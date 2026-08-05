@@ -10,32 +10,61 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { background: #0b0b0d; color: #fff; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
-        .login-box, .admin-panel { max-width: 800px; margin: 40px auto; background: #18181c; padding: 25px; border-radius: 10px; border: 1px solid #333; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { background: #d4af37; color: #000; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        .order-card { background: #222; border-left: 4px solid #d4af37; padding: 15px; margin-bottom: 15px; border-radius: 6px; }
+        :root {
+            --bg-primary: #0b0b0d;
+            --card-bg: #18181c;
+            --accent-gold: #d4af37;
+            --text-color: #fff;
+            --text-muted: #aaa;
+            --border-color: #333;
+            --input-bg: #111;
+        }
+        body { background: var(--bg-primary); color: var(--text-color); font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
+        .login-box, .admin-panel { max-width: 900px; margin: 30px auto; background: var(--card-bg); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: var(--input-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; box-sizing: border-box; }
+        button { background: var(--accent-gold); color: #000; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .order-card { background: #111; border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 15px; border-radius: 6px; border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; color: var(--accent-gold); }
         .hidden { display: none; }
+        .tag { background: #222; padding: 3px 8px; border-radius: 4px; font-size: 12px; color: #fff; }
     </style>
 </head>
 <body>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="login-box">
-        <h2 style="color: #d4af37; text-align: center;">Admin Login</h2>
+        <h2 style="color: var(--accent-gold); text-align: center;">Nova Store - Admin Login</h2>
         <input type="password" id="adminPass" placeholder="Enter Admin Password">
-        <button onclick="checkLogin()">Login</button>
+        <button onclick="checkLogin()">Login to Dashboard</button>
     </div>
 
     <!-- Admin Panel Screen -->
     <div id="adminPanel" class="admin-panel hidden">
-        <h2 style="color: #d4af37; border-bottom: 1px solid #333; padding-bottom: 10px;">Live Store Orders</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
+            <h2 style="color: var(--accent-gold); margin: 0;">Live Store Orders</h2>
+            <button onclick="loadOrders()" style="width: auto; padding: 8px 15px; font-size: 13px;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+        </div>
         <div id="ordersContainer">
-            <p style="color: #888;">Loading orders from database...</p>
+            <p style="color: var(--text-muted);">Loading live orders...</p>
         </div>
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
+            authDomain: "mushqbylibaas.firebaseapp.com",
+            projectId: "mushqbylibaas",
+            storageBucket: "mushqbylibaas.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
         function checkLogin() {
             const pass = document.getElementById('adminPass').value;
             if (pass === 'mushq123') {
@@ -48,8 +77,47 @@
         }
 
         function loadOrders() {
-            // Aapka Firebase load logic yahan aayega, ya aap direct Firebase console check kar sakte hain.
-            document.getElementById('ordersContainer').innerHTML = '<p>Connected! Check your Firebase Console "orders" collection to see live incoming orders instantly.</p>';
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '<p style="color: var(--text-muted);">Fetching orders...</p>';
+
+            db.collection("orders").get()
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No orders found yet.</p>';
+                    return;
+                }
+
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const order = doc.data();
+                    let itemsHtml = '';
+                    if (order.items && Array.isArray(order.items)) {
+                        order.items.forEach(item => {
+                            itemsHtml += `<li>${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
+                        });
+                    }
+
+                    html += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span>Customer: ${order.customerName || 'N/A'}</span>
+                                <span class="tag">Total: ₹${order.totalAmount || 0}</span>
+                            </div>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Phone:</strong> <a href="tel:${order.customerPhone}" style="color:var(--accent-gold);">${order.customerPhone || 'N/A'}</a></p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Address:</strong> ${order.customerAddress || order.address || 'N/A'}</p>
+                            <p style="margin: 5px 0; font-size: 13px; color: var(--text-muted);"><strong>Ordered Items:</strong></p>
+                            <ul style="margin: 5px 0 10px 20px; font-size: 13px; color: #ddd;">
+                                ${itemsHtml || '<li>Details not available</li>'}
+                            </ul>
+                            <p style="margin: 5px 0; font-size: 12px; color: var(--text-muted);">Date: ${order.orderDate || 'Recent'}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            })
+            .catch((error) => {
+                container.innerHTML = `<p style="color: #ff6b6b;">Error loading orders: ${error.message}</p>`;
+            });
         }
     </script>
 </body>
