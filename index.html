@@ -30,9 +30,9 @@
         
         <!-- Products Grid -->
         <div id="productGrid" class="product-grid">
-            <!-- INSTANT FALLBACK PRODUCTS (Loads instantly so page never looks empty) -->
+            <!-- INSTANT FALLBACK PRODUCTS -->
             <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit" class="product-img">
+                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit">
                 <div class="product-info">
                     <h3 class="product-title">Designer Festive Suit</h3>
                     <div class="product-price">₹1,499</div>
@@ -40,7 +40,7 @@
                 </div>
             </div>
             <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=500" alt="Suit" class="product-img">
+                <img src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=500" alt="Suit">
                 <div class="product-info">
                     <h3 class="product-title">Royal Party Wear Suit</h3>
                     <div class="product-price">₹1,899</div>
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500" alt="Suit" class="product-img">
+                <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500" alt="Suit">
                 <div class="product-info">
                     <h3 class="product-title">Elegance Embroidered Kurti</h3>
                     <div class="product-price">₹999</div>
@@ -73,20 +73,16 @@
         }
         const db = firebase.firestore();
 
-        let allProducts = [];
-
         // Fetch Live Products from Firebase Database in background
         document.addEventListener("DOMContentLoaded", () => {
             db.collection("products").get().then((querySnapshot) => {
                 if (!querySnapshot.empty) {
                     let productsHtml = "";
-                    allProducts = [];
                     querySnapshot.forEach((doc) => {
                         const prod = doc.data();
-                        allProducts.push(prod);
                         productsHtml += `
                             <div class="product-card">
-                                <img src="${prod.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500'}" alt="${prod.title}" class="product-img">
+                                <img src="${prod.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500'}" alt="${prod.title}">
                                 <div class="product-info">
                                     <h3 class="product-title">${prod.title}</h3>
                                     <div class="product-price">₹${prod.price}</div>
@@ -98,7 +94,7 @@
                     document.getElementById('productGrid').innerHTML = productsHtml;
                 }
             }).catch((error) => {
-                console.log("Using instant fallback products due to network.");
+                console.log("Using instant fallback products.");
             });
         });
 
