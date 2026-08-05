@@ -66,21 +66,16 @@
     <!-- PAYMENT MODAL POPUP -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay via UPI</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Scan QR code or click the button below to pay exact amount.</p>
+            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay via PhonePe / UPI</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Scan this QR code using GPay, PhonePe, or Paytm to pay exact amount.</p>
             
-            <!-- Aapka UPI QR Code Image yahan lagaya hai (Yahan apna QR link ya image daal sakte hain) -->
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=yourupi@paytm&pn=NovaStore" alt="Payment QR" style="width:180px; height:180px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:5px; margin-bottom:10px;">
+            <!-- Aapka Real PhonePe QR Code -->
+            <img id="myQrImg" src="" alt="Payment QR" style="width:200px; height:200px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:5px; margin-bottom:10px;">
             
             <div id="modalAmount" style="font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 15px;">Amount: ₹0</div>
 
-            <!-- Direct UPI App Payment Button -->
-            <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:12px; font-weight:bold; border-radius:6px; margin-bottom:10px;">
-                <i class="fa-solid fa-mobile-screen-button"></i> Pay via GPay / PhonePe / Paytm
-            </a>
-
-            <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:8px;">
-                I Have Paid - Submit Order
+            <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:14px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:8px; text-transform:uppercase;">
+                <i class="fa-solid fa-circle-check"></i> I Have Paid - Submit Order
             </button>
             <button onclick="closeModal()" style="width:100%; background:#333; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-size:12px;">
                 Cancel
@@ -102,6 +97,9 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
+
+        // Aapke PhonePe QR Code ki direct Image
+        const userQrData = "https://raw.githubusercontent.com/mushqbylibaas/Store/main/qr.jpg"; 
 
         let lat = "";
         let lng = "";
@@ -152,9 +150,8 @@
 
             document.getElementById('modalAmount').innerText = "Amount to Pay: ₹" + finalTotal;
             
-            // Set dynamic UPI payment intent link (Yahan apna upi id 'yourupi@paytm' badal sakte hain)
-            const upiID = "yourupi@paytm";
-            document.getElementById('upiPayLink').href = `upi://pay?pa=${upiID}&pn=NovaStore&am=${finalTotal}&cu=INR`;
+            // Render AAPKA QR Image
+            document.getElementById('myQrImg').src = document.querySelector('img[name="1000062531.jpg"]') ? document.querySelector('img[name="1000062531.jpg"]').src : userQrData;
 
             document.getElementById('paymentModal').style.display = 'flex';
         }
