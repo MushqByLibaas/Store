@@ -9,12 +9,12 @@
 </head>
 <body>
     <div class="container" style="padding-top: 40px;">
-        <div class="admin-header">
-            <h1>Mushq Libaas Admin</h1>
-            <p>Manage store orders and products</p>
+        <div class="admin-header" style="text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+            <h1 style="color: var(--accent-gold); letter-spacing: 2px; font-size: 26px; text-transform: uppercase; font-family: 'Cinzel', serif;">Mushq Libaas Admin</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Manage store orders and products</p>
         </div>
 
-        <div id="login-card">
+        <div id="login-card" style="background: var(--card-bg); border: 1px solid var(--accent-gold); padding: 30px; border-radius: 10px; max-width: 400px; margin: 60px auto; text-align: center;">
             <h3 style="color: var(--accent-gold); margin-bottom: 20px; font-family: 'Cinzel', serif;">Admin Access</h3>
             <input type="password" id="admin-pass" placeholder="Enter Admin Password" style="width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border-color); color:#fff; border-radius:6px; margin-bottom:15px; outline:none;">
             <button onclick="checkAdminLogin()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer;">Login</button>
@@ -24,21 +24,78 @@
             <div style="background:var(--card-bg); border:1px solid var(--border-color); padding:20px; border-radius:10px;">
                 <h3 style="color:var(--accent-gold); margin-bottom:15px; font-family:'Cinzel',serif;">Live Store Orders</h3>
                 <div id="orders-list">
-                    <p style="color:#888;">No orders found or connecting to database...</p>
+                    <p style="color:#888;">Loading orders...</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
+          authDomain: "mushqbylibaas.firebaseapp.com",
+          projectId: "mushqbylibaas",
+          storageBucket: "mushqbylibaas.firebasestorage.app",
+          messagingSenderId: "1057698747540",
+          appId: "1:1057698747540:web:e68337039fcb254f381081",
+          measurementId: "G-J1L758MD9G"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
         function checkAdminLogin() {
             const pass = document.getElementById('admin-pass').value;
-            if(pass === "mushq123") { // Aap yahan apna password badal sakte hain
+            if(pass === "mushq123") { // Aap password yahan change kar sakte hain
                 document.getElementById('login-card').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
+                loadOrders();
             } else {
                 alert("Incorrect Password!");
             }
+        }
+
+        function loadOrders() {
+            const listEl = document.getElementById('orders-list');
+            db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                if(snapshot.empty) {
+                    listEl.innerHTML = '<p style="color:#888;">No orders received yet.</p>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const o = doc.data();
+                    let itemsHtml = '';
+                    if(o.items) {
+                        o.items.forEach(i => {
+                            const qty = i.qty || i.quantity || 1;
+                            itemsHtml += `<li>${i.title} (Qty: ${qty}) - ₹${i.price * qty}</li>`;
+                        });
+                    }
+                    html += `
+                        <div style="background:#111; border:1px solid var(--border-color); padding:15px; border-radius:8px; margin-bottom:15px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                <strong style="color:var(--accent-gold);">${o.customerName}</strong>
+                                <span style="font-size:12px; color:#aaa;">Phone: ${o.customerPhone}</span>
+                            </div>
+                            <div style="font-size:13px; color:#ddd; margin-bottom:6px;"><strong>Address:</strong> ${o.customerAddress}</div>
+                            <div style="font-size:13px; margin-bottom:8px;"><a href="${o.customerLocation}" target="_blank" style="color:var(--accent-gold);"><i class="fa-solid fa-map-location-dot"></i> View GPS Location</a></div>
+                            <div style="font-size:13px; color:#ccc; border-top:1px dashed #333; padding-top:8px;">
+                                <strong>Items:</strong>
+                                <ul style="margin-left:20px; margin-top:4px;">${itemsHtml}</ul>
+                            </div>
+                            <div style="margin-top:8px; font-weight:bold; color:var(--accent-gold);">Total: ₹${o.totalAmount} (${o.paymentStatus || 'Paid'})</div>
+                        </div>
+                    `;
+                });
+                listEl.innerHTML = html;
+            });
         }
     </script>
 </body>
