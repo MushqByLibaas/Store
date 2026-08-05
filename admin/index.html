@@ -98,6 +98,15 @@
                         <input type="text" id="prodSizes" value="S, M, L, XL, XXL">
                     </div>
                 </div>
+                <!-- ADDED SECTION / CATEGORY DROPDOWN -->
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Select Product Section / Category</label>
+                    <select id="prodCategory">
+                        <option value="new">New Arrivals</option>
+                        <option value="trending">Trending</option>
+                        <option value="special">Special Offer</option>
+                    </select>
+                </div>
                 <div>
                     <label style="font-size: 12px; color: var(--text-muted);">Upload Image from Device</label>
                     <input type="file" id="prodImageFile" accept="image/*" onchange="convertImage(event)" style="padding: 8px;">
@@ -254,6 +263,7 @@
             const price = Number(document.getElementById('prodPrice').value);
             const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
             const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
+            const category = document.getElementById('prodCategory').value; // Get selected category
             const image = document.getElementById('prodImage').value;
 
             if (!image) {
@@ -261,7 +271,7 @@
                 return;
             }
 
-            const productData = { title, price, colors, sizes, image };
+            const productData = { title, price, colors, sizes, category, image };
 
             if (id) {
                 db.collection("products").doc(id).update(productData).then(() => {
@@ -298,7 +308,7 @@
                                 <img src="${p.image}" style="width:50px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #444;" onerror="this.src='https://via.placeholder.com/50'">
                                 <div>
                                     <h4 style="margin:0; color:var(--accent-gold); font-size:15px;">${p.title}</h4>
-                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price}</p>
+                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price} <span class="tag" style="margin-left:8px; font-size:10px; text-transform:uppercase;">${p.category || 'new'}</span></p>
                                     <p style="margin:3px 0; font-size:11px; color:var(--text-muted);">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'} | Sizes: ${p.sizes ? p.sizes.join(', ') : 'N/A'}</p>
                                 </div>
                             </div>
@@ -321,6 +331,7 @@
             document.getElementById('prodPrice').value = p.price;
             document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
             document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
+            document.getElementById('prodCategory').value = p.category || 'new'; // Set category in dropdown
             document.getElementById('prodImage').value = p.image;
             document.getElementById('formHeading').innerText = "Edit Product";
             document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
@@ -334,18 +345,4 @@
             document.getElementById('formHeading').innerText = "Add New Product";
             document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
             document.getElementById('cancelEditBtn').classList.add('hidden');
-            document.getElementById('prodColors').value = "Maroon, Black, Navy Blue, Pink";
-            document.getElementById('prodSizes').value = "S, M, L, XL, XXL";
-        }
-
-        function deleteProduct(id) {
-            if (confirm("Are you sure you want to delete this product?")) {
-                db.collection("products").doc(id).delete().then(() => {
-                    alert("Product deleted successfully!");
-                    loadProducts();
-                }).catch(err => alert("Error deleting: " + err.message));
-            }
-        }
-    </script>
-</body>
-</html>
+            document.getElementById('prodCo
