@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Store - Admin Dashboard</title>
+    <title>Nova Store - Advanced Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Firebase SDKs -->
@@ -20,32 +20,88 @@
             --input-bg: #111;
         }
         body { background: var(--bg-primary); color: var(--text-color); font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
-        .login-box, .admin-panel { max-width: 900px; margin: 30px auto; background: var(--card-bg); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: var(--input-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { background: var(--accent-gold); color: #000; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        .order-card { background: #111; border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 15px; border-radius: 6px; border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
-        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; color: var(--accent-gold); }
+        .login-box, .admin-container { max-width: 1000px; margin: 20px auto; background: var(--card-bg); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
+        input, textarea, select { width: 100%; padding: 10px 12px; margin: 8px 0 15px 0; background: var(--input-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        button { background: var(--accent-gold); color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tab-btn { background: #222; color: #fff; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
+        .card { background: #111; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 15px; border-radius: 6px; }
         .hidden { display: none; }
-        .tag { background: #222; padding: 3px 8px; border-radius: 4px; font-size: 12px; color: #fff; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .tag { background: #222; padding: 3px 8px; border-radius: 4px; font-size: 12px; color: #fff; border: 1px solid #444; display: inline-block; margin-right: 5px; }
     </style>
 </head>
 <body>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="login-box">
-        <h2 style="color: var(--accent-gold); text-align: center;">Nova Store - Admin Login</h2>
-        <input type="password" id="adminPass" placeholder="Enter Admin Password">
-        <button onclick="checkLogin()">Login to Dashboard</button>
+        <h2 style="color: var(--accent-gold); text-align: center; margin-bottom: 20px;">Nova Store - Admin Portal</h2>
+        <label style="font-size: 13px; color: var(--text-muted);">Admin Password</label>
+        <input type="password" id="adminPass" placeholder="Enter password...">
+        <button onclick="checkLogin()" style="width: 100%; margin-top: 10px;">Login to Panel</button>
     </div>
 
-    <!-- Admin Panel Screen -->
-    <div id="adminPanel" class="admin-panel hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
-            <h2 style="color: var(--accent-gold); margin: 0;">Live Store Orders</h2>
-            <button onclick="loadOrders()" style="width: auto; padding: 8px 15px; font-size: 13px;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    <!-- Admin Panel Container -->
+    <div id="adminPanel" class="admin-container hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: var(--accent-gold); margin: 0;">Nova Store Control Panel</h2>
+            <button onclick="location.reload()" style="background: #333; color: #fff; padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
-        <div id="ordersContainer">
-            <p style="color: var(--text-muted);">Loading live orders...</p>
+
+        <!-- Navigation Tabs -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Live Orders</button>
+            <button class="tab-btn" onclick="switchTab('productsTab', this)"><i class="fa-solid fa-shirt"></i> Manage Products</button>
+        </div>
+
+        <!-- TAB 1: LIVE ORDERS -->
+        <div id="ordersTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: #fff; margin: 0;">Customer Orders</h3>
+                <button onclick="loadOrders()" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-rotate"></i> Refresh Orders</button>
+            </div>
+            <div id="ordersContainer">
+                <p style="color: var(--text-muted);">Loading orders...</p>
+            </div>
+        </div>
+
+        <!-- TAB 2: MANAGE PRODUCTS -->
+        <div id="productsTab" class="tab-content hidden">
+            <h3 style="color: #fff; margin-bottom: 15px;">Add New Product</h3>
+            <form id="addProductForm" onsubmit="addNewProduct(event)" style="background: #111; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 30px;">
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Product Title / Name</label>
+                        <input type="text" id="prodTitle" required placeholder="e.g. Maroon Designer Suit">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Price (₹)</label>
+                        <input type="number" id="prodPrice" required placeholder="e.g. 2499">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Available Colors (Comma separated)</label>
+                        <input type="text" id="prodColors" placeholder="e.g. Maroon, Navy Blue, Black">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Available Sizes (Comma separated)</label>
+                        <input type="text" id="prodSizes" placeholder="e.g. S, M, L, XL, XXL">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Image URL</label>
+                    <input type="url" id="prodImage" required placeholder="Paste direct image link here">
+                </div>
+                <button type="submit" style="width: 100%; margin-top: 10px;"><i class="fa-solid fa-plus"></i> Publish Product to Store</button>
+            </form>
+
+            <h3 style="color: #fff; margin-bottom: 15px;">Existing Store Products</h3>
+            <div id="productsContainer">
+                <p style="color: var(--text-muted);">Loading products...</p>
+            </div>
         </div>
     </div>
 
@@ -71,22 +127,29 @@
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
                 loadOrders();
+                loadProducts();
             } else {
                 alert('Wrong Password!');
             }
         }
 
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            btn.classList.add('active');
+        }
+
+        // Load Orders from Firestore
         function loadOrders() {
             const container = document.getElementById('ordersContainer');
             container.innerHTML = '<p style="color: var(--text-muted);">Fetching orders...</p>';
 
-            db.collection("orders").get()
-            .then((querySnapshot) => {
+            db.collection("orders").get().then((querySnapshot) => {
                 if (querySnapshot.empty) {
                     container.innerHTML = '<p style="color: var(--text-muted);">No orders found yet.</p>';
                     return;
                 }
-
                 let html = '';
                 querySnapshot.forEach((doc) => {
                     const order = doc.data();
@@ -96,28 +159,94 @@
                             itemsHtml += `<li>${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
                         });
                     }
-
                     html += `
-                        <div class="order-card">
-                            <div class="order-header">
+                        <div class="card">
+                            <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent-gold); border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">
                                 <span>Customer: ${order.customerName || 'N/A'}</span>
-                                <span class="tag">Total: ₹${order.totalAmount || 0}</span>
+                                <span class="tag">₹${order.totalAmount || 0}</span>
                             </div>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Phone:</strong> <a href="tel:${order.customerPhone}" style="color:var(--accent-gold);">${order.customerPhone || 'N/A'}</a></p>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Address:</strong> ${order.customerAddress || order.address || 'N/A'}</p>
-                            <p style="margin: 5px 0; font-size: 13px; color: var(--text-muted);"><strong>Ordered Items:</strong></p>
-                            <ul style="margin: 5px 0 10px 20px; font-size: 13px; color: #ddd;">
-                                ${itemsHtml || '<li>Details not available</li>'}
-                            </ul>
-                            <p style="margin: 5px 0; font-size: 12px; color: var(--text-muted);">Date: ${order.orderDate || 'Recent'}</p>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Phone:</strong> <a href="tel:${order.customerPhone}" style="color:var(--accent-gold);">${order.customerPhone}</a></p>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Address:</strong> ${order.customerAddress || order.address || 'N/A'}</p>
+                            <p style="margin:4px 0; font-size:13px; color:var(--text-muted);"><strong>Items:</strong></p>
+                            <ul style="margin:4px 0 8px 15px; font-size:13px; color:#ddd;">${itemsHtml}</ul>
+                            <p style="margin:0; font-size:11px; color:var(--text-muted);">Date: ${order.orderDate || 'Recent'}</p>
                         </div>
                     `;
                 });
                 container.innerHTML = html;
-            })
-            .catch((error) => {
-                container.innerHTML = `<p style="color: #ff6b6b;">Error loading orders: ${error.message}</p>`;
+            }).catch(err => {
+                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
             });
+        }
+
+        // Add Product to Firestore
+        function addNewProduct(e) {
+            e.preventDefault();
+            const title = document.getElementById('prodTitle').value;
+            const price = Number(document.getElementById('prodPrice').value);
+            const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
+            const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
+            const image = document.getElementById('prodImage').value;
+
+            db.collection("products").add({
+                title: title,
+                price: price,
+                colors: colors,
+                sizes: sizes,
+                image: image,
+                createdAt: new Date()
+            }).then(() => {
+                alert("Product added successfully!");
+                document.getElementById('addProductForm').reset();
+                loadProducts();
+            }).catch(err => {
+                alert("Error adding product: " + err.message);
+            });
+        }
+
+        // Load Products in Admin Panel
+        function loadProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<p style="color: var(--text-muted);">Loading products...</p>';
+
+            db.collection("products").get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No custom products found in database.</p>';
+                    return;
+                }
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const p = doc.data();
+                    html += `
+                        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:15px; align-items:center;">
+                                <img src="${p.image}" style="width:50px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #444;" onerror="this.src='https://via.placeholder.com/50'">
+                                <div>
+                                    <h4 style="margin:0; color:var(--accent-gold); font-size:15px;">${p.title}</h4>
+                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price}</p>
+                                    <p style="margin:3px 0; font-size:11px; color:var(--text-muted);">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'} | Sizes: ${p.sizes ? p.sizes.join(', ') : 'N/A'}</p>
+                                </div>
+                            </div>
+                            <button onclick="deleteProduct('${doc.id}')" style="background:#ff4d4d; color:#fff; padding:8px 12px; font-size:12px;"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }).catch(err => {
+                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+            });
+        }
+
+        // Delete Product
+        function deleteProduct(id) {
+            if (confirm("Are you sure you want to delete this product?")) {
+                db.collection("products").doc(id).delete().then(() => {
+                    alert("Product deleted successfully!");
+                    loadProducts();
+                }).catch(err => {
+                    alert("Error deleting product: " + err.message);
+                });
+            }
         }
     </script>
 </body>
