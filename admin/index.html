@@ -101,7 +101,6 @@
                 <div>
                     <label style="font-size: 12px; color: var(--text-muted);">Select Product Section / Category</label>
                     <select id="prodCategory">
-                        <option value="bestseller">Best Seller</option>
                         <option value="new">New Arrivals</option>
                         <option value="trending">Trending</option>
                         <option value="special">Special Offer</option>
@@ -141,6 +140,7 @@
         }
         const db = firebase.firestore();
 
+        // Check if already logged in via localStorage
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('novaAdminAuth') === 'true') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -267,13 +267,12 @@
             const category = document.getElementById('prodCategory').value;
             const image = document.getElementById('prodImage').value;
 
-            if (!image && !id) {
+            if (!image) {
                 alert("Please upload an image file.");
                 return;
             }
 
-            const productData = { title, price, colors, sizes, category };
-            if (image) productData.image = image;
+            const productData = { title, price, colors, sizes, category, image };
 
             if (id) {
                 db.collection("products").doc(id).update(productData).then(() => {
@@ -348,4 +347,5 @@
                 document.getElementById('prodCategory').value = p.category || 'new';
                 document.getElementById('prodImage').value = p.image;
                 document.getElementById('formHeading').innerText = "Edit Product";
-                document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i
+                document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
+                document.getElementById('cancelE
