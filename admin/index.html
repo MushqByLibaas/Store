@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Store - Advanced Admin Dashboard</title>
+    <title>Mushq By Libaas - Advanced Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Firebase SDKs -->
@@ -37,7 +37,7 @@
 
     <!-- Login Screen -->
     <div id="loginScreen" class="login-box">
-        <h2 style="color: var(--accent-gold); text-align: center; margin-bottom: 20px;">Nova Store - Admin Portal</h2>
+        <h2 style="color: var(--accent-gold); text-align: center; margin-bottom: 20px;">Mushq By Libaas - Admin Portal</h2>
         <label style="font-size: 13px; color: var(--text-muted);">Admin Password</label>
         <input type="password" id="adminPass" placeholder="Enter password...">
         <button onclick="checkLogin()" style="width: 100%; margin-top: 10px;">Login to Panel</button>
@@ -99,6 +99,14 @@
                     </div>
                 </div>
                 <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Select Product Section / Category</label>
+                    <select id="prodCategory">
+                        <option value="new">New Arrivals</option>
+                        <option value="trending">Trending</option>
+                        <option value="special">Special Offer</option>
+                    </select>
+                </div>
+                <div>
                     <label style="font-size: 12px; color: var(--text-muted);">Upload Image from Device</label>
                     <input type="file" id="prodImageFile" accept="image/*" onchange="convertImage(event)" style="padding: 8px;">
                     <input type="hidden" id="prodImage">
@@ -118,12 +126,13 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
+            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
             projectId: "mushqbylibaas",
-            storageBucket: "mushqbylibaas.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            storageBucket: "mushqbylibaas.firebasestorage.app",
+            messagingSenderId: "1057698747540",
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
         };
 
         if (!firebase.apps.length) {
@@ -203,7 +212,8 @@
                     `;
                 });
                 container.innerHTML = html;
-                document.getElementById('selectAllCheckbox').checked = false;
+                const selectAll = document.getElementById('selectAllCheckbox');
+                if(selectAll) selectAll.checked = false;
             }).catch(err => {
                 container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
             });
@@ -254,6 +264,7 @@
             const price = Number(document.getElementById('prodPrice').value);
             const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
             const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
+            const category = document.getElementById('prodCategory').value;
             const image = document.getElementById('prodImage').value;
 
             if (!image) {
@@ -261,7 +272,7 @@
                 return;
             }
 
-            const productData = { title, price, colors, sizes, image };
+            const productData = { title, price, colors, sizes, category, image };
 
             if (id) {
                 db.collection("products").doc(id).update(productData).then(() => {
@@ -291,19 +302,29 @@
                 let html = '';
                 querySnapshot.forEach((doc) => {
                     const p = doc.data();
-                    const pData = JSON.stringify({id: doc.id, ...p}).replace(/"/g, '&quot;');
+                    let safeObj = {
+                        id: doc.id,
+                        title: p.title || '',
+                        price: p.price || 0,
+                        colors: p.colors || [],
+                        sizes: p.sizes || [],
+                        category: p.category || 'new',
+                        image: p.image || ''
+                    };
+                    let encodedData = encodeURIComponent(JSON.stringify(safeObj));
+
                     html += `
                         <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; gap:15px; align-items:center;">
                                 <img src="${p.image}" style="width:50px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #444;" onerror="this.src='https://via.placeholder.com/50'">
                                 <div>
                                     <h4 style="margin:0; color:var(--accent-gold); font-size:15px;">${p.title}</h4>
-                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price}</p>
+                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price} <span class="tag" style="margin-left:8px; font-size:10px; text-transform:uppercase;">${p.category || 'new'}</span></p>
                                     <p style="margin:3px 0; font-size:11px; color:var(--text-muted);">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'} | Sizes: ${p.sizes ? p.sizes.join(', ') : 'N/A'}</p>
                                 </div>
                             </div>
                             <div style="display:flex; gap:8px;">
-                                <button onclick="editProduct(${pData})" style="background:#333; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:8px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="editProductByJSON('${encodedData}')" style="background:#333; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:8px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button>
                                 <button onclick="deleteProduct('${doc.id}')" style="background:#ff4d4d; color:#fff; padding:8px 12px; font-size:12px;"><i class="fa-solid fa-trash"></i> Delete</button>
                             </div>
                         </div>
@@ -315,17 +336,23 @@
             });
         }
 
-        function editProduct(p) {
-            document.getElementById('editProdId').value = p.id;
-            document.getElementById('prodTitle').value = p.title;
-            document.getElementById('prodPrice').value = p.price;
-            document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
-            document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
-            document.getElementById('prodImage').value = p.image;
-            document.getElementById('formHeading').innerText = "Edit Product";
-            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function editProductByJSON(encodedStr) {
+            try {
+                const p = JSON.parse(decodeURIComponent(encodedStr));
+                document.getElementById('editProdId').value = p.id;
+                document.getElementById('prodTitle').value = p.title;
+                document.getElementById('prodPrice').value = p.price;
+                document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
+                document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
+                document.getElementById('prodCategory').value = p.category || 'new';
+                document.getElementById('prodImage').value = p.image;
+                document.getElementById('formHeading').innerText = "Edit Product";
+                document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
+                document.getElementById('cancelEditBtn').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch(e) {
+                console.error(e);
+            }
         }
 
         function resetForm() {
@@ -336,6 +363,7 @@
             document.getElementById('cancelEditBtn').classList.add('hidden');
             document.getElementById('prodColors').value = "Maroon, Black, Navy Blue, Pink";
             document.getElementById('prodSizes').value = "S, M, L, XL, XXL";
+            document.getElementById('prodCategory').value = "new";
         }
 
         function deleteProduct(id) {
