@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mushq Libaas - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" style="padding-top: 40px;">
+        <div class="admin-header">
+            <h1>Mushq Libaas Admin</h1>
+            <p>Manage store orders and products</p>
+        </div>
+
+        <div id="login-card">
+            <h3 style="color: var(--accent-gold); margin-bottom: 20px; font-family: 'Cinzel', serif;">Admin Access</h3>
+            <input type="password" id="admin-pass" placeholder="Enter Admin Password" style="width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border-color); color:#fff; border-radius:6px; margin-bottom:15px; outline:none;">
+            <button onclick="checkAdminLogin()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer;">Login</button>
+        </div>
+
+        <div id="admin-panel" style="display:none;">
+            <div style="background:var(--card-bg); border:1px solid var(--border-color); padding:20px; border-radius:10px;">
+                <h3 style="color:var(--accent-gold); margin-bottom:15px; font-family:'Cinzel',serif;">Live Store Orders</h3>
+                <div id="orders-list">
+                    <p style="color:#888;">No orders found or connecting to database...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkAdminLogin() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === "mushq123") { // Aap yahan apna password badal sakte hain
+                document.getElementById('login-card').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+            } else {
+                alert("Incorrect Password!");
+            }
+        }
+    </script>
+</body>
+</html>
