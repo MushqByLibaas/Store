@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Nova Store</title>
+    <title>Checkout - Mushq By Libaas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -21,7 +21,7 @@
     </div>
 
     <header class="header">
-        <a href="index.html" class="logo">NOVA <span>STORE</span></a>
+        <a href="index.html" class="logo">MUSHQ BY <span>LIBAAS</span></a>
     </header>
 
     <div class="container" style="max-width: 600px; margin-top: 20px;">
@@ -88,12 +88,13 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
+            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
             projectId: "mushqbylibaas",
-            storageBucket: "mushqbylibaas.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            storageBucket: "mushqbylibaas.firebasestorage.app",
+            messagingSenderId: "1057698747540",
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
         };
 
         if (!firebase.apps.length) {
@@ -162,7 +163,7 @@
             document.getElementById('modalAmount').innerText = "Amount to Pay: ₹" + finalTotal;
             
             const merchantUpiID = "mushq@paytm"; 
-            document.getElementById('upiPayLink').href = `upi://pay?pa=${merchantUpiID}&pn=NovaStore&am=${finalTotal}&cu=INR`;
+            document.getElementById('upiPayLink').href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas&am=${finalTotal}&cu=INR`;
 
             document.getElementById('paymentModal').style.display = 'flex';
         }
@@ -187,7 +188,6 @@
             })
             .then(() => {
                 localStorage.removeItem('novaCart');
-                // Redirect to professional success page
                 window.location.href = 'success.html';
             })
             .catch((error) => {
