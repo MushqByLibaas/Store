@@ -66,17 +66,22 @@
     <!-- PAYMENT MODAL POPUP -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay via PhonePe / UPI</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Scan this QR code using GPay, PhonePe, or Paytm to pay exact amount.</p>
+            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay via PhonePe</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;">Scan QR or click below to pay via UPI app.</p>
             
-            <img src="qr.jpg" alt="Payment QR" style="width:200px; height:200px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:5px; margin-bottom:10px;" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mushq@paytm&pn=NovaStore'">
+            <img src="qr.jpg" alt="Payment QR" style="width:160px; height:160px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
             
-            <div id="modalAmount" style="font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 15px;">Amount: ₹0</div>
+            <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
 
-            <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:14px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:8px; text-transform:uppercase;">
+            <!-- Direct Auto-Pay UPI App Button -->
+            <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:10px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
+                <i class="fa-solid fa-mobile-screen-button"></i> Pay via GPay / PhonePe / Paytm
+            </a>
+
+            <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:6px; text-transform:uppercase;">
                 <i class="fa-solid fa-circle-check"></i> I Have Paid - Submit Order
             </button>
-            <button onclick="closeModal()" style="width:100%; background:#333; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-size:12px;">
+            <button onclick="closeModal()" style="width:100%; background:#333; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-size:12px;">
                 Cancel
             </button>
         </div>
@@ -156,6 +161,11 @@
             }
 
             document.getElementById('modalAmount').innerText = "Amount to Pay: ₹" + finalTotal;
+            
+            // Apni PhonePe UPI ID yahan dal dein jisse auto-fill kaam karega
+            const merchantUpiID = "mushq@paytm"; 
+            document.getElementById('upiPayLink').href = `upi://pay?pa=${merchantUpiID}&pn=NovaStore&am=${finalTotal}&cu=INR`;
+
             document.getElementById('paymentModal').style.display = 'flex';
         }
 
@@ -173,7 +183,7 @@
                 location: { latitude: lat || 'Not shared', longitude: lng || 'Not shared' },
                 items: cartItems,
                 totalAmount: finalTotal,
-                paymentStatus: "Paid (QR Scan)",
+                paymentStatus: "Paid (QR & App)",
                 status: "Pending",
                 orderDate: new Date().toLocaleString()
             })
