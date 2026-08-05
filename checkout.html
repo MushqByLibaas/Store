@@ -69,7 +69,6 @@
             <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay via PhonePe / UPI</h3>
             <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Scan this QR code using GPay, PhonePe, or Paytm to pay exact amount.</p>
             
-            <!-- GitHub Repository Direct QR Image Path -->
             <img src="qr.jpg" alt="Payment QR" style="width:200px; height:200px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:5px; margin-bottom:10px;" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mushq@paytm&pn=NovaStore'">
             
             <div id="modalAmount" style="font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 15px;">Amount: ₹0</div>
@@ -104,17 +103,23 @@
         let customerData = {};
 
         document.addEventListener("DOMContentLoaded", () => {
-            const cart = JSON.parse(localStorage.getItem('novaCart')) || [];
             const summaryDiv = document.getElementById('checkoutSummary');
+            let cart = [];
+            
+            try {
+                cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            } catch (err) {
+                cart = [];
+            }
             
             if (cart.length === 0) {
-                summaryDiv.innerHTML = "Your cart is empty.";
+                summaryDiv.innerHTML = '<p style="color:red;">No product selected! Please go back and click Order Now again.</p>';
                 return;
             }
 
             let html = '<ul style="padding-left:15px; margin:0;">';
             cart.forEach(item => {
-                finalTotal += item.price * item.qty;
+                finalTotal += Number(item.price) * Number(item.qty);
                 html += `<li style="margin-bottom:5px;">${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
             });
             html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ₹${finalTotal}</div>`;
@@ -141,9 +146,14 @@
             e.preventDefault();
             customerData = {
                 name: document.getElementById('custName').value,
-                phone: document.getElementById('custPhone'].value,
+                phone: document.getElementById('custPhone').value,
                 address: document.getElementById('custAddress').value
             };
+
+            if (finalTotal <= 0) {
+                alert("Invalid total amount. Please re-select the product.");
+                return;
+            }
 
             document.getElementById('modalAmount').innerText = "Amount to Pay: ₹" + finalTotal;
             document.getElementById('paymentModal').style.display = 'flex';
