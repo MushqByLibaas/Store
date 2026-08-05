@@ -11,8 +11,19 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
-        .cart-badge { position: absolute; top: 15px; right: 20px; background: var(--accent-gold, #d4af37); color: #000; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; }
+        .cart-badge { position: absolute; top: 15px; right: 20px; background: var(--accent-gold, #d4af37); color: #000; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; cursor: pointer; }
         .product-btn-group { display: flex; gap: 8px; margin-top: 10px; }
+        
+        /* PROFESSIONAL CART MODAL STYLES */
+        .cart-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); justify-content: flex-end; }
+        .cart-drawer { background: #18181c; width: 100%; max-width: 420px; height: 100%; display: flex; flex-direction: column; border-left: 1px solid #333; box-shadow: -5px 0 25px rgba(0,0,0,0.5); animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .cart-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: #111; }
+        .cart-body { flex: 1; padding: 20px; overflow-y: auto; }
+        .cart-footer { padding: 20px; border-top: 1px solid #333; background: #111; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #333; }
+        .qty-btn { background: #333; color: #fff; border: none; width: 26px; height: 26px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .qty-btn:hover { background: var(--accent-gold, #d4af37); color: #000; }
     </style>
 </head>
 <body>
@@ -24,9 +35,9 @@
     <header class="header" style="position: relative; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
         <a href="index.html" class="logo" style="text-decoration:none; color:#fff; font-size:20px; font-weight:bold;">MUSK BY <span style="color:var(--accent-gold, #d4af37);">LIBAAS</span></a>
         <!-- Top Corner Cart Button -->
-        <a href="checkout.html" class="cart-badge">
+        <div onclick="openCartDrawer()" class="cart-badge">
             🛒 Cart <span id="cartCount" style="background:#000; color:#fff; padding:2px 6px; border-radius:50%; font-size:11px;">0</span>
-        </a>
+        </div>
     </header>
 
     <div class="container">
@@ -38,6 +49,28 @@
         <h2 class="section-title">NEW ARRIVALS</h2>
         <div class="product-grid" id="productGrid">
             <p style="color: #aaa; text-align: center; grid-column: 1 / -1;">Loading live products...</p>
+        </div>
+    </div>
+
+    <!-- PROFESSIONAL CART SIDE DRAWER MODAL -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h3 style="color: var(--accent-gold, #d4af37); margin:0;"><i class="fa-solid fa-cart-shopping"></i> Your Shopping Cart</h3>
+                <button onclick="closeCartDrawer()" style="background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="cart-body" id="cartItemsContainer">
+                <p style="color: #aaa; text-align: center; margin-top: 40px;">Your cart is empty.</p>
+            </div>
+            <div class="cart-footer">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 16px; font-weight: bold; color: #fff;">
+                    <span>Subtotal:</span>
+                    <span id="cartSubtotal" style="color: var(--accent-gold, #d4af37);">₹0</span>
+                </div>
+                <button onclick="proceedToCheckout()" style="width:100%; background:var(--accent-gold, #d4af37); color:#000; border:none; padding:14px; font-weight:bold; border-radius:6px; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
+                    Proceed to Checkout ⚡
+                </button>
+            </div>
         </div>
     </div>
 
@@ -97,6 +130,7 @@
             });
         }
 
+        // PROFESSIONAL CART FUNCTIONS
         function addToCart(title, price) {
             let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
             let existing = cart.find(item => item.title === title);
@@ -107,7 +141,73 @@
             }
             localStorage.setItem('novaCart', JSON.stringify(cart));
             updateCartCount();
-            alert(`🛒 "${title}" added to cart successfully!`);
+            openCartDrawer();
+        }
+
+        function openCartDrawer() {
+            renderCartItems();
+            document.getElementById('cartModal').style.display = 'flex';
+        }
+
+        function closeCartDrawer() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="color: #aaa; text-align: center; margin-top: 40px;">Your cart is empty.</p>';
+                document.getElementById('cartSubtotal').innerText = '₹0';
+                return;
+            }
+
+            let html = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+                html += `
+                    <div class="cart-item">
+                        <div>
+                            <h4 style="margin:0 0 4px 0; font-size:13px; color:#fff;">${item.title}</h4>
+                            <div style="font-size:12px; color:var(--accent-gold, #d4af37); font-weight:bold;">₹${item.price} x ${item.qty} = ₹${itemTotal}</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+                            <span style="font-size:13px; font-weight:bold; color:#fff; min-width:16px; text-align:center;">${item.qty}</span>
+                            <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                            <button onclick="removeItem(${index})" style="background:transparent; border:none; color:#ff4d4d; cursor:pointer; margin-left:6px; font-size:14px;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('cartSubtotal').innerText = '₹' + subtotal;
+        }
+
+        function changeQty(index, delta) {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            if (cart[index]) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            updateCartCount();
+            renderCartItems();
+        }
+
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            updateCartCount();
+            renderCartItems();
         }
 
         function updateCartCount() {
@@ -123,6 +223,15 @@
                 qty: 1
             }];
             localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
+            window.location.href = 'checkout.html';
+        }
+
+        function proceedToCheckout() {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
             window.location.href = 'checkout.html';
         }
 
