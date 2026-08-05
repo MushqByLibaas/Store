@@ -3,100 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mushq Libaas - Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Mushq Libaas | Premium Ladies Suits</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container" style="padding-top: 40px;">
-        <div class="admin-header" style="text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
-            <h1 style="color: var(--accent-gold); letter-spacing: 2px; font-size: 26px; text-transform: uppercase; font-family: 'Cinzel', serif;">Mushq Libaas Admin</h1>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Manage store orders and products</p>
+
+    <div class="top-bar">
+        ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
+    </div>
+
+    <header class="header">
+        <a href="index.html" class="logo">MUSHQ <span>LIBAAS</span></a>
+        <div class="cart-trigger" onclick="toggleCart(true)">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cartBadge" class="cart-badge">0</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive...">
         </div>
 
-        <div id="login-card" style="background: var(--card-bg); border: 1px solid var(--accent-gold); padding: 30px; border-radius: 10px; max-width: 400px; margin: 60px auto; text-align: center;">
-            <h3 style="color: var(--accent-gold); margin-bottom: 20px; font-family: 'Cinzel', serif;">Admin Access</h3>
-            <input type="password" id="admin-pass" placeholder="Enter Admin Password" style="width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border-color); color:#fff; border-radius:6px; margin-bottom:15px; outline:none;">
-            <button onclick="checkAdminLogin()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer;">Login</button>
-        </div>
-
-        <div id="admin-panel" style="display:none;">
-            <div style="background:var(--card-bg); border:1px solid var(--border-color); padding:20px; border-radius:10px;">
-                <h3 style="color:var(--accent-gold); margin-bottom:15px; font-family:'Cinzel',serif;">Live Store Orders</h3>
-                <div id="orders-list">
-                    <p style="color:#888;">Loading orders...</p>
-                </div>
+        <h2 class="section-title">NEW ARRIVALS</h2>
+        <div class="product-grid" id="productGrid">
+            <!-- Sample Product Card -->
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;">
+                <h3 style="font-size:14px; font-weight:600; margin-bottom:6px;">Winish Maroon Soft Cotton Suit</h3>
+                <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:12px;">₹2,499</div>
+                <button onclick="addToCart('1', 'Winish Maroon Soft Cotton Suit', 2499, 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500', 'Standard', 'Maroon')" style="background:var(--accent-gold); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">Add to Bag</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart(false)"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3>Your Bag</h3>
+            <button class="close-cart" onclick="toggleCart(false)"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-body" id="cartBody"></div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span>₹<span id="cartTotal">0</span></span>
+            </div>
+            <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+        </div>
+    </div>
 
-    <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
-          authDomain: "mushqbylibaas.firebaseapp.com",
-          projectId: "mushqbylibaas",
-          storageBucket: "mushqbylibaas.firebasestorage.app",
-          messagingSenderId: "1057698747540",
-          appId: "1:1057698747540:web:e68337039fcb254f381081",
-          measurementId: "G-J1L758MD9G"
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-
-        function checkAdminLogin() {
-            const pass = document.getElementById('admin-pass').value;
-            if(pass === "mushq123") { // Aap password yahan change kar sakte hain
-                document.getElementById('login-card').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                loadOrders();
-            } else {
-                alert("Incorrect Password!");
-            }
-        }
-
-        function loadOrders() {
-            const listEl = document.getElementById('orders-list');
-            db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-                if(snapshot.empty) {
-                    listEl.innerHTML = '<p style="color:#888;">No orders received yet.</p>';
-                    return;
-                }
-                let html = '';
-                snapshot.forEach(doc => {
-                    const o = doc.data();
-                    let itemsHtml = '';
-                    if(o.items) {
-                        o.items.forEach(i => {
-                            const qty = i.qty || i.quantity || 1;
-                            itemsHtml += `<li>${i.title} (Qty: ${qty}) - ₹${i.price * qty}</li>`;
-                        });
-                    }
-                    html += `
-                        <div style="background:#111; border:1px solid var(--border-color); padding:15px; border-radius:8px; margin-bottom:15px;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <strong style="color:var(--accent-gold);">${o.customerName}</strong>
-                                <span style="font-size:12px; color:#aaa;">Phone: ${o.customerPhone}</span>
-                            </div>
-                            <div style="font-size:13px; color:#ddd; margin-bottom:6px;"><strong>Address:</strong> ${o.customerAddress}</div>
-                            <div style="font-size:13px; margin-bottom:8px;"><a href="${o.customerLocation}" target="_blank" style="color:var(--accent-gold);"><i class="fa-solid fa-map-location-dot"></i> View GPS Location</a></div>
-                            <div style="font-size:13px; color:#ccc; border-top:1px dashed #333; padding-top:8px;">
-                                <strong>Items:</strong>
-                                <ul style="margin-left:20px; margin-top:4px;">${itemsHtml}</ul>
-                            </div>
-                            <div style="margin-top:8px; font-weight:bold; color:var(--accent-gold);">Total: ₹${o.totalAmount} (${o.paymentStatus || 'Paid'})</div>
-                        </div>
-                    `;
-                });
-                listEl.innerHTML = html;
-            });
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
