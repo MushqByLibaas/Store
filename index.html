@@ -6,10 +6,18 @@
     <title>MuskByLibaas - Exclusive Suits & Party Wear</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Force product images to stay perfectly inside the card */
+        .product-card img, .product-grid img {
+            width: 100% !important;
+            height: 260px !important;
+            object-fit: cover !important;
+            border-radius: 8px 8px 0 0 !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -73,7 +81,6 @@
         }
         const db = firebase.firestore();
 
-        // Fetch Live Products from Firebase Database in background
         document.addEventListener("DOMContentLoaded", () => {
             db.collection("products").get().then((querySnapshot) => {
                 if (!querySnapshot.empty) {
