@@ -17,7 +17,7 @@
 <body>
 
     <div class="top-bar">
-        ✨ PREPAID ORDERS ONLY | Pan India Delivery ✨
+        ✨ PREPAID ORDERS ONLY | International Delivery Available ✨
     </div>
 
     <header class="header">
@@ -32,6 +32,17 @@
             <div style="margin-bottom: 15px;">
                 <label style="display:block; margin-bottom:5px; font-size:13px; color:var(--text-muted);">Full Name</label>
                 <input type="text" id="custName" required placeholder="Enter your full name" style="width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border-color); color:#fff; border-radius:6px; box-sizing:border-box;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px; font-size:13px; color:var(--text-muted);">Select Country</label>
+                <select id="custCountry" required style="width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border-color); color:#fff; border-radius:6px; box-sizing:border-box; font-family:'Poppins', sans-serif;">
+                    <option value="" disabled selected>-- Select your country --</option>
+                    <option value="India">India</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                    <option value="Dubai">Dubai</option>
+                    <option value="Qatar">Qatar</option>
+                </select>
             </div>
 
             <div style="margin-bottom: 15px;">
@@ -66,15 +77,15 @@
     <!-- PAYMENT MODAL POPUP -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay via PhonePe</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;">Scan QR or click below to pay via UPI app.</p>
+            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;">Scan QR or click below to complete payment.</p>
             
             <img src="qr.jpg" alt="Payment QR" style="width:160px; height:160px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
             
             <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
 
             <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:10px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
-                <i class="fa-solid fa-mobile-screen-button"></i> Pay via GPay / PhonePe / Paytm
+                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App
             </a>
 
             <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:6px; text-transform:uppercase;">
@@ -151,6 +162,7 @@
             e.preventDefault();
             customerData = {
                 name: document.getElementById('custName').value,
+                country: document.getElementById('custCountry').value,
                 phone: document.getElementById('custPhone').value,
                 address: document.getElementById('custAddress').value
             };
@@ -177,6 +189,7 @@
 
             db.collection("orders").add({
                 customerName: customerData.name,
+                country: customerData.country,
                 phone: customerData.phone,
                 address: customerData.address,
                 location: { latitude: lat || 'Not shared', longitude: lng || 'Not shared' },
