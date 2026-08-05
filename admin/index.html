@@ -126,12 +126,13 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
+            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
             projectId: "mushqbylibaas",
-            storageBucket: "mushqbylibaas.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            storageBucket: "mushqbylibaas.firebasestorage.app",
+            messagingSenderId: "1057698747540",
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
         };
 
         if (!firebase.apps.length) {
@@ -347,6 +348,4 @@
                 document.getElementById('formHeading').innerText = "Edit Product";
                 document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
                 document.getElementById('cancelEditBtn').classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch(e) {
-             
+        
