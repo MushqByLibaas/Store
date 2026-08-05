@@ -3,21 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MuskByLibaas - Exclusive Suits & Party Wear</title>
+    <title>Nova Store | Premium Ladies Suits</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Force product images to stay perfectly inside the card */
-        .product-card img, .product-grid img {
-            width: 100% !important;
-            height: 260px !important;
-            object-fit: cover !important;
-            border-radius: 8px 8px 0 0 !important;
-        }
-    </style>
 </head>
 <body>
 
@@ -26,46 +18,22 @@
     </div>
 
     <header class="header">
-        <a href="index.html" class="logo">MUSK BY <span>LIBAAS</span></a>
+        <a href="index.html" class="logo">NOVA <span>STORE</span></a>
     </header>
 
     <div class="container">
-        <div class="search-bar-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search Suits, Party Wear, Festive..." onkeyup="filterProducts()">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive...">
         </div>
 
-        <h2 class="section-title">New Arrivals</h2>
-        
-        <!-- Products Grid -->
-        <div id="productGrid" class="product-grid">
-            <!-- INSTANT FALLBACK PRODUCTS -->
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit">
-                <div class="product-info">
-                    <h3 class="product-title">Designer Festive Suit</h3>
-                    <div class="product-price">₹1,499</div>
-                    <button onclick="orderNow('Designer Festive Suit', 1499)" class="order-btn">Order Now</button>
-                </div>
-            </div>
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=500" alt="Suit">
-                <div class="product-info">
-                    <h3 class="product-title">Royal Party Wear Suit</h3>
-                    <div class="product-price">₹1,899</div>
-                    <button onclick="orderNow('Royal Party Wear Suit', 1899)" class="order-btn">Order Now</button>
-                </div>
-            </div>
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500" alt="Suit">
-                <div class="product-info">
-                    <h3 class="product-title">Elegance Embroidered Kurti</h3>
-                    <div class="product-price">₹999</div>
-                    <button onclick="orderNow('Elegance Embroidered Kurti', 999)" class="order-btn">Order Now</button>
-                </div>
-            </div>
+        <h2 class="section-title">NEW ARRIVALS</h2>
+        <div class="product-grid" id="productGrid">
+            <p style="color: #aaa; text-align: center; grid-column: 1 / -1;">Loading live products...</p>
         </div>
     </div>
 
+    <!-- Firebase Configuration & Dynamic Loader Script -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
@@ -81,49 +49,43 @@
         }
         const db = firebase.firestore();
 
+        // Fetch products from Firebase on page load
         document.addEventListener("DOMContentLoaded", () => {
+            const grid = document.getElementById('productGrid');
+
             db.collection("products").get().then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    let productsHtml = "";
-                    querySnapshot.forEach((doc) => {
-                        const prod = doc.data();
-                        productsHtml += `
-                            <div class="product-card">
-                                <img src="${prod.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500'}" alt="${prod.title}">
-                                <div class="product-info">
-                                    <h3 class="product-title">${prod.title}</h3>
-                                    <div class="product-price">₹${prod.price}</div>
-                                    <button onclick="orderNow('${prod.title}', ${prod.price})" class="order-btn">Order Now</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    document.getElementById('productGrid').innerHTML = productsHtml;
+                if (querySnapshot.empty) {
+                    grid.innerHTML = '<p style="color: #aaa; text-align: center; grid-column: 1 / -1;">No products available at the moment.</p>';
+                    return;
                 }
+
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const p = doc.data();
+                    html += `
+                        <div class="product-card" style="background:var(--card-bg); padding:15px; border-radius:8px; border:1px solid var(--border-color);">
+                            <img src="${p.image}" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;" onerror="this.src='https://via.placeholder.com/300'">
+                            <h3 style="font-size:14px; font-weight:600; margin-bottom:6px; color:#fff;">${p.title}</h3>
+                            <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:8px;">₹${p.price}</div>
+                            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'}</p>
+                            <button onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price})" style="background:var(--accent-gold); border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%; text-transform:uppercase; letter-spacing:1px; color:#000;">Order Now</button>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
             }).catch((error) => {
-                console.log("Using instant fallback products.");
+                grid.innerHTML = `<p style="color:red; text-align:center; grid-column: 1 / -1;">Error loading products: ${error.message}</p>`;
             });
         });
 
-        function orderNow(title, price) {
-            const cart = [{ title: title, price: price, qty: 1 }];
-            localStorage.setItem('novaCart', JSON.stringify(cart));
+        function directOrder(title, price) {
+            const buyNowItem = [{
+                title: title,
+                price: price,
+                qty: 1
+            }];
+            localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
             window.location.href = 'checkout.html';
-        }
-
-        function filterProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const grid = document.getElementById('productGrid');
-            const cards = grid.getElementsByClassName('product-card');
-
-            for (let i = 0; i < cards.length; i++) {
-                const title = cards[i].querySelector('.product-title').innerText.toLowerCase();
-                if (title.includes(query)) {
-                    cards[i].style.display = "";
-                } else {
-                    cards[i].style.display = "none";
-                }
-            }
         }
     </script>
 </body>
