@@ -6,15 +6,18 @@
     <title>Checkout - Nova Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase App (compat) and Firestore SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--accent-gold); text-align: center; }
+    </style>
 </head>
 <body>
 
     <div class="top-bar">
-        ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
+        ✨ PREPAID ORDERS ONLY | Pan India Delivery ✨
     </div>
 
     <header class="header">
@@ -24,7 +27,7 @@
     <div class="container" style="max-width: 600px; margin-top: 20px;">
         <h2 class="section-title">Checkout Details</h2>
         
-        <form id="checkoutForm" onsubmit="submitOrder(event)" style="background: var(--card-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color);">
+        <form id="checkoutForm" onsubmit="openPaymentModal(event)" style="background: var(--card-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color);">
             
             <div style="margin-bottom: 15px;">
                 <label style="display:block; margin-bottom:5px; font-size:13px; color:var(--text-muted);">Full Name</label>
@@ -55,14 +58,37 @@
             </div>
 
             <button type="submit" id="orderBtn" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:14px; font-weight:bold; border-radius:6px; cursor:pointer; text-transform:uppercase;">
-                Place Order Now
+                Proceed to Payment
             </button>
         </form>
     </div>
 
-    <!-- Firebase Configuration & Logic Script -->
+    <!-- PAYMENT MODAL POPUP -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay via UPI</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Scan QR code or click the button below to pay exact amount.</p>
+            
+            <!-- Aapka UPI QR Code Image yahan lagaya hai (Yahan apna QR link ya image daal sakte hain) -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=yourupi@paytm&pn=NovaStore" alt="Payment QR" style="width:180px; height:180px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:5px; margin-bottom:10px;">
+            
+            <div id="modalAmount" style="font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 15px;">Amount: ₹0</div>
+
+            <!-- Direct UPI App Payment Button -->
+            <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:12px; font-weight:bold; border-radius:6px; margin-bottom:10px;">
+                <i class="fa-solid fa-mobile-screen-button"></i> Pay via GPay / PhonePe / Paytm
+            </a>
+
+            <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:8px;">
+                I Have Paid - Submit Order
+            </button>
+            <button onclick="closeModal()" style="width:100%; background:#333; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-size:12px;">
+                Cancel
+            </button>
+        </div>
+    </div>
+
     <script>
-        // Your Firebase Configuration (Aapke project ke credentials)
         const firebaseConfig = {
             apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
             authDomain: "mushqbylibaas.firebaseapp.com",
@@ -72,7 +98,6 @@
             appId: "YOUR_APP_ID"
         };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -80,8 +105,9 @@
 
         let lat = "";
         let lng = "";
+        let finalTotal = 0;
+        let customerData = {};
 
-        // Load Cart Summary on page load
         document.addEventListener("DOMContentLoaded", () => {
             const cart = JSON.parse(localStorage.getItem('novaCart')) || [];
             const summaryDiv = document.getElementById('checkoutSummary');
@@ -92,16 +118,14 @@
             }
 
             let html = '<ul style="padding-left:15px; margin:0;">';
-            let total = 0;
             cart.forEach(item => {
-                total += item.price * item.qty;
+                finalTotal += item.price * item.qty;
                 html += `<li style="margin-bottom:5px;">${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
             });
-            html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ₹${total}</div>`;
+            html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ₹${finalTotal}</div>`;
             summaryDiv.innerHTML = html;
         });
 
-        // Get GPS Location function
         function getLocation() {
             const status = document.getElementById('locationStatus');
             if (navigator.geolocation) {
@@ -109,47 +133,57 @@
                 navigator.geolocation.getCurrentPosition((position) => {
                     lat = position.coords.latitude;
                     lng = position.coords.longitude;
-                    status.innerText = `Location captured successfully! (Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)})`;
+                    status.innerText = `Location captured!`;
                 }, (error) => {
-                    status.innerText = "Unable to retrieve your location. Please type address clearly.";
+                    status.innerText = "Unable to retrieve location. Address is sufficient.";
                 });
             } else {
-                status.innerText = "Geolocation is not supported by your browser.";
+                status.innerText = "Geolocation not supported.";
             }
         }
 
-        // Submit Order to Firebase Firestore
-        function submitOrder(e) {
+        function openPaymentModal(e) {
             e.preventDefault();
-            const btn = document.getElementById('orderBtn');
-            btn.innerText = "Placing Order...";
-            btn.disabled = true;
+            customerData = {
+                name: document.getElementById('custName').value,
+                phone: document.getElementById('custPhone').value,
+                address: document.getElementById('custAddress').value
+            };
 
-            const name = document.getElementById('custName').value;
-            const phone = document.getElementById('custPhone').value;
-            const address = document.getElementById('custAddress').value;
+            document.getElementById('modalAmount').innerText = "Amount to Pay: ₹" + finalTotal;
+            
+            // Set dynamic UPI payment intent link (Yahan apna upi id 'yourupi@paytm' badal sakte hain)
+            const upiID = "yourupi@paytm";
+            document.getElementById('upiPayLink').href = `upi://pay?pa=${upiID}&pn=NovaStore&am=${finalTotal}&cu=INR`;
+
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function submitFinalOrder() {
             const cartItems = JSON.parse(localStorage.getItem('novaCart')) || [];
 
-            const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
             db.collection("orders").add({
-                customerName: name,
-                phone: phone,
-                address: address,
+                customerName: customerData.name,
+                phone: customerData.phone,
+                address: customerData.address,
                 location: { latitude: lat || 'Not shared', longitude: lng || 'Not shared' },
                 items: cartItems,
-                totalAmount: totalAmount,
+                totalAmount: finalTotal,
+                paymentStatus: "Paid (QR Scan)",
+                status: "Pending",
                 orderDate: new Date().toLocaleString()
             })
             .then(() => {
-                alert("Order placed successfully!");
+                alert("Order submitted successfully! Payment verify hone ke baad 2-3 dino mein aapka order dispatch kar diya jayega.");
                 localStorage.removeItem('novaCart');
                 window.location.href = 'index.html';
             })
             .catch((error) => {
-                alert("Error placing order: " + error.message);
-                btn.innerText = "Place Order Now";
-                btn.disabled = false;
+                alert("Error: " + error.message);
             });
         }
     </script>
