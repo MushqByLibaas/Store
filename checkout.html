@@ -190,7 +190,26 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
+          authDomain: "mushqbylibaas.firebaseapp.com",
+          projectId: "mushqbylibaas",
+          storageBucket: "mushqbylibaas.firebasestorage.app",
+          messagingSenderId: "1057698747540",
+          appId: "1:1057698747540:web:e68337039fcb254f381081",
+          measurementId: "G-J1L758MD9G"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
         let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
         let calculatedTotal = 0;
 
@@ -264,11 +283,25 @@
             const address = document.getElementById('cust-address').value;
             const location = document.getElementById('cust-location').value;
 
-            alert(`Thank you ${name}! Your order has been placed successfully. We will verify your payment and contact you soon on ${phone}.`);
-            localStorage.removeItem('novaCart');
-            
-            document.getElementById('qrSection').style.display = 'none';
-            document.getElementById('confirmationCard').style.display = 'block';
+            const orderData = {
+                customerName: name,
+                customerPhone: phone,
+                customerAddress: address,
+                customerLocation: location,
+                items: cart,
+                totalAmount: calculatedTotal,
+                paymentStatus: "Paid (QR Scan)",
+                status: "Pending",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            db.collection("orders").add(orderData).then(() => {
+                localStorage.removeItem('novaCart');
+                document.getElementById('qrSection').style.display = 'none';
+                document.getElementById('confirmationCard').style.display = 'block';
+            }).catch(error => {
+                alert("Error saving order: " + error.message);
+            });
         }
     </script>
 </body>
