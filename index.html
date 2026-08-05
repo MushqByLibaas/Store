@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mushq Libaas | Premium Ladies Suits</title>
+    <title>Nova Store | Premium Ladies Suits</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +18,7 @@
     </div>
 
     <header class="header">
-        <a href="index.html" class="logo">MUSHQ <span>LIBAAS</span></a>
+        <a href="index.html" class="logo">NOVA <span>STORE</span></a>
     </header>
 
     <div class="container">
@@ -26,19 +29,56 @@
 
         <h2 class="section-title">NEW ARRIVALS</h2>
         <div class="product-grid" id="productGrid">
-            <!-- Product Card with Direct Order Button -->
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;">
-                <h3 style="font-size:14px; font-weight:600; margin-bottom:6px;">Winish Maroon Soft Cotton Suit</h3>
-                <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:12px;">₹2,499</div>
-                <button onclick="directOrder('Winish Maroon Soft Cotton Suit', 2499)" style="background:var(--accent-gold); border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%; text-transform:uppercase; letter-spacing:1px;">Order Now</button>
-            </div>
+            <p style="color: #aaa; text-align: center; grid-column: 1 / -1;">Loading live products...</p>
         </div>
     </div>
 
+    <!-- Firebase Configuration & Dynamic Loader Script -->
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
+            authDomain: "mushqbylibaas.firebaseapp.com",
+            projectId: "mushqbylibaas",
+            storageBucket: "mushqbylibaas.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Fetch products from Firebase on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            const grid = document.getElementById('productGrid');
+
+            db.collection("products").get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    grid.innerHTML = '<p style="color: #aaa; text-align: center; grid-column: 1 / -1;">No products available at the moment.</p>';
+                    return;
+                }
+
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const p = doc.data();
+                    html += `
+                        <div class="product-card" style="background:var(--card-bg); padding:15px; border-radius:8px; border:1px solid var(--border-color);">
+                            <img src="${p.image}" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;" onerror="this.src='https://via.placeholder.com/300'">
+                            <h3 style="font-size:14px; font-weight:600; margin-bottom:6px; color:#fff;">${p.title}</h3>
+                            <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:8px;">₹${p.price}</div>
+                            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'}</p>
+                            <button onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price})" style="background:var(--accent-gold); border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%; text-transform:uppercase; letter-spacing:1px; color:#000;">Order Now</button>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+            }).catch((error) => {
+                grid.innerHTML = `<p style="color:red; text-align:center; grid-column: 1 / -1;">Error loading products: ${error.message}</p>`;
+            });
+        });
+
         function directOrder(title, price) {
-            // Cart mein single item array daal kar seedha checkout bhej rahe hain
             const buyNowItem = [{
                 title: title,
                 price: price,
