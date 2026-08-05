@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mushq Libaas Fashion | Premium Ladies Suits</title>
-    
-    <!-- FontAwesome Icons & Google Fonts -->
+    <title>Mushq Libaas | Premium Ladies Suits</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Announcement Bar -->
     <div class="top-bar">
-        📌 NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery
+        ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
     </div>
 
-    <!-- Header -->
     <header class="header">
         <a href="index.html" class="logo">MUSHQ <span>LIBAAS</span></a>
         <div class="cart-trigger" onclick="toggleCart(true)">
@@ -26,58 +22,38 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container">
-        <!-- Search Box -->
+    <div class="container">
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive..." onkeyup="handleSearch()">
+            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive...">
         </div>
 
-        <!-- Search Results Grid (Hidden by default) -->
-        <div id="searchGridSection" style="display: none;">
-            <h2 class="section-title">SEARCH RESULTS</h2>
-            <div id="searchGrid" class="product-grid"></div>
-        </div>
-
-        <!-- Main Product Sections -->
-        <div id="mainSections">
-            <!-- Pinned Section -->
-            <div id="pinnedSection" style="display:none;">
-                <h2 class="section-title">📌 FEATURED SELECTION</h2>
-                <div id="pinnedSlider" class="product-grid"></div>
+        <h2 class="section-title">NEW ARRIVALS</h2>
+        <div class="product-grid" id="productGrid">
+            <!-- Sample Product Card for testing -->
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;">
+                <h3 style="font-size:14px; font-weight:600; margin-bottom:6px;">Winish Maroon Soft Cotton Suit</h3>
+                <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:12px;">₹2,499</div>
+                <button onclick="addToCart('1', 'Winish Maroon Soft Cotton Suit', 2499, 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500', 'Standard', 'Maroon')" style="background:var(--accent-gold); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">Add to Bag</button>
             </div>
-
-            <!-- Special Offers -->
-            <h2 class="section-title">SPECIAL OFFERS</h2>
-            <div id="specialOfferSlider" class="product-grid"></div>
-
-            <!-- New Arrivals -->
-            <h2 class="section-title">NEW ARRIVALS</h2>
-            <div id="newArrivalsSlider" class="product-grid"></div>
-
-            <!-- Trending Now -->
-            <h2 class="section-title">TRENDING NOW</h2>
-            <div id="trendingSlider" class="product-grid"></div>
         </div>
-    </main>
+    </div>
 
-    <!-- Shopping Bag Drawer (Slide-in from right) -->
-    <div id="cartOverlay" class="cart-overlay" onclick="toggleCart(false)"></div>
-    <div id="cartDrawer" class="cart-drawer">
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart(false)"></div>
+    <div class="cart-drawer" id="cartDrawer">
         <div class="cart-header">
-            <h3><i class="fa-solid fa-bag-shopping"></i> YOUR BAG</h3>
+            <h3>Your Bag</h3>
             <button class="close-cart" onclick="toggleCart(false)"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div id="cartBody" class="cart-body">
-            <!-- Cart items will render here dynamically -->
-        </div>
+        <div class="cart-body" id="cartBody"></div>
         <div class="cart-footer">
             <div class="cart-total-row">
-                <span>TOTAL:</span>
-                <span style="color: var(--gold-primary);">₹<span id="cartTotal">0</span></span>
+                <span>Total:</span>
+                <span>₹<span id="cartTotal">0</span></span>
             </div>
-            <a href="checkout.html" class="checkout-btn">PROCEED TO CHECKOUT</a>
+            <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
         </div>
     </div>
 
