@@ -154,10 +154,9 @@
             <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive..." onkeyup="filterProducts()">
         </div>
 
-        <!-- SECTION: BEST SELLERS (Added) -->
+        <!-- SECTION: BEST SELLERS -->
         <h2 class="section-title">🔥 BEST SELLERS</h2>
         <div class="product-grid" id="bestSellerGrid">
-            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line" style="width:80%;"></div><div class="skeleton-line" style="width:40%;"></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line" style="width:80%;"></div><div class="skeleton-line" style="width:40%;"></div></div>
         </div>
 
@@ -226,12 +225,13 @@
     <!-- Firebase Configuration & Script -->
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD-YOUR_API_KEY_HERE",
+            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
             projectId: "mushqbylibaas",
-            storageBucket: "mushqbylibaas.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            storageBucket: "mushqbylibaas.firebasestorage.app",
+            messagingSenderId: "1057698747540",
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
         };
 
         if (!firebase.apps.length) {
@@ -287,12 +287,9 @@
                         </div>
                     `;
 
-                    // Categorize products including manual hardcoded fallback checks for Best Sellers
-                    if (category.includes('bestseller') || category.includes('best') || titleLower.includes('pathani') || titleLower.includes('waistcoat') || titleLower.includes('kurta set')) {
+                    if (category.includes('bestseller') || category.includes('best')) {
                         bestSellerHTML += cardContent;
-                    } 
-                    
-                    if (category.includes('trending')) {
+                    } else if (category.includes('trending')) {
                         trendingHTML += cardContent;
                     } else if (category.includes('special') || category.includes('offer')) {
                         specialHTML += cardContent;
@@ -427,4 +424,13 @@
                 alert("Your cart is empty!");
                 return;
             }
-            window.location.
+            window.location.href = 'checkout.html';
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title');
+              
