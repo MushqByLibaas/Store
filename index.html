@@ -3,55 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Store | Premium Ladies Suits</title>
+    <title>Mushq Libaas Fashion | Premium Ladies Suits</title>
+    
+    <!-- FontAwesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="top-announcement">
-            📌 NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery
-        </div>
-        <div class="main-header">
-            <div class="menu-icon">&#9776;</div>
-            <div class="brand-title">Nova Store</div>
-            <div class="header-icons">
-                <span>&#128269;</span>
-                <span>&#128722;</span>
-            </div>
-        </div>
-        <div class="hero-banner">
-            <h2>Nova Store Designer Wear</h2>
-            <p>LUXURY & HIGH QUALITY | 100% ORIGINAL</p>
+
+    <!-- Announcement Bar -->
+    <div class="top-bar">
+        📌 NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html" class="logo">MUSHQ <span>LIBAAS</span></a>
+        <div class="cart-trigger" onclick="toggleCart(true)">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cartBadge" class="cart-badge">0</span>
         </div>
     </header>
 
-    <main>
-        <section class="products-section">
-            <h2 class="section-title">NEW ARRIVALS</h2>
-            <div class="product-grid" id="productGrid">
-                <!-- Products will load dynamically -->
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Search Box -->
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive..." onkeyup="handleSearch()">
+        </div>
+
+        <!-- Search Results Grid (Hidden by default) -->
+        <div id="searchGridSection" style="display: none;">
+            <h2 class="section-title">SEARCH RESULTS</h2>
+            <div id="searchGrid" class="product-grid"></div>
+        </div>
+
+        <!-- Main Product Sections -->
+        <div id="mainSections">
+            <!-- Pinned Section -->
+            <div id="pinnedSection" style="display:none;">
+                <h2 class="section-title">📌 FEATURED SELECTION</h2>
+                <div id="pinnedSlider" class="product-grid"></div>
             </div>
-        </section>
 
-        <section class="checkout-section">
-            <h2>Complete Your Order</h2>
-            <form id="orderForm">
-                <label for="custName">Full Name:</label>
-                <input type="text" id="custName" required placeholder="Enter your full name">
+            <!-- Special Offers -->
+            <h2 class="section-title">SPECIAL OFFERS</h2>
+            <div id="specialOfferSlider" class="product-grid"></div>
 
-                <label for="custPhone">WhatsApp Number:</label>
-                <input type="tel" id="custPhone" required placeholder="Enter 10-digit mobile number">
+            <!-- New Arrivals -->
+            <h2 class="section-title">NEW ARRIVALS</h2>
+            <div id="newArrivalsSlider" class="product-grid"></div>
 
-                <label for="custAddress">Delivery Address:</label>
-                <textarea id="custAddress" required placeholder="House no, Street, Landmark, City, Pincode"></textarea>
-
-                <label for="custLocation">Select Location / Area:</label>
-                <input type="text" id="custLocation" placeholder="Enter your city or area location">
-
-                <button type="submit" id="orderNowBtn">Order Now</button>
-            </form>
-        </section>
+            <!-- Trending Now -->
+            <h2 class="section-title">TRENDING NOW</h2>
+            <div id="trendingSlider" class="product-grid"></div>
+        </div>
     </main>
+
+    <!-- Shopping Bag Drawer (Slide-in from right) -->
+    <div id="cartOverlay" class="cart-overlay" onclick="toggleCart(false)"></div>
+    <div id="cartDrawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3><i class="fa-solid fa-bag-shopping"></i> YOUR BAG</h3>
+            <button class="close-cart" onclick="toggleCart(false)"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="cartBody" class="cart-body">
+            <!-- Cart items will render here dynamically -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>TOTAL:</span>
+                <span style="color: var(--gold-primary);">₹<span id="cartTotal">0</span></span>
+            </div>
+            <a href="checkout.html" class="checkout-btn">PROCEED TO CHECKOUT</a>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
