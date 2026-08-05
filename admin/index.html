@@ -98,7 +98,6 @@
                         <input type="text" id="prodSizes" value="S, M, L, XL, XXL">
                     </div>
                 </div>
-                <!-- ADDED SECTION / CATEGORY DROPDOWN -->
                 <div>
                     <label style="font-size: 12px; color: var(--text-muted);">Select Product Section / Category</label>
                     <select id="prodCategory">
@@ -140,7 +139,6 @@
         }
         const db = firebase.firestore();
 
-        // Check if already logged in via localStorage
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('novaAdminAuth') === 'true') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -212,7 +210,8 @@
                     `;
                 });
                 container.innerHTML = html;
-                document.getElementById('selectAllCheckbox').checked = false;
+                const selectAll = document.getElementById('selectAllCheckbox');
+                if(selectAll) selectAll.checked = false;
             }).catch(err => {
                 container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
             });
@@ -263,7 +262,7 @@
             const price = Number(document.getElementById('prodPrice').value);
             const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
             const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
-            const category = document.getElementById('prodCategory').value; // Get selected category
+            const category = document.getElementById('prodCategory').value;
             const image = document.getElementById('prodImage').value;
 
             if (!image) {
@@ -301,7 +300,17 @@
                 let html = '';
                 querySnapshot.forEach((doc) => {
                     const p = doc.data();
-                    const pData = JSON.stringify({id: doc.id, ...p}).replace(/"/g, '&quot;');
+                    let safeObj = {
+                        id: doc.id,
+                        title: p.title || '',
+                        price: p.price || 0,
+                        colors: p.colors || [],
+                        sizes: p.sizes || [],
+                        category: p.category || 'new',
+                        image: p.image || ''
+                    };
+                    let encodedData = encodeURIComponent(JSON.stringify(safeObj));
+                    
                     html += `
                         <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; gap:15px; align-items:center;">
@@ -313,7 +322,7 @@
                                 </div>
                             </div>
                             <div style="display:flex; gap:8px;">
-                                <button onclick="editProduct(${pData})" style="background:#333; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:8px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="editProductByJSON('${encodedData}')" style="background:#333; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:8px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button>
                                 <button onclick="deleteProduct('${doc.id}')" style="background:#ff4d4d; color:#fff; padding:8px 12px; font-size:12px;"><i class="fa-solid fa-trash"></i> Delete</button>
                             </div>
                         </div>
@@ -325,24 +334,19 @@
             });
         }
 
-        function editProduct(p) {
-            document.getElementById('editProdId').value = p.id;
-            document.getElementById('prodTitle').value = p.title;
-            document.getElementById('prodPrice').value = p.price;
-            document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
-            document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
-            document.getElementById('prodCategory').value = p.category || 'new'; // Set category in dropdown
-            document.getElementById('prodImage').value = p.image;
-            document.getElementById('formHeading').innerText = "Edit Product";
-            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function resetForm() {
-            document.getElementById('addProductForm').reset();
-            document.getElementById('editProdId').value = '';
-            document.getElementById('formHeading').innerText = "Add New Product";
-            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-            document.getElementById('prodCo
+        function editProductByJSON(encodedStr) {
+            try {
+                const p = JSON.parse(decodeURIComponent(encodedStr));
+                document.getElementById('editProdId').value = p.id;
+                document.getElementById('prodTitle').value = p.title;
+                document.getElementById('prodPrice').value = p.price;
+                document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
+                document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
+                document.getElementById('prodCategory').value = p.category || 'new';
+                document.getElementById('prodImage').value = p.image;
+                document.getElementById('formHeading').innerText = "Edit Product";
+                document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
+                document.getElementById('cancelEditBtn').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch(e) {
+             
