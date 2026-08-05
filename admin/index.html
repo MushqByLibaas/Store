@@ -140,6 +140,7 @@
         }
         const db = firebase.firestore();
 
+        // Check if already logged in via localStorage
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('novaAdminAuth') === 'true') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -311,7 +312,7 @@
                         image: p.image || ''
                     };
                     let encodedData = encodeURIComponent(JSON.stringify(safeObj));
-                    
+
                     html += `
                         <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; gap:15px; align-items:center;">
@@ -347,5 +348,4 @@
                 document.getElementById('prodImage').value = p.image;
                 document.getElementById('formHeading').innerText = "Edit Product";
                 document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
-                document.getElementById('cancelEditBtn').classList.remove('hidden');
-        
+                document.getElementById('cancelEditBtn').c
