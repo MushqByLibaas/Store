@@ -73,7 +73,6 @@
             
             <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
 
-            <!-- Direct Auto-Pay UPI App Button -->
             <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:10px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
                 <i class="fa-solid fa-mobile-screen-button"></i> Pay via GPay / PhonePe / Paytm
             </a>
@@ -162,7 +161,6 @@
 
             document.getElementById('modalAmount').innerText = "Amount to Pay: ₹" + finalTotal;
             
-            // Apni PhonePe UPI ID yahan dal dein jisse auto-fill kaam karega
             const merchantUpiID = "mushq@paytm"; 
             document.getElementById('upiPayLink').href = `upi://pay?pa=${merchantUpiID}&pn=NovaStore&am=${finalTotal}&cu=INR`;
 
@@ -183,14 +181,14 @@
                 location: { latitude: lat || 'Not shared', longitude: lng || 'Not shared' },
                 items: cartItems,
                 totalAmount: finalTotal,
-                paymentStatus: "Paid (QR & App)",
-                status: "Pending",
+                paymentStatus: "Pending Verification",
+                status: "Pending Confirmation",
                 orderDate: new Date().toLocaleString()
             })
             .then(() => {
-                alert("Order submitted successfully! Payment verify hone ke baad 2-3 dino mein aapka order dispatch kar diya jayega.");
                 localStorage.removeItem('novaCart');
-                window.location.href = 'index.html';
+                // Redirect to professional success page
+                window.location.href = 'success.html';
             })
             .catch((error) => {
                 alert("Error: " + error.message);
