@@ -47,7 +47,7 @@
     <div id="adminPanel" class="admin-container hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 id="panelTitle" style="color: var(--accent-gold); margin: 0;">Add New Product</h2>
-            <button onclick="location.reload()" style="background: #333; color: #fff; padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            <button onclick="logoutAdmin()" style="background: #333; color: #fff; padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
 
         <!-- Navigation Tabs -->
@@ -125,9 +125,20 @@
         }
         const db = firebase.firestore();
 
+        // Check if already logged in via localStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('novaAdminAuth') === 'true') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadOrders();
+                loadProducts();
+            }
+        });
+
         function checkLogin() {
             const pass = document.getElementById('adminPass').value;
             if (pass === 'mushq123') {
+                localStorage.setItem('novaAdminAuth', 'true');
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
                 loadOrders();
@@ -135,6 +146,11 @@
             } else {
                 alert('Wrong Password!');
             }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('novaAdminAuth');
+            location.reload();
         }
 
         function switchTab(tabId, btn) {
@@ -182,7 +198,6 @@
             });
         }
 
-        // Convert uploaded image file to Base64 string
         function convertImage(event) {
             const file = event.target.files[0];
             if (file) {
@@ -194,7 +209,6 @@
             }
         }
 
-        // Add or Update Product in Firestore
         function saveProduct(e) {
             e.preventDefault();
             const id = document.getElementById('editProdId').value;
@@ -212,14 +226,12 @@
             const productData = { title, price, colors, sizes, image };
 
             if (id) {
-                // Update existing product
                 db.collection("products").doc(id).update(productData).then(() => {
                     alert("Product updated successfully!");
                     resetForm();
                     loadProducts();
                 }).catch(err => alert("Error updating: " + err.message));
             } else {
-                // Add new product
                 productData.createdAt = new Date();
                 db.collection("products").add(productData).then(() => {
                     alert("Product added successfully!");
