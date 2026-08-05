@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Store | Premium Ladies Suits</title>
+    <title>MuskByLibaas | Exclusive Suits & Party Wear</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .cart-badge { position: absolute; top: 15px; right: 20px; background: var(--accent-gold, #d4af37); color: #000; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; }
+        .product-btn-group { display: flex; gap: 8px; margin-top: 10px; }
+    </style>
 </head>
 <body>
 
@@ -17,19 +21,34 @@
         ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
     </div>
 
-    <header class="header">
-        <a href="index.html" class="logo">NOVA <span>STORE</span></a>
+    <header class="header" style="position: relative; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
+        <a href="index.html" class="logo" style="text-decoration:none; color:#fff; font-size:20px; font-weight:bold;">MUSK BY <span style="color:var(--accent-gold, #d4af37);">LIBAAS</span></a>
+        <!-- Top Corner Cart Button -->
+        <a href="checkout.html" class="cart-badge">
+            🛒 Cart <span id="cartCount" style="background:#000; color:#fff; padding:2px 6px; border-radius:50%; font-size:11px;">0</span>
+        </a>
     </header>
 
     <div class="container">
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive...">
+            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive..." onkeyup="filterProducts()">
         </div>
 
         <h2 class="section-title">NEW ARRIVALS</h2>
         <div class="product-grid" id="productGrid">
-            <p style="color: #aaa; text-align: center; grid-column: 1 / -1;">Loading live products...</p>
+            <!-- INSTANT FALLBACK PRODUCTS SO PAGE NEVER LOOKS EMPTY -->
+            <div class="product-card" style="background:var(--card-bg, #18181c); padding:15px; border-radius:8px; border:1px solid var(--border-color, #333);">
+                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit" style="width:100%; height:260px; object-fit:cover; border-radius:6px; margin-bottom:12px;">
+                <h3 style="font-size:14px; font-weight:600; margin-bottom:6px; color:#fff;" class="product-title">Designer Festive Suit</h3>
+                <div style="color:var(--accent-gold, #d4af37); font-weight:bold; margin-bottom:6px;">₹1,499</div>
+                <p style="font-size:11px; color:#aaa; margin-bottom:4px;">Colors: Maroon, Navy Blue</p>
+                <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Sizes: S, M, L, XL</p>
+                <div class="product-btn-group">
+                    <button onclick="addToCart('Designer Festive Suit', 1499)" style="flex:1; background:#222; color:#fff; border:1px solid var(--accent-gold, #d4af37); padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🛒 Add to Cart</button>
+                    <button onclick="directOrder('Designer Festive Suit', 1499)" style="flex:1; background:var(--accent-gold, #d4af37); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; color:#000;">⚡ Order Now</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -49,34 +68,63 @@
         }
         const db = firebase.firestore();
 
-        // Fetch products from Firebase on page load
         document.addEventListener("DOMContentLoaded", () => {
+            updateCartCount();
+            loadLiveProducts();
+        });
+
+        function loadLiveProducts() {
             const grid = document.getElementById('productGrid');
 
             db.collection("products").get().then((querySnapshot) => {
                 if (querySnapshot.empty) {
-                    grid.innerHTML = '<p style="color: #aaa; text-align: center; grid-column: 1 / -1;">No products available at the moment.</p>';
-                    return;
+                    return; // Keep fallback if no products in DB yet
                 }
 
                 let html = '';
                 querySnapshot.forEach((doc) => {
                     const p = doc.data();
+                    const colorsText = p.colors && Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || 'N/A');
+                    const sizesText = p.sizes && Array.isArray(p.sizes) ? p.sizes.join(', ') : (p.sizes || 'N/A');
+                    
                     html += `
-                        <div class="product-card" style="background:var(--card-bg); padding:15px; border-radius:8px; border:1px solid var(--border-color);">
-                            <img src="${p.image}" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;" onerror="this.src='https://via.placeholder.com/300'">
-                            <h3 style="font-size:14px; font-weight:600; margin-bottom:6px; color:#fff;">${p.title}</h3>
-                            <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:8px;">₹${p.price}</div>
-                            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'}</p>
-                            <button onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price})" style="background:var(--accent-gold); border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%; text-transform:uppercase; letter-spacing:1px; color:#000;">Order Now</button>
+                        <div class="product-card" style="background:var(--card-bg, #18181c); padding:15px; border-radius:8px; border:1px solid var(--border-color, #333);">
+                            <img src="${p.image}" alt="Suit" style="width:100%; height:260px; object-fit:cover; border-radius:6px; margin-bottom:12px;" onerror="this.src='https://via.placeholder.com/300'">
+                            <h3 style="font-size:14px; font-weight:600; margin-bottom:6px; color:#fff;" class="product-title">${p.title}</h3>
+                            <div style="color:var(--accent-gold, #d4af37); font-weight:bold; margin-bottom:6px;">₹${p.price}</div>
+                            <p style="font-size:11px; color:#aaa; margin-bottom:4px;">Colors: ${colorsText}</p>
+                            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">Sizes: ${sizesText}</p>
+                            <div class="product-btn-group">
+                                <button onclick="addToCart('${p.title.replace(/'/g, "\\'")}', ${p.price})" style="flex:1; background:#222; color:#fff; border:1px solid var(--accent-gold, #d4af37); padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🛒 Add to Cart</button>
+                                <button onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price})" style="flex:1; background:var(--accent-gold, #d4af37); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; color:#000;">⚡ Order Now</button>
+                            </div>
                         </div>
                     `;
                 });
                 grid.innerHTML = html;
             }).catch((error) => {
-                grid.innerHTML = `<p style="color:red; text-align:center; grid-column: 1 / -1;">Error loading products: ${error.message}</p>`;
+                console.log("Using fallback products due to network.");
             });
-        });
+        }
+
+        function addToCart(title, price) {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            let existing = cart.find(item => item.title === title);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ title: title, price: price, qty: 1 });
+            }
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            updateCartCount();
+            alert(`🛒 "${title}" added to cart successfully!`);
+        }
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            let totalCount = cart.reduce((sum, item) => sum + Number(item.qty), 0);
+            document.getElementById('cartCount').innerText = totalCount;
+        }
 
         function directOrder(title, price) {
             const buyNowItem = [{
@@ -86,6 +134,24 @@
             }];
             localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
             window.location.href = 'checkout.html';
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('productGrid');
+            const cards = grid.getElementsByClassName('product-card');
+
+            for (let i = 0; i < cards.length; i++) {
+                const titleElement = cards[i].querySelector('.product-title');
+                if (titleElement) {
+                    const title = titleElement.innerText.toLowerCase();
+                    if (title.includes(query)) {
+                        cards[i].style.display = "";
+                    } else {
+                        cards[i].style.display = "none";
+                    }
+                }
+            }
         }
     </script>
 </body>
