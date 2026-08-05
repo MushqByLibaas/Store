@@ -3,228 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment & Confirmation | Mushq Libaas Fashion</title>
+    <title>Mushq Libaas | Secure Checkout</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        :root { --gold-primary: #d4af37; }
-        .checkout-container { max-width: 600px; margin: 30px auto; padding: 20px; }
-        .payment-box {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #18181c;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid var(--gold-primary);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
+        .checkout-container { max-width: 800px; margin: 40px auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+        .checkout-title { font-family: 'Cinzel', serif; color: var(--accent-gold); font-size: 24px; margin-bottom: 25px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; font-weight: 600; }
         .form-group input, .form-group textarea {
-            width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s;
+            width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s;
         }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--gold-primary); }
-        .location-btn { background: #111; border: 1px dashed var(--gold-primary); color: var(--gold-primary); padding: 10px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-top: 6px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .location-btn:hover { background: #222; }
-        
-        .order-summary-box {
-            background: #0f0f11;
-            border: 1px solid #333;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-            color: #ddd;
-        }
-        .order-summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .order-total-row { display: flex; justify-content: space-between; font-size: 1rem; font-weight: bold; color: var(--gold-primary); border-top: 1px solid #333; padding-top: 10px; margin-top: 8px; }
-
-        .qr-section { display: none; }
-        .qr-card {
-            background: #0f0f11;
-            border: 1px solid var(--gold-primary);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .qr-card img {
-            width: 200px;
-            height: 200px;
-            border-radius: 8px;
-            margin: 12px 0;
-            border: 2px solid var(--gold-primary);
-            background: #fff;
-            padding: 5px;
-        }
-        .btn-group { display: flex; flex-direction: column; gap: 12px; }
-        .btn-confirm {
-            width: 100%;
-            background: linear-gradient(135deg, var(--gold-primary), #b38f2a);
-            color: #000;
-            padding: 14px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        .btn-confirm:hover { opacity: 0.95; transform: translateY(-1px); }
-        .btn-retry {
-            width: 100%;
-            background: transparent;
-            color: #aaa;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-        .btn-retry:hover { border-color: var(--gold-primary); color: #fff; }
-
-        .confirmation-card {
-            display: none;
-            text-align: center;
-            background: #0f0f11;
-            border: 1px solid var(--gold-primary);
-            padding: 30px 20px;
-            border-radius: 12px;
-        }
-        .pending-icon {
-            width: 70px;
-            height: 70px;
-            background: rgba(212, 175, 55, 0.1);
-            border: 2px solid var(--gold-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px auto;
-            color: var(--gold-primary);
-            font-size: 28px;
-        }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-gold); }
+        .location-btn { background: #222; border: 1px dashed var(--accent-gold); color: var(--accent-gold); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .location-btn:hover { background: #333; }
+        .order-summary-box { background: #111; border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        .order-summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .order-total-row { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: var(--accent-gold); border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px; }
+        .place-order-btn { background: #25d366; color: #fff; border: none; width: 100%; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .place-order-btn:hover { background: #20ba5a; }
     </style>
 </head>
 <body>
 
     <header class="header">
         <a href="index.html" class="logo">MUSHQ <span>LIBAAS</span></a>
-        <a href="index.html" style="color: var(--gold-primary); text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        <a href="index.html" style="color: var(--accent-gold); text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left"></i> Back to Store</a>
     </header>
 
-    <div class="checkout-container">
-        <div class="payment-box">
+    <div class="container">
+        <div class="checkout-container">
+            <h2 class="checkout-title"><i class="fa-solid fa-bag-shopping"></i> Complete Your Order</h2>
             
-            <!-- Step 1: Customer Info & Proceed to QR -->
-            <div id="detailsSection">
-                <h3 style="color: var(--gold-primary); font-family: 'Cinzel', serif; margin-bottom: 20px; text-align: center;">Checkout & Payment</h3>
-                
-                <div class="order-summary-box">
-                    <div style="font-weight: bold; margin-bottom: 8px; color: var(--gold-primary);">Order Summary</div>
-                    <div id="summaryItemsList"></div>
-                    <div class="order-total-row">
-                        <span>Total:</span>
-                        <span>₹<span id="summaryTotal">0</span></span>
-                    </div>
-                </div>
-
-                <form id="customerForm" onsubmit="proceedToQR(event)">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="cust-name" placeholder="Enter your full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>WhatsApp Number</label>
-                        <input type="tel" id="cust-phone" placeholder="Enter 10-digit mobile number" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Delivery Address</label>
-                        <textarea id="cust-address" rows="2" placeholder="House no, Street, Landmark, City, Pincode" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>GPS Location Pin</label>
-                        <button type="button" class="location-btn" onclick="getLocationPin()"><i class="fa-solid fa-location-dot"></i> Get Current GPS Location</button>
-                        <input type="text" id="cust-location" placeholder="GPS link will appear here" style="margin-top: 6px;" readonly required>
-                    </div>
-                    <button type="submit" class="btn-confirm" style="margin-top: 10px;">Proceed to Payment <i class="fa-solid fa-arrow-right"></i></button>
-                </form>
-            </div>
-
-            <!-- Step 2: QR Code Payment Section -->
-            <div id="qrSection" class="qr-section">
-                <h3 style="color: var(--gold-primary); font-family: 'Cinzel', serif; margin-bottom: 15px; text-align: center;">Scan & Pay</h3>
-                <div class="qr-card">
-                    <p style="font-size: 13px; color: #aaa;">Scan code via GooglePay / PhonePe / Paytm to pay</p>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MushqLibaasPayment" alt="Payment QR Code">
-                    <div style="font-size: 15px; font-weight: bold; color: var(--gold-primary);">Amount: ₹<span id="qrTotalAmount">0</span></div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn-confirm" onclick="confirmOrderFinal()"><i class="fa-solid fa-check"></i> I Have Paid - Confirm Order</button>
-                    <button class="btn-retry" onclick="goBackToDetails()"><i class="fa-solid fa-pen"></i> Edit Details</button>
+            <div class="order-summary-box">
+                <h4 style="color: var(--accent-gold); margin-bottom: 15px; font-family: 'Cinzel', serif;">Order Summary</h4>
+                <div id="checkoutItemsList"></div>
+                <div class="order-total-row">
+                    <span>Total Amount:</span>
+                    <span>₹<span id="checkoutTotalAmount">0</span></span>
                 </div>
             </div>
 
-            <!-- Step 3: Success Confirmation Card -->
-            <div id="confirmationCard" class="confirmation-card">
-                <div class="pending-icon"><i class="fa-solid fa-circle-check"></i></div>
-                <h3 style="color: var(--gold-primary); font-family: 'Cinzel', serif; margin-bottom: 10px;">Order Placed Successfully!</h3>
-                <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Thank you for shopping with Mushq Libaas. Our team will verify your payment and contact you on WhatsApp soon.</p>
-                <a href="index.html" class="btn-confirm" style="text-decoration: none; text-align: center; display: block;">Return to Store</a>
-            </div>
+            <form id="checkoutForm" onsubmit="submitOrderToWhatsApp(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="cust-name" placeholder="Enter your full name" required>
+                </div>
 
+                <div class="form-group">
+                    <label>WhatsApp Phone Number</label>
+                    <input type="tel" id="cust-phone" placeholder="Enter 10-digit mobile number" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <textarea id="cust-address" rows="3" placeholder="House no, Street, Landmark, City, Pincode" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>GPS Location Pin</label>
+                    <button type="button" class="location-btn" onclick="getLocationPin()"><i class="fa-solid fa-location-dot"></i> Get My Current GPS Location</button>
+                    <input type="text" id="cust-location" placeholder="Google Maps link will appear here" style="margin-top: 8px;" readonly required>
+                </div>
+
+                <button type="submit" class="place-order-btn"><i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> Order via WhatsApp</button>
+            </form>
         </div>
     </div>
 
     <script>
-        let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
-        let calculatedTotal = 0;
+        let cart = JSON.parse(localStorage.getItem('nova_cart')) || [];
 
         document.addEventListener("DOMContentLoaded", () => {
-            renderSummary();
+            renderCheckoutSummary();
         });
 
-        function renderSummary() {
-            const listEl = document.getElementById('summaryItemsList');
-            const totalEl = document.getElementById('summaryTotal');
-            const qrTotalEl = document.getElementById('qrTotalAmount');
+        function renderCheckoutSummary() {
+            const listEl = document.getElementById('checkoutItemsList');
+            const totalEl = document.getElementById('checkoutTotalAmount');
             
             if(!cart || cart.length === 0) {
-                listEl.innerHTML = '<p style="color:#888;">No items found in bag.</p>';
+                listEl.innerHTML = '<p style="color:#888;">No items in cart.</p>';
+                totalEl.innerText = '0';
                 return;
             }
 
             let html = '';
-            calculatedTotal = 0;
+            let total = 0;
 
             cart.forEach(item => {
-                const itemQty = item.qty || 1;
-                calculatedTotal += item.price * itemQty;
+                const qty = item.quantity || 1;
+                total += item.price * qty;
                 html += `
                     <div class="order-summary-row">
-                        <span>${item.title} × ${itemQty}</span>
-                        <span style="color: var(--gold-primary);">₹${item.price * itemQty}</span>
+                        <span>${item.title} × ${qty}</span>
+                        <span style="color: var(--accent-gold);">₹${item.price * qty}</span>
                     </div>
                 `;
             });
 
             listEl.innerHTML = html;
-            totalEl.innerText = calculatedTotal;
-            if(qrTotalEl) qrTotalEl.innerText = calculatedTotal;
+            totalEl.innerText = total;
         }
 
         function getLocationPin() {
@@ -234,41 +114,52 @@
                     const lng = position.coords.longitude;
                     const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
                     document.getElementById('cust-location').value = mapsLink;
-                    alert("GPS Location captured successfully!");
+                    alert("Location captured successfully!");
                 }, error => {
-                    alert("Unable to retrieve location. Please check GPS settings.");
+                    alert("Unable to retrieve your location. Please ensure GPS is enabled.");
                 });
             } else {
                 alert("Geolocation is not supported by your browser.");
             }
         }
 
-        function proceedToQR(e) {
+        function submitOrderToWhatsApp(e) {
             e.preventDefault();
-            if(!cart || cart.length === 0) {
-                alert("Your bag is empty!");
-                return;
-            }
-            document.getElementById('detailsSection').style.display = 'none';
-            document.getElementById('qrSection').style.display = 'block';
-        }
-
-        function goBackToDetails() {
-            document.getElementById('qrSection').style.display = 'none';
-            document.getElementById('detailsSection').style.display = 'block';
-        }
-
-        function confirmOrderFinal() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const address = document.getElementById('cust-address').value;
             const location = document.getElementById('cust-location').value;
 
-            alert(`Thank you ${name}! Your order has been placed successfully. We will verify your payment and contact you soon on ${phone}.`);
-            localStorage.removeItem('novaCart');
-            
-            document.getElementById('qrSection').style.display = 'none';
-            document.getElementById('confirmationCard').style.display = 'block';
+            if(!cart || cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            let totalAmount = 0;
+            let itemsText = "";
+            cart.forEach((item, index) => {
+                const qty = item.quantity || 1;
+                totalAmount += item.price * qty;
+                itemsText += `%0A${index + 1}. *${item.title}* (Qty: ${qty}) - ₹${item.price * qty}`;
+            });
+
+            // Yahan apna WhatsApp number daal dein (Country code ke sath, jaise 919876543210)
+            const ownerWhatsAppNumber = "919876543210"; 
+
+            const whatsappMessage = `*New Order Received! - Mushq Libaas*%0A` +
+                                    `-----------------------------------%0A` +
+                                    `*Customer Name:* ${name}%0A` +
+                                    `*Phone:* ${phone}%0A` +
+                                    `*Address:* ${address}%0A` +
+                                    `*Location Map:* ${location}%0A` +
+                                    `-----------------------------------%0A` +
+                                    `*Products:* ${itemsText}%0A` +
+                                    `-----------------------------------%0A` +
+                                    `*Total Amount:* ₹${totalAmount}%0A` +
+                                    `-----------------------------------`;
+
+            localStorage.removeItem('nova_cart');
+            window.location.href = `https://wa.me/${ownerWhatsAppNumber}?text=${whatsappMessage}`;
         }
     </script>
 </body>
