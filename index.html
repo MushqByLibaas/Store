@@ -16,10 +16,6 @@
 
     <header class="header">
         <a href="index.html" class="logo">MUSHQ <span>LIBAAS</span></a>
-        <div class="cart-trigger" onclick="toggleCart(true)">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span id="cartBadge" class="cart-badge">0</span>
-        </div>
     </header>
 
     <div class="container">
@@ -30,33 +26,27 @@
 
         <h2 class="section-title">NEW ARRIVALS</h2>
         <div class="product-grid" id="productGrid">
-            <!-- Sample Product Card for testing -->
+            <!-- Product Card with Direct Order Button -->
             <div class="product-card">
                 <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;">
                 <h3 style="font-size:14px; font-weight:600; margin-bottom:6px;">Winish Maroon Soft Cotton Suit</h3>
                 <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:12px;">₹2,499</div>
-                <button onclick="addToCart('1', 'Winish Maroon Soft Cotton Suit', 2499, 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500', 'Standard', 'Maroon')" style="background:var(--accent-gold); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">Add to Bag</button>
+                <button onclick="directOrder('Winish Maroon Soft Cotton Suit', 2499)" style="background:var(--accent-gold); border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%; text-transform:uppercase; letter-spacing:1px;">Order Now</button>
             </div>
         </div>
     </div>
 
-    <!-- Cart Drawer -->
-    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart(false)"></div>
-    <div class="cart-drawer" id="cartDrawer">
-        <div class="cart-header">
-            <h3>Your Bag</h3>
-            <button class="close-cart" onclick="toggleCart(false)"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="cart-body" id="cartBody"></div>
-        <div class="cart-footer">
-            <div class="cart-total-row">
-                <span>Total:</span>
-                <span>₹<span id="cartTotal">0</span></span>
-            </div>
-            <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+    <script>
+        function directOrder(title, price) {
+            // Cart mein single item array daal kar seedha checkout bhej rahe hain
+            const buyNowItem = [{
+                title: title,
+                price: price,
+                qty: 1
+            }];
+            localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
+            window.location.href = 'checkout.html';
+        }
+    </script>
 </body>
 </html>
