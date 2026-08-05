@@ -10,6 +10,82 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Trust Badges Bar (Upar Yellow Strip ke niche) */
+        .trust-badges-bar {
+            background: #18181c;
+            border-bottom: 1px solid #333;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 13px;
+            color: #ddd;
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-gold, #d4af37);
+            font-weight: 500;
+        }
+        /* Header Trust Icons (Cart ke paas) */
+        .header-trust {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #aaa;
+            align-items: center;
+        }
+        /* Floating WhatsApp Button (Bottom-right) */
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #25d366;
+            color: #fff;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            z-index: 1000;
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+        .floating-whatsapp:hover {
+            transform: scale(1.1);
+        }
+        /* Real Product Reviews Section */
+        .reviews-section {
+            padding: 40px 20px;
+            background: #111;
+            border-top: 1px solid #333;
+            margin-top: 40px;
+        }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .review-card {
+            background: #18181c;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-gold, #d4af37);
+        }
+        @media(max-width: 768px) {
+            .header-trust { display: none; }
+            .trust-badges-bar { font-size: 11px; padding: 8px; }
+        }
+    </style>
 </head>
 <body>
 
@@ -17,8 +93,24 @@
         ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
     </div>
 
+    <!-- Trust Badges Bar -->
+    <div class="trust-badges-bar">
+        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Secure Payments</div>
+        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Pan India Delivery</div>
+        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Quality Checked Products</div>
+        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> WhatsApp Support</div>
+    </div>
+
     <header class="header">
         <a href="index.html" class="logo">MUSK BY <span>LIBAAS</span></a>
+        
+        <!-- Trust Icons near Cart -->
+        <div class="header-trust">
+            <span>🔒 Secure Checkout</span>
+            <span>🚚 Fast Delivery</span>
+            <span>↩️ Easy Support</span>
+        </div>
+
         <!-- Cart Trigger Button -->
         <div class="cart-trigger" onclick="toggleCartDrawer()">
             <i class="fa-solid fa-cart-shopping"></i>
@@ -50,6 +142,28 @@
             <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading new arrivals...</p>
         </div>
     </div>
+
+    <!-- REAL PRODUCT REVIEWS SECTION -->
+    <div class="reviews-section">
+        <h2 style="text-align: center; color: var(--accent-gold, #d4af37); margin-bottom: 25px;">What Our Customers Say</h2>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div style="color: #f39c12; margin-bottom: 8px;">⭐⭐⭐⭐⭐</div>
+                <p style="font-size: 14px; color: #ddd; margin-bottom: 10px; font-style: italic;">"Quality bahut achi hai, fitting perfect."</p>
+                <p style="font-size: 12px; color: var(--accent-gold, #d4af37); font-weight: bold; margin: 0;">– Rahul, Delhi</p>
+            </div>
+            <div class="review-card">
+                <div style="color: #f39c12; margin-bottom: 8px;">⭐⭐⭐⭐⭐</div>
+                <p style="font-size: 14px; color: #ddd; margin-bottom: 10px; font-style: italic;">"Same as shown in photos."</p>
+                <p style="font-size: 12px; color: var(--accent-gold, #d4af37); font-weight: bold; margin: 0;">– Aman, Mumbai</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/966571116528?text=Hello%20Mushq%20By%20Libaas,%20I%20want%20to%20know%20more%20about%20your%20products." target="_blank" class="floating-whatsapp" title="Chat on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
 
     <!-- CART OVERLAY & DRAWER -->
     <div class="cart-overlay" id="cartOverlay" onclick="toggleCartDrawer()"></div>
