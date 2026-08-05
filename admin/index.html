@@ -3,60 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mushq Libaas | Premium Ladies Suits</title>
+    <title>Nova Store - Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { background: #0b0b0d; color: #fff; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
+        .login-box, .admin-panel { max-width: 800px; margin: 40px auto; background: #18181c; padding: 25px; border-radius: 10px; border: 1px solid #333; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        button { background: #d4af37; color: #000; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .order-card { background: #222; border-left: 4px solid #d4af37; padding: 15px; margin-bottom: 15px; border-radius: 6px; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-box">
+        <h2 style="color: #d4af37; text-align: center;">Admin Login</h2>
+        <input type="password" id="adminPass" placeholder="Enter Admin Password">
+        <button onclick="checkLogin()">Login</button>
     </div>
 
-    <header class="header">
-        <a href="index.html" class="logo">MUSHQ <span>LIBAAS</span></a>
-        <div class="cart-trigger" onclick="toggleCart(true)">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span id="cartBadge" class="cart-badge">0</span>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive...">
-        </div>
-
-        <h2 class="section-title">NEW ARRIVALS</h2>
-        <div class="product-grid" id="productGrid">
-            <!-- Sample Product Card -->
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500" alt="Suit" style="width:100%; height:300px; object-fit:cover; border-radius:6px; margin-bottom:12px;">
-                <h3 style="font-size:14px; font-weight:600; margin-bottom:6px;">Winish Maroon Soft Cotton Suit</h3>
-                <div style="color:var(--accent-gold); font-weight:bold; margin-bottom:12px;">₹2,499</div>
-                <button onclick="addToCart('1', 'Winish Maroon Soft Cotton Suit', 2499, 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500', 'Standard', 'Maroon')" style="background:var(--accent-gold); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">Add to Bag</button>
-            </div>
+    <!-- Admin Panel Screen -->
+    <div id="adminPanel" class="admin-panel hidden">
+        <h2 style="color: #d4af37; border-bottom: 1px solid #333; padding-bottom: 10px;">Live Store Orders</h2>
+        <div id="ordersContainer">
+            <p style="color: #888;">Loading orders from database...</p>
         </div>
     </div>
 
-    <!-- Cart Drawer -->
-    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart(false)"></div>
-    <div class="cart-drawer" id="cartDrawer">
-        <div class="cart-header">
-            <h3>Your Bag</h3>
-            <button class="close-cart" onclick="toggleCart(false)"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="cart-body" id="cartBody"></div>
-        <div class="cart-footer">
-            <div class="cart-total-row">
-                <span>Total:</span>
-                <span>₹<span id="cartTotal">0</span></span>
-            </div>
-            <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
-        </div>
-    </div>
+    <script>
+        function checkLogin() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === 'mushq123') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadOrders();
+            } else {
+                alert('Wrong Password!');
+            }
+        }
 
-    <script src="script.js"></script>
+        function loadOrders() {
+            // Aapka Firebase load logic yahan aayega, ya aap direct Firebase console check kar sakte hain.
+            document.getElementById('ordersContainer').innerHTML = '<p>Connected! Check your Firebase Console "orders" collection to see live incoming orders instantly.</p>';
+        }
+    </script>
 </body>
 </html>
