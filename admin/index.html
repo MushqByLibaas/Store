@@ -46,14 +46,14 @@
     <!-- Admin Panel Container -->
     <div id="adminPanel" class="admin-container hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 id="panelTitle" style="color: var(--accent-gold); margin: 0;">Add New Product</h2>
+            <h2 id="panelTitle" style="color: var(--accent-gold); margin: 0;">Admin Dashboard</h2>
             <button onclick="logoutAdmin()" style="background: #333; color: #fff; padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
 
         <!-- Navigation Tabs -->
         <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Live Orders</button>
-            <button class="tab-btn" onclick="switchTab('productsTab', this)"><i class="fa-solid fa-shirt"></i> Manage Products</button>
+            <button class="tab-btn active" id="btnOrdersTab" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Live Orders</button>
+            <button class="tab-btn" id="btnProductsTab" onclick="switchTab('productsTab', this)"><i class="fa-solid fa-shirt"></i> Manage Products</button>
         </div>
 
         <!-- TAB 1: LIVE ORDERS -->
@@ -129,8 +129,7 @@
             </div>
         </div>
     </div>
-
-    <script>
+        <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
@@ -151,6 +150,12 @@
             if (localStorage.getItem('novaAdminAuth') === 'true') {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
+                
+                // Restore active tab memory so refresh doesn't reset position
+                const savedTab = localStorage.getItem('novaActiveTab') || 'ordersTab';
+                const activeBtnId = savedTab === 'productsTab' ? 'btnProductsTab' : 'btnOrdersTab';
+                switchTab(savedTab, document.getElementById(activeBtnId), false);
+
                 loadOrders();
                 loadProducts();
             }
@@ -162,6 +167,7 @@
                 localStorage.setItem('novaAdminAuth', 'true');
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
+                switchTab('ordersTab', document.getElementById('btnOrdersTab'), false);
                 loadOrders();
                 loadProducts();
             } else {
@@ -171,14 +177,18 @@
 
         function logoutAdmin() {
             localStorage.removeItem('novaAdminAuth');
+            localStorage.removeItem('novaActiveTab');
             location.reload();
         }
 
-        function switchTab(tabId, btn) {
+        function switchTab(tabId, btn, save = true) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.remove('hidden');
-            btn.classList.add('active');
+            if(btn) btn.classList.add('active');
+            if(save) {
+                localStorage.setItem('novaActiveTab', tabId);
+            }
         }
 
         function loadOrders() {
@@ -252,7 +262,6 @@
             }
         }
 
-        // Image compression helper function
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -261,7 +270,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const max_size = 700; // optimized size to stay well under Firestore limits
+                    const max_size = 700;
 
                     if (width > height) {
                         if (width > max_size) {
@@ -280,7 +289,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Compress to JPEG format with 0.65 quality
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
                     callback(dataUrl);
                 };
@@ -369,7 +377,7 @@
             }
         }
 
-   function loadProducts() {
+        function loadProducts() {
             const container = document.getElementById('productsContainer');
             container.innerHTML = '<p style="color: var(--text-muted);">Loading products...</p>';
 
