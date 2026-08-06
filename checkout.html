@@ -78,16 +78,12 @@
     <div id="paymentModal" class="modal">
         <div class="modal-content">
             <h3 style="color: var(--accent-gold); margin-top:0;" id="modalTitle">Scan & Pay</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;" id="modalSubtitle">Scan QR or click below to complete payment.</p>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;" id="modalSubtitle">Scan QR using PhonePe, GPay, or Paytm.</p>
             
-            <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:150px; height:150px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
+            <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:170px; height:170px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
             
-            <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
-
-            <!-- Auto-Pay UPI App Button -->
-            <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:11px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
-                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App (Auto Amount)
-            </a>
+            <div id="modalAmount" style="font-size: 18px; font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;">Amount to Pay: ₹0</div>
+            <div style="font-size: 12px; color: #bbb; margin-bottom: 12px;">UPI ID: <b style="color:#fff;">rehan65@ybl</b></div>
 
             <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:6px; text-transform:uppercase;">
                 <i class="fa-solid fa-circle-check"></i> I Have Paid - Submit Order
@@ -218,7 +214,6 @@
             const country = customerData.country;
             const modalAmount = document.getElementById('modalAmount');
             const qrImg = document.getElementById('paymentQrImg');
-            const upiLink = document.getElementById('upiPayLink');
             const modalTitle = document.getElementById('modalTitle');
             const modalSubtitle = document.getElementById('modalSubtitle');
 
@@ -230,17 +225,11 @@
                 qrImg.src = "saudi-qr.jpg"; 
                 modalTitle.innerText = "Saudi Bank QR Payment";
                 modalSubtitle.innerText = "Scan via STC Pay, Al Rajhi, or Saudi Banking App";
-                upiLink.style.display = "none"; // Hide UPI button for Saudi Arabia
             } else {
                 modalAmount.innerText = "Amount to Pay: ₹" + baseInrTotal;
-                qrImg.src = "qr.jpg"; // Your PhonePe QR image
+                qrImg.src = "qr.jpg"; 
                 modalTitle.innerText = "Scan & Pay (India)";
-                modalSubtitle.innerText = "Scan QR or click below to pay automatically.";
-                
-                // Your exact PhonePe UPI ID with auto amount integration
-                const merchantUpiID = "rehan65@ybl"; 
-                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=RehanAli&am=${baseInrTotal}&cu=INR&tn=MushqByLibaasOrder`;
-                upiLink.style.display = "block"; // Show Auto-Pay UPI button for India
+                modalSubtitle.innerText = "Scan QR using PhonePe, GPay, or Paytm";
             }
 
             document.getElementById('paymentModal').style.display = 'flex';
