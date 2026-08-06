@@ -3,458 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mushq By Libaas - Advanced Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <title>Nova Store - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-primary: #0b0b0d;
-            --card-bg: #18181c;
-            --accent-gold: #d4af37;
-            --text-color: #fff;
-            --text-muted: #aaa;
-            --border-color: #333;
-            --input-bg: #111;
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --success: #2ec4b6;
+            --danger: #e71d36;
+            --warning: #ff9f1c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2b2d42;
+            --text-muted: #8d99ae;
+            --border-color: #e9ecef;
+            --sidebar-width: 260px;
         }
-        body { background: var(--bg-primary); color: var(--text-color); font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
-        .login-box, .admin-container { max-width: 1000px; margin: 20px auto; background: var(--card-bg); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
-        input, textarea, select { width: 100%; padding: 10px 12px; margin: 8px 0 15px 0; background: var(--input-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        button { background: var(--accent-gold); color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        button:hover { opacity: 0.9; }
-        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-        .tab-btn { background: #222; color: #fff; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .tab-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
-        .card { background: #111; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 15px; border-radius: 6px; }
-        .hidden { display: none; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .tag { background: #222; padding: 3px 8px; border-radius: 4px; font-size: 12px; color: #fff; border: 1px solid #444; display: inline-block; margin-right: 5px; text-transform: uppercase; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .brand-box {
+            padding: 24px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links li.active a, .nav-links li a:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            max-width: calc(100% - var(--sidebar-width));
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+        }
+
+        .admin-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-card span {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .metric-card h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .metric-card .trend {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Data Section */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            box-init: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-muted);
+            background-color: rgba(0,0,0,0.01);
+        }
+
+        td {
+            color: var(--text-main);
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge.pending {
+            background-color: rgba(255, 159, 28, 0.1);
+            color: var(--warning);
+        }
+
+        .badge.completed {
+            background-color: rgba(46, 196, 182, 0.1);
+            color: var(--success);
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            aside {
+                display: none;
+            }
+            main {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-box">
-        <h2 style="color: var(--accent-gold); text-align: center; margin-bottom: 20px;">Mushq By Libaas - Admin Portal</h2>
-        <label style="font-size: 13px; color: var(--text-muted);">Admin Password</label>
-        <input type="password" id="adminPass" placeholder="Enter password...">
-        <button onclick="checkLogin()" style="width: 100%; margin-top: 10px;">Login to Panel</button>
-    </div>
-
-    <!-- Admin Panel Container -->
-    <div id="adminPanel" class="admin-container hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 id="panelTitle" style="color: var(--accent-gold); margin: 0;">Admin Dashboard</h2>
-            <button onclick="logoutAdmin()" style="background: #333; color: #fff; padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    <aside>
+        <div class="brand-box">
+            <i class="fa-solid fa-store"></i> Nova Store Admin
         </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="#"><i class="fa-solid fa-shopping-cart"></i> Orders</a></li>
+            <li><a href="#"><i class="fa-solid fa-users"></i> Customers</a></li>
+            <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+        </ul>
+    </aside>
 
-        <!-- Navigation Tabs -->
-        <div class="tab-buttons">
-            <button class="tab-btn active" id="btnOrdersTab" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Live Orders</button>
-            <button class="tab-btn" id="btnProductsTab" onclick="switchTab('productsTab', this)"><i class="fa-solid fa-shirt"></i> Manage Products</button>
-        </div>
-
-        <!-- TAB 1: LIVE ORDERS -->
-        <div id="ordersTab" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3 style="color: #fff; margin: 0;">Customer Orders</h3>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <label style="cursor: pointer; font-size: 13px; color: #ddd; display: flex; align-items: center; gap: 6px;">
-                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" style="width: 16px; height: 16px; margin:0; accent-color: var(--accent-gold);"> Select All
-                    </label>
-                    <button onclick="deleteSelectedOrders()" style="background: #c0392b; color: #fff; padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-trash"></i> Delete Selected</button>
-                    <button onclick="loadOrders()" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-rotate"></i> Refresh</button>
-                </div>
+    <main>
+        <header>
+            <h1>Dashboard Overview</h1>
+            <div class="admin-profile">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Admin">
+                <span>Admin Rehan</span>
             </div>
-            <div id="ordersContainer">
-                <p style="color: var(--text-muted);">Loading orders...</p>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span>Total Revenue</span>
+                <h3>$12,450.00</h3>
+                <span class="trend"><i class="fa-solid fa-arrow-up"></i> +14.2% this month</span>
             </div>
-        </div>
-
-        <!-- TAB 2: MANAGE PRODUCTS -->
-        <div id="productsTab" class="tab-content hidden">
-            <h3 id="formHeading" style="color: #fff; margin-bottom: 15px;">Add New Product</h3>
-            <form id="addProductForm" onsubmit="saveProduct(event)" style="background: #111; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 30px;">
-                <input type="hidden" id="editProdId">
-                <div class="grid-2">
-                    <div>
-                        <label style="font-size: 12px; color: var(--text-muted);">Product Title / Name</label>
-                        <input type="text" id="prodTitle" required placeholder="e.g. Maroon Designer Suit">
-                    </div>
-                    <div>
-                        <label style="font-size: 12px; color: var(--text-muted);">Price (₹)</label>
-                        <input type="number" id="prodPrice" required placeholder="e.g. 2499">
-                    </div>
-                </div>
-                <div class="grid-2">
-                    <div>
-                        <label style="font-size: 12px; color: var(--text-muted);">Available Colors (Auto-filled)</label>
-                        <input type="text" id="prodColors" value="Maroon, Black, Navy Blue, Pink">
-                    </div>
-                    <div>
-                        <label style="font-size: 12px; color: var(--text-muted);">Available Sizes (Auto-filled)</label>
-                        <input type="text" id="prodSizes" value="S, M, L, XL, XXL">
-                    </div>
-                </div>
-                <div>
-                    <label style="font-size: 12px; color: var(--text-muted);">Select Product Section / Category (Collection)</label>
-                    <select id="prodCategory">
-                        <option value="new">New Arrivals</option>
-                        <option value="trending">Trending</option>
-                        <option value="special">Special Offer</option>
-                        <option value="bestseller">Best Seller</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size: 12px; color: var(--text-muted);">Main Cover Image from Device</label>
-                    <input type="file" id="prodImageFile" accept="image/*" onchange="convertImage(event)" style="padding: 8px;">
-                    <input type="hidden" id="prodImage">
-                </div>
-                <div>
-                    <label style="font-size: 12px; color: var(--text-muted);">Additional Slider Images (Select 3-4 Images for Detail Page)</label>
-                    <input type="file" id="prodExtraImagesFiles" accept="image/*" multiple onchange="convertExtraImages(event)" style="padding: 8px;">
-                    <div id="extraImagesPreview" style="font-size: 11px; color: var(--accent-gold); margin-top: 5px;"></div>
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" id="saveBtn" style="flex: 1;"><i class="fa-solid fa-plus"></i> Publish Product</button>
-                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="hidden" style="background:#444; color:#fff; width:120px;">Cancel</button>
-                </div>
-            </form>
-
-            <h3 style="color: #fff; margin-bottom: 15px;">Existing Store Products</h3>
-            <div id="productsContainer">
-                <p style="color: var(--text-muted);">Loading products...</p>
+            <div class="metric-card">
+                <span>Total Orders</span>
+                <h3>184</h3>
+                <span class="trend"><i class="fa-solid fa-arrow-up"></i> +8.1% this week</span>
+            </div>
+            <div class="metric-card">
+                <span>Active Products</span>
+                <h3>32</h3>
+                <span>Nova Store Inventory</span>
+            </div>
+            <div class="metric-card">
+                <span>Pending Deliveries</span>
+                <h3>12</h3>
+                <span class="trend" style="color: var(--warning);"><i class="fa-solid fa-clock"></i> Requires attention</span>
             </div>
         </div>
-    </div>
-        <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
-            authDomain: "mushqbylibaas.firebaseapp.com",
-            projectId: "mushqbylibaas",
-            storageBucket: "mushqbylibaas.firebasestorage.app",
-            messagingSenderId: "1057698747540",
-            appId: "1:1057698747540:web:e68337039fcb254f381081",
-            measurementId: "G-J1L758MD9G"
-        };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-        let uploadedExtraImagesArray = [];
+        <div class="card">
+            <div class="card-header">
+                <h2>Recent Customer Orders & Location Details</h2>
+                <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export Orders</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>WhatsApp Phone</th>
+                        <th>Delivery Address</th>
+                        <th>Location Coordinates</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="order-table-body">
+                    <tr>
+                        <td>#NS-9021</td>
+                        <td>Aarav Sharma</td>
+                        <td>+966 50 123 4567</td>
+                        <td>King Fahd Road, Riyadh</td>
+                        <td>24.7136° N, 46.6753° E</td>
+                        <td><span class="badge pending">Pending</span></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="markCompleted(this)">Complete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#NS-9020</td>
+                        <td>Fatima Al-Farsi</td>
+                        <td>+966 55 987 6543</td>
+                        <td>Olaya Street, Riyadh</td>
+                        <td>24.6877° N, 46.6852° E</td>
+                        <td><span class="badge completed">Completed</span></td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#NS-9019</td>
+                        <td>Zaid Khan</td>
+                        <td>+966 54 456 7890</td>
+                        <td>Al Malaz, Riyadh</td>
+                        <td>24.6734° N, 46.7219° E</td>
+                        <td><span class="badge pending">Pending</span></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="markCompleted(this)">Complete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
 
-        window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('novaAdminAuth') === 'true') {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                
-                // Restore active tab memory so refresh doesn't reset position
-                const savedTab = localStorage.getItem('novaActiveTab') || 'ordersTab';
-                const activeBtnId = savedTab === 'productsTab' ? 'btnProductsTab' : 'btnOrdersTab';
-                switchTab(savedTab, document.getElementById(activeBtnId), false);
-
-                loadOrders();
-                loadProducts();
-            }
-        });
-
-        function checkLogin() {
-            const pass = document.getElementById('adminPass').value;
-            if (pass === 'mushq123') {
-                localStorage.setItem('novaAdminAuth', 'true');
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                switchTab('ordersTab', document.getElementById('btnOrdersTab'), false);
-                loadOrders();
-                loadProducts();
-            } else {
-                alert('Wrong Password!');
-            }
-        }
-
-        function logoutAdmin() {
-            localStorage.removeItem('novaAdminAuth');
-            localStorage.removeItem('novaActiveTab');
-            location.reload();
-        }
-
-        function switchTab(tabId, btn, save = true) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.remove('hidden');
-            if(btn) btn.classList.add('active');
-            if(save) {
-                localStorage.setItem('novaActiveTab', tabId);
-            }
-        }
-
-        function loadOrders() {
-            const container = document.getElementById('ordersContainer');
-            container.innerHTML = '<p style="color: var(--text-muted);">Fetching orders...</p>';
-
-            db.collection("orders").get().then((querySnapshot) => {
-                if (querySnapshot.empty) {
-                    container.innerHTML = '<p style="color: var(--text-muted);">No orders found yet.</p>';
-                    return;
-                }
-                let html = '';
-                querySnapshot.forEach((doc) => {
-                    const order = doc.data();
-                    const orderId = doc.id;
-                    let itemsHtml = '';
-                    if (order.items && Array.isArray(order.items)) {
-                        order.items.forEach(item => {
-                            itemsHtml += `<li>${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
-                        });
-                    }
-                    html += `
-                        <div class="card">
-                            <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; color:var(--accent-gold); border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <input type="checkbox" class="order-checkbox" value="${orderId}" style="width:16px; height:16px; margin:0; accent-color:var(--accent-gold);">
-                                    <span>Customer: ${order.customerName || 'N/A'}</span>
-                                </div>
-                                <span class="tag">₹${order.totalAmount || 0}</span>
-                            </div>
-                            <p style="margin:4px 0; font-size:13px;"><strong>Phone:</strong> <a href="tel:${order.customerPhone}" style="color:var(--accent-gold);">${order.customerPhone}</a></p>
-                            <p style="margin:4px 0; font-size:13px;"><strong>Address:</strong> ${order.customerAddress || order.address || 'N/A'}</p>
-                            <p style="margin:4px 0; font-size:13px; color:var(--text-muted);"><strong>Items:</strong></p>
-                            <ul style="margin:4px 0 8px 15px; font-size:13px; color:#ddd;">${itemsHtml}</ul>
-                            <p style="margin:0; font-size:11px; color:var(--text-muted);">Date: ${order.orderDate || 'Recent'}</p>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-                const selectAll = document.getElementById('selectAllCheckbox');
-                if(selectAll) selectAll.checked = false;
-            }).catch(err => {
-                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
-            });
+    <script>
+        function markCompleted(btn) {
+            const row = btn.closest('tr');
+            const badge = row.querySelector('.badge');
+            badge.className = 'badge completed';
+            badge.innerText = 'Completed';
+            btn.className = 'btn btn-danger';
+            btn.innerText = 'Remove';
+            btn.setAttribute('onclick', 'deleteRow(this)');
         }
 
-        function toggleSelectAll(master) {
-            const checkboxes = document.querySelectorAll('.order-checkbox');
-            checkboxes.forEach(cb => cb.checked = master.checked);
-        }
-
-        function deleteSelectedOrders() {
-            const checkboxes = document.querySelectorAll('.order-checkbox:checked');
-            if (checkboxes.length === 0) {
-                alert("Please select at least one order to delete!");
-                return;
-            }
-
-            if (confirm(`Are you sure you want to delete selected ${checkboxes.length} orders?`)) {
-                let promises = [];
-                checkboxes.forEach(cb => {
-                    promises.push(db.collection("orders").doc(cb.value).delete());
-                });
-
-                Promise.all(promises).then(() => {
-                    alert("Selected orders deleted successfully!");
-                    loadOrders();
-                }).catch(err => {
-                    alert("Error deleting orders: " + err.message);
-                });
-            }
-        }
-
-        function compressImage(file, callback) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const max_size = 700;
-
-                    if (width > height) {
-                        if (width > max_size) {
-                            height *= max_size / width;
-                            width = max_size;
-                        }
-                    } else {
-                        if (height > max_size) {
-                            width *= max_size / height;
-                            height = max_size;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
-                    callback(dataUrl);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function convertImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                compressImage(file, function(compressedDataUrl) {
-                    document.getElementById('prodImage').value = compressedDataUrl;
-                });
-            }
-        }
-
-        function convertExtraImages(event) {
-            const files = event.target.files;
-            uploadedExtraImagesArray = [];
-            if (files.length > 0) {
-                document.getElementById('extraImagesPreview').innerText = "Compressing images, please wait...";
-                let processed = 0;
-                for (let i = 0; i < files.length; i++) {
-                    compressImage(files[i], function(compressedDataUrl) {
-                        uploadedExtraImagesArray.push(compressedDataUrl);
-                        processed++;
-                        if (processed === files.length) {
-                            document.getElementById('extraImagesPreview').innerText = `${files.length} extra images compressed & attached successfully!`;
-                        }
-                    });
-                }
-            }
-        }
-
-        function saveProduct(e) {
-            e.preventDefault();
-            const id = document.getElementById('editProdId').value;
-            const title = document.getElementById('prodTitle').value;
-            const price = Number(document.getElementById('prodPrice').value);
-            const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
-            const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
-            const category = document.getElementById('prodCategory').value;
-            const image = document.getElementById('prodImage').value;
-
-            if (!image && !id) {
-                alert("Please upload a main cover image file.");
-                return;
-            }
-
-            const productData = { title, price, colors, sizes, category };
-            if (image) productData.image = image;
-            
-            if (uploadedExtraImagesArray.length > 0) {
-                let mainImg = image || document.getElementById('prodImage').value;
-                productData.images = [mainImg, ...uploadedExtraImagesArray];
-            } else if (!productData.images && image) {
-                productData.images = [image];
-            }
-
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerText = "Publishing...";
-            saveBtn.disabled = true;
-
-            if (id) {
-                db.collection("products").doc(id).update(productData).then(() => {
-                    alert("Product updated successfully!");
-                    resetForm();
-                    loadProducts();
-                }).catch(err => {
-                    alert("Error updating: " + err.message);
-                    saveBtn.innerText = "Update Product";
-                    saveBtn.disabled = false;
-                });
-            } else {
-                productData.createdAt = new Date();
-                db.collection("products").add(productData).then(() => {
-                    alert("Product added successfully!");
-                    resetForm();
-                    loadProducts();
-                }).catch(err => {
-                    alert("Error adding: " + err.message);
-                    saveBtn.innerText = "Publish Product";
-                    saveBtn.disabled = false;
-                });
-            }
-        }
-
-        function loadProducts() {
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = '<p style="color: var(--text-muted);">Loading products...</p>';
-
-            db.collection("products").get().then((querySnapshot) => {
-                if (querySnapshot.empty) {
-                    container.innerHTML = '<p style="color: var(--text-muted);">No custom products found in database.</p>';
-                    return;
-                }
-                let html = '';
-                querySnapshot.forEach((doc) => {
-                    const p = doc.data();
-                    const pData = JSON.stringify({id: doc.id, ...p}).replace(/"/g, '&quot;');
-                    let imgCount = p.images && Array.isArray(p.images) ? p.images.length : 1;
-                    html += `
-                        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="display:flex; gap:15px; align-items:center;">
-                                <img src="${p.image}" style="width:50px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #444;" onerror="this.src='https://via.placeholder.com/50'">
-                                <div>
-                                    <h4 style="margin:0; color:var(--accent-gold); font-size:15px;">${p.title}</h4>
-                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price} <span class="tag" style="margin-left:8px; font-size:10px;">${p.category || 'new'}</span> <span style="font-size:11px; color:#aaa;">(Imgs: ${imgCount})</span></p>
-                                    <p style="margin:3px 0; font-size:11px; color:var(--text-muted);">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'} | Sizes: ${p.sizes ? p.sizes.join(', ') : 'N/A'}</p>
-                                </div>
-                            </div>
-                            <div style="display:flex; gap:8px;">
-                                <button onclick="editProduct(${pData})" style="background:#333; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:8px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button>
-                                <button onclick="deleteProduct('${doc.id}')" style="background:#ff4d4d; color:#fff; padding:8px 12px; font-size:12px;"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }).catch(err => {
-                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
-            });
-        }
-
-        function editProduct(p) {
-            document.getElementById('editProdId').value = p.id;
-            document.getElementById('prodTitle').value = p.title;
-            document.getElementById('prodPrice').value = p.price;
-            document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
-            document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
-            document.getElementById('prodCategory').value = p.category || 'new';
-            if(p.image) document.getElementById('prodImage').value = p.image;
-            uploadedExtraImagesArray = p.images || [];
-            if(uploadedExtraImagesArray.length > 0) {
-                document.getElementById('extraImagesPreview').innerText = `${uploadedExtraImagesArray.length} images currently loaded in gallery.`;
-            }
-            document.getElementById('formHeading').innerText = "Edit Product";
-            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function resetForm() {
-            document.getElementById('addProductForm').reset();
-            document.getElementById('editProdId').value = '';
-            document.getElementById('prodImage').value = '';
-            document.getElementById('extraImagesPreview').innerText = '';
-            uploadedExtraImagesArray = [];
-            document.getElementById('formHeading').innerText = "Add New Product";
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
-            saveBtn.disabled = false;
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-            document.getElementById('prodColors').value = "Maroon, Black, Navy Blue, Pink";
-            document.getElementById('prodSizes').value = "S, M, L, XL, XXL";
-            document.getElementById('prodCategory').value = "new";
-        }
-
-        function deleteProduct(id) {
-            if (confirm("Are you sure you want to delete this product?")) {
-                db.collection("products").doc(id).delete().then(() => {
-                    alert("Product deleted successfully!");
-                    loadProducts();
-                }).catch(err => alert("Error deleting: " + err.message));
-            }
+        function deleteRow(btn) {
+            const row = btn.closest('tr');
+            row.remove();
         }
     </script>
 </body>
