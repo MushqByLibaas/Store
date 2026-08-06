@@ -85,7 +85,7 @@
             <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
 
             <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:10px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
-                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App
+                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App (Auto Amount)
             </a>
 
             <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:6px; text-transform:uppercase;">
@@ -117,8 +117,8 @@
         let lng = "";
         let baseInrTotal = 0;
         let customerData = {};
-        const sarRate = 22; // 1 SAR = 22 INR approx
-        const saudiShippingSar = 25; // 25 SAR Shipping Charge
+        const sarRate = 22; 
+        const saudiShippingSar = 25; 
 
         document.addEventListener("DOMContentLoaded", () => {
             const summaryDiv = document.getElementById('checkoutSummary');
@@ -234,10 +234,11 @@
                 modalAmount.innerText = "Amount to Pay: ₹" + baseInrTotal;
                 qrImg.src = "qr.jpg";
                 modalTitle.innerText = "Scan & Pay";
-                modalSubtitle.innerText = "Scan QR or click below to complete payment.";
+                modalSubtitle.innerText = "Scan QR or click below to pay automatically.";
                 
+                // Automatic Amount UPI Intent Link
                 const merchantUpiID = "mushq@paytm"; 
-                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas&am=${baseInrTotal}&cu=INR`;
+                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas&am=${baseInrTotal}&cu=INR&tn=OrderPayment`;
                 upiLink.style.display = "block";
             }
 
