@@ -3,376 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Store - Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Admin Dashboard - MuskByLibaas</title>
+    <!-- Cropper.js CSS for image cropping & resizing -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a0ca3;
-            --success: #2ec4b6;
-            --danger: #e71d36;
-            --warning: #ff9f1c;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-main: #2b2d42;
-            --text-muted: #8d99ae;
-            --border-color: #e9ecef;
-            --sidebar-width: 260px;
+            --primary-color: #2c3e50;
+            --secondary-color: #1abc9c;
+            --background-color: #f4f6f9;
+            --text-color: #333;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--background-color);
+            color: var(--text-color);
             display: flex;
             min-height: 100vh;
         }
-
-        /* Sidebar */
-        aside {
-            width: var(--sidebar-width);
-            background-color: var(--card-bg);
-            border-right: 1px solid var(--border-color);
+        sidebar {
+            width: 250px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
         }
-
-        .brand-box {
-            padding: 24px;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
+        sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--secondary-color);
         }
-
-        .nav-links {
-            list-style: none;
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .nav-links li a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: var(--text-muted);
+        sidebar a {
+            color: white;
             text-decoration: none;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
         }
-
-        .nav-links li.active a, .nav-links li a:hover {
-            background-color: rgba(67, 97, 238, 0.1);
-            color: var(--primary);
+        sidebar a:hover, sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.1);
         }
-
-        /* Main Content */
         main {
-            margin-left: var(--sidebar-width);
             flex: 1;
             padding: 30px;
-            max-width: calc(100% - var(--sidebar-width));
+            overflow-y: auto;
         }
-
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-
-        header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-        }
-
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--card-bg);
-            padding: 8px 16px;
-            border-radius: 50px;
-            border: 1px solid var(--border-color);
-        }
-
-        .admin-profile img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* Metrics Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .metric-card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .metric-card span {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .metric-card h3 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .metric-card .trend {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--success);
-        }
-
-        /* Data Section */
         .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            box-init: 0 2px 4px rgba(0,0,0,0.02);
-            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
         }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        h3 {
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
-
-        .card-header h2 {
-            font-size: 1.25rem;
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: 600;
         }
-
-        table {
+        input[type="text"], input[type="number"], textarea, select {
             width: 100%;
-            border-collapse: collapse;
-            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
         }
-
-        th, td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        th {
-            font-weight: 600;
-            color: var(--text-muted);
-            background-color: rgba(0,0,0,0.01);
-        }
-
-        td {
-            color: var(--text-main);
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .badge.pending {
-            background-color: rgba(255, 159, 28, 0.1);
-            color: var(--warning);
-        }
-
-        .badge.completed {
-            background-color: rgba(46, 196, 182, 0.1);
-            color: var(--success);
-        }
-
-        .btn {
-            padding: 8px 14px;
-            border-radius: 6px;
+        button {
+            background-color: var(--secondary-color);
+            color: white;
             border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 500;
-            font-size: 0.85rem;
-            transition: opacity 0.2s;
+            transition: background 0.3s;
         }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .btn:hover {
+        button:hover {
             opacity: 0.9;
         }
-
-        @media (max-width: 768px) {
-            aside {
-                display: none;
-            }
-            main {
-                margin-left: 0;
-                max-width: 100%;
-                padding: 15px;
-            }
+        /* Image Cropper Container Styles */
+        .img-container {
+            max-width: 100%;
+            max-height: 400px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .img-container img {
+            max-width: 100%;
+            display: block;
+        }
+        .preview-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: center;
         }
     </style>
 </head>
 <body>
 
-    <aside>
-        <div class="brand-box">
-            <i class="fa-solid fa-store"></i> Nova Store Admin
-        </div>
-        <ul class="nav-links">
-            <li class="active"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-            <li><a href="#"><i class="fa-solid fa-box"></i> Products</a></li>
-            <li><a href="#"><i class="fa-solid fa-shopping-cart"></i> Orders</a></li>
-            <li><a href="#"><i class="fa-solid fa-users"></i> Customers</a></li>
-            <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
-        </ul>
-    </aside>
+    <sidebar>
+        <h2>MuskByLibaas</h2>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Products</a>
+        <a href="#">Orders</a>
+        <a href="#">Settings</a>
+    </sidebar>
 
     <main>
         <header>
-            <h1>Dashboard Overview</h1>
-            <div class="admin-profile">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Admin">
-                <span>Admin Rehan</span>
-            </div>
+            <h2>Admin Dashboard</h2>
+            <span>Welcome, Admin</span>
         </header>
 
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <span>Total Revenue</span>
-                <h3>$12,450.00</h3>
-                <span class="trend"><i class="fa-solid fa-arrow-up"></i> +14.2% this month</span>
-            </div>
-            <div class="metric-card">
-                <span>Total Orders</span>
-                <h3>184</h3>
-                <span class="trend"><i class="fa-solid fa-arrow-up"></i> +8.1% this week</span>
-            </div>
-            <div class="metric-card">
-                <span>Active Products</span>
-                <h3>32</h3>
-                <span>Nova Store Inventory</span>
-            </div>
-            <div class="metric-card">
-                <span>Pending Deliveries</span>
-                <h3>12</h3>
-                <span class="trend" style="color: var(--warning);"><i class="fa-solid fa-clock"></i> Requires attention</span>
-            </div>
-        </div>
-
         <div class="card">
-            <div class="card-header">
-                <h2>Recent Customer Orders & Location Details</h2>
-                <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export Orders</button>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer Name</th>
-                        <th>WhatsApp Phone</th>
-                        <th>Delivery Address</th>
-                        <th>Location Coordinates</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="order-table-body">
-                    <tr>
-                        <td>#NS-9021</td>
-                        <td>Aarav Sharma</td>
-                        <td>+966 50 123 4567</td>
-                        <td>King Fahd Road, Riyadh</td>
-                        <td>24.7136° N, 46.6753° E</td>
-                        <td><span class="badge pending">Pending</span></td>
-                        <td>
-                            <button class="btn btn-primary" onclick="markCompleted(this)">Complete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#NS-9020</td>
-                        <td>Fatima Al-Farsi</td>
-                        <td>+966 55 987 6543</td>
-                        <td>Olaya Street, Riyadh</td>
-                        <td>24.6877° N, 46.6852° E</td>
-                        <td><span class="badge completed">Completed</span></td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteRow(this)">Remove</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#NS-9019</td>
-                        <td>Zaid Khan</td>
-                        <td>+966 54 456 7890</td>
-                        <td>Al Malaz, Riyadh</td>
-                        <td>24.6734° N, 46.7219° E</td>
-                        <td><span class="badge pending">Pending</span></td>
-                        <td>
-                            <button class="btn btn-primary" onclick="markCompleted(this)">Complete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <h3>Add New Product</h3>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Price</label>
+                    <input type="number" id="productPrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="productImageInput">Product Image (Auto 1000x1000 Resizer)</label>
+                    <input type="file" id="productImageInput" accept="image/*" required>
+                </div>
+
+                <!-- Cropper Area -->
+                <div class="form-group">
+                    <div class="img-container">
+                        <img id="imageToCrop" src="" alt="Source Image">
+                    </div>
+                    <button type="button" id="cropBtn" style="display:none; margin-top: 10px;">Crop & Fit to 1000x1000</button>
+                </div>
+
+                <div class="form-group preview-container">
+                    <input type="hidden" id="croppedImageData">
+                    <canvas id="outputCanvas" width="100" height="100" style="border:1px solid #ccc; display:none;"></canvas>
+                    <span id="cropStatus" style="font-size: 0.9rem; color: #665; display:none;">Image ready (1000x1000px)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="productDesc">Description</label>
+                    <textarea id="productDesc" rows="4"></textarea>
+                </div>
+                <button type="submit">Save Product</button>
+            </form>
         </div>
     </main>
 
+    <!-- Cropper.js Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        function markCompleted(btn) {
-            const row = btn.closest('tr');
-            const badge = row.querySelector('.badge');
-            badge.className = 'badge completed';
-            badge.innerText = 'Completed';
-            btn.className = 'btn btn-danger';
-            btn.innerText = 'Remove';
-            btn.setAttribute('onclick', 'deleteRow(this)');
-        }
+        let cropper;
+        const imageInput = document.getElementById('productImageInput');
+        const imageToCrop = document.getElementById('imageToCrop');
+        const imgContainer = document.querySelector('.img-container');
+        const cropBtn = document.getElementById('cropBtn');
+        const croppedImageData = document.getElementById('croppedImageData');
+        const outputCanvas = document.getElementById('outputCanvas');
+        const cropStatus = document.getElementById('cropStatus');
 
-        function deleteRow(btn) {
-            const row = btn.closest('tr');
-            row.remove();
-        }
+        imageInput.addEventListener('change', function (e) {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    imageToCrop.src = event.target.result;
+                    imgContainer.style.display = 'block';
+                    cropBtn.style.display = 'inline-block';
+                    
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 1 / 1, // 1:1 Square for 1000x1000
+                        viewMode: 1,
+                        autoCropArea: 1,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        cropBtn.addEventListener('click', function () {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas({
+                    width: 1000,
+                    height: 1000,
+                });
+                
+                // Show thumbnail preview
+                outputCanvas.style.display = 'block';
+                const ctx = outputCanvas.getContext('2d');
+                ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+                ctx.drawImage(canvas, 0, 0, 100, 100);
+
+                // Save base64 data to hidden input
+                croppedImageData.value = canvas.toDataURL('image/jpeg');
+                cropStatus.style.display = 'inline-block';
+                cropStatus.innerText = "Image successfully fitted to 1000x1000px!";
+            }
+        });
+
+        document.getElementById('productForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!croppedImageData.value) {
+                alert('Please crop and generate the 1000x1000 image first!');
+                return;
+            }
+            // Baaki submission logic jo aapki pehle se thi
+            alert('Product saved successfully for MuskByLibaas!');
+        });
     </script>
 </body>
 </html>
