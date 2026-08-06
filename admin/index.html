@@ -116,7 +116,6 @@
                     <label style="font-size: 12px; color: var(--text-muted);">Additional Slider Images (Select 3-4 Images for Detail Page)</label>
                     <input type="file" id="prodExtraImagesFiles" accept="image/*" multiple onchange="convertExtraImages(event)" style="padding: 8px;">
                     <div id="extraImagesPreview" style="font-size: 11px; color: var(--accent-gold); margin-top: 5px;"></div>
-                    <input type="hidden" id="prodExtraImages">
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <button type="submit" id="saveBtn" style="flex: 1;"><i class="fa-solid fa-plus"></i> Publish Product</button>
@@ -268,6 +267,7 @@
             const files = event.target.files;
             uploadedExtraImagesArray = [];
             if (files.length > 0) {
+                document.getElementById('extraImagesPreview').innerText = "Processing images, please wait...";
                 let processed = 0;
                 for (let i = 0; i < files.length; i++) {
                     const reader = new FileReader();
@@ -301,26 +301,193 @@
             const productData = { title, price, colors, sizes, category };
             if (image) productData.image = image;
             
-            // Extra images handling (agar nayi select ki hain toh save hongi, warna purani rahengi)
             if (uploadedExtraImagesArray.length > 0) {
-                // Main image ko bhi extra images array mein pehla item rakh dete hain taaki slider complete bane
-                let fullGallery = [image || document.getElementById('prodImage').value, ...uploadedExtraImagesArray];
-                productData.images = fullGallery;
+                let mainImg = image || document.getElementById('prodImage').value;
+                productData.images = [mainImg, ...uploadedExtraImagesArray];
+            } else if (!productData.images && image) {
+                productData.images = [image];
             }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Publishing...";
+            saveBtn.disabled = true;
 
             if (id) {
                 db.collection("products").doc(id).update(productData).then(() => {
                     alert("Product updated successfully!");
                     resetForm();
                     loadProducts();
-                }).catch(err => alert("Error updating: " + err.message));
+                }).catch(err => {
+                    alert("Error updating: " + err.message);
+                    saveBtn.innerText = "Update Product";
+                    saveBtn.disabled = false;
+                });
             } else {
                 productData.createdAt = new Date();
                 db.collection("products").add(productData).then(() => {
                     alert("Product added successfully!");
                     resetForm();
                     loadProducts();
-                }).catch(err => alert("Error adding: " + err.message));
+                }).catch(err => {
+                    alert("Error adding: " + err.message);
+                    saveBtn.innerText = "Publish Product";
+                    saveBtn.disabled = false;
+                });
+            }
+        }
+
+        function loadProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<p style="color: var(--text-muted);">Loading products...</p>';
+
+            db.collection("products").get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No custom products found in database.</p>';
+                    return;
+                }
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const order = doc.data();
+                    const orderId = doc.id;
+                    let itemsHtml = '';
+                    if (order.items && Array.isArray(order.items)) {
+                        order.items.forEach(item => {
+                            itemsHtml += `<li>${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
+                        });
+                    }
+                    html += `
+                        <div class="card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; color:var(--accent-gold); border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <input type="checkbox" class="order-checkbox" value="${orderId}" style="width:16px; height:16px; margin:0; accent-color:var(--accent-gold);">
+                                    <span>Customer: ${order.customerName || 'N/A'}</span>
+                                </div>
+                                <span class="tag">₹${order.totalAmount || 0}</span>
+                            </div>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Phone:</strong> <a href="tel:${order.customerPhone}" style="color:var(--accent-gold);">${order.customerPhone}</a></p>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Address:</strong> ${order.customerAddress || order.address || 'N/A'}</p>
+                            <p style="margin:4px 0; font-size:13px; color:var(--text-muted);"><strong>Items:</strong></p>
+                            <ul style="margin:4px 0 8px 15px; font-size:13px; color:#ddd;">${itemsHtml}</ul>
+                            <p style="margin:0; font-size:11px; color:var(--text-muted);">Date: ${order.orderDate || 'Recent'}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                const selectAll = document.getElementById('selectAllCheckbox');
+                if(selectAll) selectAll.checked = false;
+            }).catch(err => {
+                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+            });
+        }
+
+        function toggleSelectAll(master) {
+            const checkboxes = document.querySelectorAll('.order-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+        }
+
+        function deleteSelectedOrders() {
+            const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert("Please select at least one order to delete!");
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete selected ${checkboxes.length} orders?`)) {
+                let promises = [];
+                checkboxes.forEach(cb => {
+                    promises.push(db.collection("orders").doc(cb.value).delete());
+                });
+
+                Promise.all(promises).then(() => {
+                    alert("Selected orders deleted successfully!");
+                    loadOrders();
+                }).catch(err => {
+                    alert("Error deleting orders: " + err.message);
+                });
+            }
+        }
+
+        function convertImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('prodImage').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function convertExtraImages(event) {
+            const files = event.target.files;
+            uploadedExtraImagesArray = [];
+            if (files.length > 0) {
+                document.getElementById('extraImagesPreview').innerText = "Processing images, please wait...";
+                let processed = 0;
+                for (let i = 0; i < files.length; i++) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedExtraImagesArray.push(e.target.result);
+                        processed++;
+                        if (processed === files.length) {
+                            document.getElementById('extraImagesPreview').innerText = `${files.length} extra images attached successfully!`;
+                        }
+                    };
+                    reader.readAsDataURL(files[i]);
+                }
+            }
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('editProdId').value;
+            const title = document.getElementById('prodTitle').value;
+            const price = Number(document.getElementById('prodPrice').value);
+            const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
+            const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
+            const category = document.getElementById('prodCategory').value;
+            const image = document.getElementById('prodImage').value;
+
+            if (!image && !id) {
+                alert("Please upload a main cover image file.");
+                return;
+            }
+
+            const productData = { title, price, colors, sizes, category };
+            if (image) productData.image = image;
+            
+            if (uploadedExtraImagesArray.length > 0) {
+                let mainImg = image || document.getElementById('prodImage').value;
+                productData.images = [mainImg, ...uploadedExtraImagesArray];
+            } else if (!productData.images && image) {
+                productData.images = [image];
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Publishing...";
+            saveBtn.disabled = true;
+
+            if (id) {
+                db.collection("products").doc(id).update(productData).then(() => {
+                    alert("Product updated successfully!");
+                    resetForm();
+                    loadProducts();
+                }).catch(err => {
+                    alert("Error updating: " + err.message);
+                    saveBtn.innerText = "Update Product";
+                    saveBtn.disabled = false;
+                });
+            } else {
+                productData.createdAt = new Date();
+                db.collection("products").add(productData).then(() => {
+                    alert("Product added successfully!");
+                    resetForm();
+                    loadProducts();
+                }).catch(err => {
+                    alert("Error adding: " + err.message);
+                    saveBtn.innerText = "Publish Product";
+                    saveBtn.disabled = false;
+                });
             }
         }
 
@@ -383,11 +550,12 @@
             document.getElementById('addProductForm').reset();
             document.getElementById('editProdId').value = '';
             document.getElementById('prodImage').value = '';
-            document.getElementById('prodExtraImages').value = '';
             document.getElementById('extraImagesPreview').innerText = '';
             uploadedExtraImagesArray = [];
             document.getElementById('formHeading').innerText = "Add New Product";
-            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
+            saveBtn.disabled = false;
             document.getElementById('cancelEditBtn').classList.add('hidden');
             document.getElementById('prodColors').value = "Maroon, Black, Navy Blue, Pink";
             document.getElementById('prodSizes').value = "S, M, L, XL, XXL";
