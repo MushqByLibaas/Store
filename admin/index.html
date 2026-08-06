@@ -108,9 +108,15 @@
                     </select>
                 </div>
                 <div>
-                    <label style="font-size: 12px; color: var(--text-muted);">Upload Image from Device</label>
+                    <label style="font-size: 12px; color: var(--text-muted);">Main Cover Image from Device</label>
                     <input type="file" id="prodImageFile" accept="image/*" onchange="convertImage(event)" style="padding: 8px;">
                     <input type="hidden" id="prodImage">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Additional Slider Images (Select 3-4 Images for Detail Page)</label>
+                    <input type="file" id="prodExtraImagesFiles" accept="image/*" multiple onchange="convertExtraImages(event)" style="padding: 8px;">
+                    <div id="extraImagesPreview" style="font-size: 11px; color: var(--accent-gold); margin-top: 5px;"></div>
+                    <input type="hidden" id="prodExtraImages">
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <button type="submit" id="saveBtn" style="flex: 1;"><i class="fa-solid fa-plus"></i> Publish Product</button>
@@ -140,6 +146,7 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
+        let uploadedExtraImagesArray = [];
 
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('novaAdminAuth') === 'true') {
@@ -257,6 +264,25 @@
             }
         }
 
+        function convertExtraImages(event) {
+            const files = event.target.files;
+            uploadedExtraImagesArray = [];
+            if (files.length > 0) {
+                let processed = 0;
+                for (let i = 0; i < files.length; i++) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedExtraImagesArray.push(e.target.result);
+                        processed++;
+                        if (processed === files.length) {
+                            document.getElementById('extraImagesPreview').innerText = `${files.length} extra images attached successfully!`;
+                        }
+                    };
+                    reader.readAsDataURL(files[i]);
+                }
+            }
+        }
+
         function saveProduct(e) {
             e.preventDefault();
             const id = document.getElementById('editProdId').value;
@@ -268,12 +294,19 @@
             const image = document.getElementById('prodImage').value;
 
             if (!image && !id) {
-                alert("Please upload an image file.");
+                alert("Please upload a main cover image file.");
                 return;
             }
 
             const productData = { title, price, colors, sizes, category };
             if (image) productData.image = image;
+            
+            // Extra images handling (agar nayi select ki hain toh save hongi, warna purani rahengi)
+            if (uploadedExtraImagesArray.length > 0) {
+                // Main image ko bhi extra images array mein pehla item rakh dete hain taaki slider complete bane
+                let fullGallery = [image || document.getElementById('prodImage').value, ...uploadedExtraImagesArray];
+                productData.images = fullGallery;
+            }
 
             if (id) {
                 db.collection("products").doc(id).update(productData).then(() => {
@@ -304,13 +337,14 @@
                 querySnapshot.forEach((doc) => {
                     const p = doc.data();
                     const pData = JSON.stringify({id: doc.id, ...p}).replace(/"/g, '&quot;');
+                    let imgCount = p.images && Array.isArray(p.images) ? p.images.length : 1;
                     html += `
                         <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; gap:15px; align-items:center;">
                                 <img src="${p.image}" style="width:50px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #444;" onerror="this.src='https://via.placeholder.com/50'">
                                 <div>
                                     <h4 style="margin:0; color:var(--accent-gold); font-size:15px;">${p.title}</h4>
-                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price} <span class="tag" style="margin-left:8px; font-size:10px;">${p.category || 'new'}</span></p>
+                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price} <span class="tag" style="margin-left:8px; font-size:10px;">${p.category || 'new'}</span> <span style="font-size:11px; color:#aaa;">(Imgs: ${imgCount})</span></p>
                                     <p style="margin:3px 0; font-size:11px; color:var(--text-muted);">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'} | Sizes: ${p.sizes ? p.sizes.join(', ') : 'N/A'}</p>
                                 </div>
                             </div>
@@ -335,16 +369,23 @@
             document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
             document.getElementById('prodCategory').value = p.category || 'new';
             if(p.image) document.getElementById('prodImage').value = p.image;
+            uploadedExtraImagesArray = p.images || [];
+            if(uploadedExtraImagesArray.length > 0) {
+                document.getElementById('extraImagesPreview').innerText = `${uploadedExtraImagesArray.length} images currently loaded in gallery.`;
+            }
             document.getElementById('formHeading').innerText = "Edit Product";
             document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
             document.getElementById('cancelEditBtn').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-function resetForm() {
+
+        function resetForm() {
             document.getElementById('addProductForm').reset();
             document.getElementById('editProdId').value = '';
             document.getElementById('prodImage').value = '';
+            document.getElementById('prodExtraImages').value = '';
+            document.getElementById('extraImagesPreview').innerText = '';
+            uploadedExtraImagesArray = [];
             document.getElementById('formHeading').innerText = "Add New Product";
             document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
             document.getElementById('cancelEditBtn').classList.add('hidden');
