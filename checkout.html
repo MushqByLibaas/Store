@@ -85,7 +85,7 @@
             <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
 
             <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:10px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
-                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App (Auto Amount)
+                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App
             </a>
 
             <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:6px; text-transform:uppercase;">
@@ -234,11 +234,11 @@
                 modalAmount.innerText = "Amount to Pay: ₹" + baseInrTotal;
                 qrImg.src = "qr.jpg";
                 modalTitle.innerText = "Scan & Pay";
-                modalSubtitle.innerText = "Scan QR or click below to pay automatically.";
+                modalSubtitle.innerText = "Scan QR or click below to open UPI App.";
                 
-                // Automatic Amount UPI Intent Link
+                // Fixed clean UPI intent link without forcing amount parameter to prevent app crashes
                 const merchantUpiID = "mushq@paytm"; 
-                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas&am=${baseInrTotal}&cu=INR&tn=OrderPayment`;
+                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas`;
                 upiLink.style.display = "block";
             }
 
