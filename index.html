@@ -443,7 +443,9 @@
                 Proceed to Checkout ⚡
             </button>
         </div>
-    </div><script>
+    </div>
+
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
@@ -485,7 +487,7 @@
                 let specialHTML = '';
                 let newHTML = '';
 
-                querySnapshot.forEach((doc) => {
+                              querySnapshot.forEach((doc) => {
                     const p = doc.data();
                     const pId = doc.id;
                     const colorsText = p.colors && Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || 'N/A');
@@ -667,4 +669,4 @@
         }
     </script>
 </body>
-</html>
+</html
