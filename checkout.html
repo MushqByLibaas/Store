@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--accent-gold); text-align: center; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--accent-gold); text-align: center; max-height: 90vh; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -80,12 +80,13 @@
             <h3 style="color: var(--accent-gold); margin-top:0;" id="modalTitle">Scan & Pay</h3>
             <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;" id="modalSubtitle">Scan QR or click below to complete payment.</p>
             
-            <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:160px; height:160px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
+            <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:150px; height:150px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
             
             <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
 
-            <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:10px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
-                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App
+            <!-- Auto-Pay UPI App Button -->
+            <a id="upiPayLink" href="#" style="display:block; background:#28a745; color:#fff; text-decoration:none; padding:11px; font-weight:bold; border-radius:6px; margin-bottom:8px; font-size:14px;">
+                <i class="fa-solid fa-mobile-screen-button"></i> Pay via UPI App (Auto Amount)
             </a>
 
             <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:6px; text-transform:uppercase;">
@@ -229,17 +230,17 @@
                 qrImg.src = "saudi-qr.jpg"; 
                 modalTitle.innerText = "Saudi Bank QR Payment";
                 modalSubtitle.innerText = "Scan via STC Pay, Al Rajhi, or Saudi Banking App";
-                upiLink.style.display = "none";
+                upiLink.style.display = "none"; // Hide UPI button for Saudi Arabia
             } else {
                 modalAmount.innerText = "Amount to Pay: ₹" + baseInrTotal;
-                qrImg.src = "qr.jpg";
-                modalTitle.innerText = "Scan & Pay";
-                modalSubtitle.innerText = "Scan QR or click below to open UPI App.";
+                qrImg.src = "qr.jpg"; // Your PhonePe QR image
+                modalTitle.innerText = "Scan & Pay (India)";
+                modalSubtitle.innerText = "Scan QR or click below to pay automatically.";
                 
-                // Fixed clean UPI intent link without forcing amount parameter to prevent app crashes
-                const merchantUpiID = "mushq@paytm"; 
-                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas`;
-                upiLink.style.display = "block";
+                // Your exact PhonePe UPI ID with auto amount integration
+                const merchantUpiID = "rehan65@ybl"; 
+                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=RehanAli&am=${baseInrTotal}&cu=INR&tn=MushqByLibaasOrder`;
+                upiLink.style.display = "block"; // Show Auto-Pay UPI button for India
             }
 
             document.getElementById('paymentModal').style.display = 'flex';
