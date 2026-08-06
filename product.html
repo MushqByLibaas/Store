@@ -13,7 +13,7 @@
     <style>
         .product-detail-container {
             max-width: 1100px;
-            margin: 30px auto;
+            margin: 30px auto 20px auto;
             padding: 20px;
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -124,6 +124,62 @@
             color: #000;
             border: none;
         }
+        /* Similar Products Grid Styles */
+        .similar-container {
+            max-width: 1100px;
+            margin: 0 auto 40px auto;
+            padding: 20px;
+        }
+        .product-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 15px !important;
+            width: 100% !important;
+        }
+        @media (min-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 20px !important;
+            }
+        }
+        .product-card {
+            background: #18181c;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+        }
+        .product-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #111;
+        }
+        @media (min-width: 768px) {
+            .product-card img { height: 220px; }
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin: 8px 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-price {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--accent-gold, #d4af37);
+        }
         @media(max-width: 768px) {
             .product-detail-container {
                 grid-template-columns: 1fr;
@@ -134,13 +190,17 @@
             .main-img-wrap {
                 height: 350px;
             }
+            .similar-container {
+                margin: 0 10px 30px 10px;
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <a href="index.html" class="logo">MUSK BY <span>LIBAAS</span></a>
+        <a href="index.html" class="logo">MUSK BY <span>LIBAAS</span>[span_1](start_span)[span_1](end_span)</a>
         <div class="cart-trigger" onclick="window.location.href='index.html'" style="cursor: pointer;">
             <i class="fa-solid fa-house"></i> Home
         </div>
@@ -150,7 +210,15 @@
         <p style="color: #aaa; text-align: center; grid-column: 1 / -1; padding: 40px;">Loading product details...</p>
     </div>
 
-    <script>
+    <!-- Similar Products & Collection Section -->
+    <div class="similar-container">
+        <h2 style="font-family: 'Cinzel', serif; color: var(--accent-gold, #d4af37); font-size: 18px; margin-bottom: 15px; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">✨ Similar Products & Collection</h2>
+        <div class="product-grid" id="similarProductsGrid">
+            <p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size: 13px; padding: 20px;">Loading collection...</p>
+        </div>
+    </div>
+
+    <script[span_2](start_span)[span_2](end_span)>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
@@ -183,6 +251,7 @@
                 if (doc.exists) {
                     currentProduct = doc.data();
                     renderProduct(currentProduct);
+                    loadSimilarProducts(productId);
                 } else {
                     document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center; grid-column:1/-1;">Product does not exist.</p>';
                 }
@@ -255,6 +324,36 @@
                     </div>
                 </div>
             `;
+        }
+
+        function loadSimilarProducts(currentId) {
+            const grid = document.getElementById('similarProductsGrid');
+            db.collection("products").get().then((snapshot) => {
+                if (snapshot.empty) {
+                    grid.innerHTML = '<p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size:12px;">No other products available.</p>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach((doc) => {
+                    if (doc.id === currentId) return; // Skip current product
+                    const p = doc.data();
+                    const pId = doc.id;
+                    const img = (p.images && p.images[0]) ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
+
+                    html += `
+                        <div class="product-card" onclick="window.location.href='product.html?id=${pId}'">
+                            <img src="${img}" alt="${p.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
+                            <div class="card-title">${p.title}</div>
+                            <div class="card-price">₹${p.price}</div>
+                        </div>
+                    `;
+                });
+
+                grid.innerHTML = html || '<p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size:12px;">No similar products found.</p>';
+            }).catch(err => {
+                grid.innerHTML = `<p style="color:red; text-align:center; grid-column: 1 / -1; font-size:12px;">Error loading collection.</p>`;
+            });
         }
 
         function changeMainImage(imgSrc, thumbElement) {
