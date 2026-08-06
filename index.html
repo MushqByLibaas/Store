@@ -2,40 +2,306 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MushqByLibaas | Exclusive Suits & Party Wear</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mushq By Libaas | Exclusive Luxury Suits & Party Wear</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
+        :root {
+            --bg-primary: #0f0f11;
+            --bg-card: #18181c;
+            --bg-card-hover: #222228;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f3e5ab;
+            --text-color: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: #27272a;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-primary);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .top-bar {
+            background: linear-gradient(90deg, #b89728, var(--accent-gold), #b89728);
+            color: #000;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            padding: 8px 12px;
+            letter-spacing: 0.5px;
+        }
+
         .trust-badges-bar {
-            background: #18181c;
-            border-bottom: 1px solid #333;
+            background: #141417;
+            border-bottom: 1px solid var(--border-color);
             padding: 10px 15px;
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
             gap: 15px;
-            font-size: 13px;
-            color: #ddd;
+            font-size: 11px;
+            color: #d1d5db;
         }
         .trust-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            color: var(--accent-gold, #d4af37);
+            color: var(--accent-gold);
             font-weight: 500;
+        }
+
+        header.header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(15, 15, 17, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 800;
+            letter-spacing: 1px;
         }
         .header-trust {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             font-size: 12px;
-            color: #aaa;
+            color: var(--text-muted);
             align-items: center;
         }
+        .cart-trigger {
+            cursor: pointer;
+            position: relative;
+            background: var(--bg-card);
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .cart-trigger:hover {
+            border-color: var(--accent-gold);
+        }
+        .cart-badge {
+            background: var(--accent-gold);
+            color: #000;
+            padding: 1px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .hero-banner {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=1200') center/cover;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 15px 0 30px 0;
+            border: 1px solid var(--border-color);
+        }
+        .hero-banner h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .hero-banner p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box input:focus {
+            border-color: var(--accent-gold);
+        }
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-family: 'Cinzel', serif;
+            color: #fff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title span {
+            color: var(--accent-gold);
+        }
+
+        .product-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+            width: 100% !important;
+            margin-bottom: 30px;
+        }
+        @media (min-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 20px !important;
+            }
+            .hero-banner { padding: 60px 20px; }
+            .hero-banner h1 { font-size: 32px; }
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            overflow: hidden;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background: var(--bg-card-hover);
+        }
+        .product-card img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #111;
+        }
+        @media (min-width: 768px) {
+            .product-card img { height: 250px; }
+            .product-card { padding: 12px; }
+        }
+        .product-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin: 10px 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .product-price {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 6px;
+        }
+        .product-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .product-btn-group {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .btn-cart {
+            flex: 1;
+            background: #111;
+            color: #fff;
+            border: 1px solid var(--accent-gold);
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 11px;
+            transition: 0.2s;
+        }
+        .btn-cart:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .btn-order {
+            flex: 1;
+            background: var(--accent-gold);
+            border: none;
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 11px;
+            color: #000;
+            transition: 0.2s;
+        }
+        .btn-order:hover {
+            background: var(--accent-gold-light);
+        }
+
+        .reviews-section {
+            padding: 40px 15px;
+            background: #121215;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-gold);
+        }
+
         .floating-whatsapp {
             position: fixed;
             bottom: 25px;
@@ -48,115 +314,109 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            font-size: 26px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
             z-index: 1000;
-            transition: transform 0.2s;
             text-decoration: none;
+            transition: transform 0.2s;
         }
         .floating-whatsapp:hover {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
-        .reviews-section {
-            padding: 40px 20px;
-            background: #111;
-            border-top: 1px solid #333;
-            margin-top: 40px;
+
+        .cart-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; z-index: 1100;
+            backdrop-filter: blur(3px);
         }
-        .reviews-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+        .cart-drawer {
+            position: fixed; top: 0; right: -100%; width: 100%; max-width: 380px;
+            height: 100%; background: var(--bg-card); z-index: 1200;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
+            border-left: 1px solid var(--border-color);
         }
-        .review-card {
-            background: #18181c;
-            border: 1px solid #333;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-gold, #d4af37);
+        .cart-header {
+            padding: 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .product-card {
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
+        .cart-body { flex: 1; overflow-y: auto; padding: 20px; }
+        .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: #121215; }
+
         @media(max-width: 768px) {
             .header-trust { display: none; }
-            .trust-badges-bar { font-size: 11px; padding: 8px; }
         }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
-        ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
+        ✨ PREMIUM LUXURY SUITS & PARTY WEAR COLLECTION | Pan India Express Delivery ✨
     </div>
 
     <div class="trust-badges-bar">
-        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Secure Payments</div>
-        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Pan India Delivery</div>
-        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Quality Checked Products</div>
-        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> WhatsApp Support</div>
+        <div class="trust-item"><i class="fa-solid fa-shield-halved"></i> 100% Secure Checkout</div>
+        <div class="trust-item"><i class="fa-solid fa-truck-fast"></i> Pan India Delivery</div>
+        <div class="trust-item"><i class="fa-solid fa-gem"></i> Premium Quality Checked</div>
     </div>
 
     <header class="header">
-        <a href="index.html" class="logo">MUSK BY <span>LIBAAS</span></a>
+        <a href="index.html" class="logo">MUSHQ BY <span style="color:var(--accent-gold);">LIBAAS</span></a>
         
         <div class="header-trust">
-            <span>🔒 Secure Checkout</span>
-            <span>🚚 Fast Delivery</span>
-            <span>↩️ Easy Support</span>
+            <span>🔒 Verified Store</span>
+            <span>🚚 Fast Shipping</span>
         </div>
 
         <div class="cart-trigger" onclick="toggleCartDrawer()">
-            <i class="fa-solid fa-cart-shopping"></i>
+            <i class="fa-solid fa-cart-shopping" style="color: var(--accent-gold);"></i>
             <span class="cart-badge" id="cartCount">0</span>
         </div>
     </header>
 
     <div class="container">
+        <div class="hero-banner">
+            <h1>Elevate Your Ethnic Style</h1>
+            <p>Discover our exclusive handpicked collection of luxury suits and festive wear.</p>
+        </div>
+
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive..." onkeyup="filterProducts()">
+            <input type="text" id="searchInput" placeholder="Search exclusive suits, festive wear, party styles..." onkeyup="filterProducts()">
         </div>
 
-        <h2 class="section-title">🔥 BEST SELLERS</h2>
+        <h2 class="section-title"><i class="fa-solid fa-fire" style="color: var(--accent-gold);"></i> Best <span>Sellers</span></h2>
         <div class="product-grid" id="bestSellerGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
+            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
         </div>
 
-        <h2 class="section-title" style="margin-top: 40px;">⚡ TRENDING</h2>
+        <h2 class="section-title" style="margin-top: 40px;"><i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> Trending <span>Styles</span></h2>
         <div class="product-grid" id="trendingGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
+            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
         </div>
 
-        <h2 class="section-title" style="margin-top: 40px;">⚡ SPECIAL OFFER</h2>
+        <h2 class="section-title" style="margin-top: 40px;"><i class="fa-solid fa-tags" style="color: var(--accent-gold);"></i> Special <span>Offers</span></h2>
         <div class="product-grid" id="specialGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
+            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
         </div>
 
-        <h2 class="section-title" style="margin-top: 40px;">✨ NEW ARRIVALS</h2>
+        <h2 class="section-title" style="margin-top: 40px;"><i class="fa-solid fa-sparkles" style="color: var(--accent-gold);"></i> New <span>Arrivals</span></h2>
         <div class="product-grid" id="newGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
+            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
         </div>
     </div>
 
     <div class="reviews-section">
-        <h2 style="text-align: center; color: var(--accent-gold, #d4af37); margin-bottom: 25px;">What Our Customers Say</h2>
+        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 25px; font-family: 'Cinzel', serif; font-size: 20px;">Loved By Our Customers</h2>
         <div class="reviews-grid">
             <div class="review-card">
-                <div style="color: #f39c12; margin-bottom: 8px;">⭐⭐⭐⭐⭐</div>
-                <p style="font-size: 14px; color: #ddd; margin-bottom: 10px; font-style: italic;">"Fabric quality amazing."</p>
-                <p style="font-size: 12px; color: var(--accent-gold, #d4af37); font-weight: bold; margin: 0;">– Rahul</p>
+                <div style="color: var(--accent-gold); margin-bottom: 8px; font-size: 13px;">★★★★★</div>
+                <p style="font-size: 13px; color: #e5e7eb; margin-bottom: 10px; font-style: italic;">"The fabric quality is absolute premium. Received exact same piece as shown!"</p>
+                <p style="font-size: 12px; color: var(--accent-gold); font-weight: 600; margin: 0;">– Priya Sharma</p>
             </div>
             <div class="review-card">
-                <div style="color: #f39c12; margin-bottom: 8px;">⭐⭐⭐⭐⭐</div>
-                <p style="font-size: 14px; color: #ddd; margin-bottom: 10px; font-style: italic;">"Received exactly as shown."</p>
-                <p style="font-size: 12px; color: var(--accent-gold, #d4af37); font-weight: bold; margin: 0;">– Aman</p>
+                <div style="color: var(--accent-gold); margin-bottom: 8px; font-size: 13px;">★★★★★</div>
+                <p style="font-size: 13px; color: #e5e7eb; margin-bottom: 10px; font-style: italic;">"Superfast delivery and wonderful fitting. Highly recommended store."</p>
+                <p style="font-size: 12px; color: var(--accent-gold); font-weight: 600; margin: 0;">– Ananya Verma</p>
             </div>
         </div>
     </div>
@@ -168,18 +428,18 @@
     <div class="cart-overlay" id="cartOverlay" onclick="toggleCartDrawer()"></div>
     <div class="cart-drawer" id="cartDrawer">
         <div class="cart-header">
-            <h3>Your Shopping Cart</h3>
-            <button class="close-cart" onclick="toggleCartDrawer()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="margin:0; font-size: 16px; color:#fff; font-family:'Cinzel', serif;">Your Shopping Cart</h3>
+            <button onclick="toggleCartDrawer()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="cart-body" id="cartItemsContainer">
             <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Your cart is empty.</p>
         </div>
         <div class="cart-footer">
-            <div class="cart-total-row">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:600; font-size: 14px;">
                 <span>Subtotal:</span>
-                <span id="cartSubtotal">₹0</span>
+                <span id="cartSubtotal" style="color:var(--accent-gold);">₹0</span>
             </div>
-            <button class="checkout-btn" onclick="proceedToCheckout()">
+            <button onclick="proceedToCheckout()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; border-radius:8px; font-weight:700; cursor:pointer; font-size:14px; transition: 0.2s;">
                 Proceed to Checkout ⚡
             </button>
         </div>
@@ -214,7 +474,7 @@
 
             db.collection("products").get().then((querySnapshot) => {
                 if (querySnapshot.empty) {
-                    const emptyMsg = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding:10px;">No products available.</p>';
+                    const emptyMsg = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding:20px;">No products available in Firebase database.</p>';
                     bestSellerGrid.innerHTML = emptyMsg;
                     trendingGrid.innerHTML = emptyMsg;
                     specialGrid.innerHTML = emptyMsg;
@@ -242,10 +502,10 @@
                             <h3 class="product-title">${p.title}</h3>
                             <div class="product-price">₹${p.price}</div>
                             <div class="product-meta">Colors: ${colorsText}</div>
-                            <div class="product-meta" style="margin-bottom:10px;">Sizes: ${sizesText}</div>
+                            <div class="product-meta" style="margin-bottom:8px;">Sizes: ${sizesText}</div>
                             <div class="product-btn-group" onclick="event.stopPropagation();">
-                                <button onclick="addToCart('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')" style="flex:1; background:var(--input-bg); color:var(--text-color); border:1px solid var(--accent-gold); padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🛒 Add to Cart</button>
-                                <button onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')" style="flex:1; background:var(--accent-gold); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; color:#000;">⚡ Order Now</button>
+                                <button class="btn-cart" onclick="addToCart('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')">🛒 Cart</button>
+                                <button class="btn-order" onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')">⚡ Order</button>
                             </div>
                         </div>
                     `;
@@ -261,13 +521,13 @@
                     }
                 });
 
-                bestSellerGrid.innerHTML = bestSellerHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No best sellers right now.</p>';
-                trendingGrid.innerHTML = trendingHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No trending products.</p>';
-                specialGrid.innerHTML = specialHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No special offers right now.</p>';
-                newGrid.innerHTML = newHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No new arrivals.</p>';
+                bestSellerGrid.innerHTML = bestSellerHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No best sellers.</p>';
+                trendingGrid.innerHTML = trendingHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No trending products.</p>';
+                specialGrid.innerHTML = specialHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No special offers.</p>';
+                newGrid.innerHTML = newHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No new arrivals.</p>';
 
             }).catch((error) => {
-                const errMsg = `<p style="color:red; text-align:center; grid-column: 1 / -1; padding:20px;">Error loading products.</p>`;
+                const errMsg = `<p style="color:red; text-align:center; grid-column: 1 / -1; padding:20px;">Firebase Error: Check database rules/connection.</p>`;
                 bestSellerGrid.innerHTML = errMsg;
                 trendingGrid.innerHTML = errMsg;
                 specialGrid.innerHTML = errMsg;
@@ -290,14 +550,18 @@
             }
             localStorage.setItem('novaCart', JSON.stringify(cart));
             updateCartCount();
+            alert("Product added to cart successfully!");
         }
 
         function toggleCartDrawer() {
             const drawer = document.getElementById('cartDrawer');
             const overlay = document.getElementById('cartOverlay');
-            drawer.classList.toggle('open');
-            overlay.classList.toggle('active');
-            if (drawer.classList.contains('open')) {
+            if (drawer.style.right === '0px') {
+                drawer.style.right = '-100%';
+                overlay.style.display = 'none';
+            } else {
+                drawer.style.right = '0px';
+                overlay.style.display = 'block';
                 renderCartItems();
             }
         }
@@ -321,19 +585,19 @@
                 let itemImg = item.image && item.image !== 'undefined' ? item.image : 'https://via.placeholder.com/50';
                 
                 html += `
-                    <div class="cart-item" style="display: flex; align-items: center; gap: 10px;">
-                        <img src="${itemImg}" alt="" style="width: 55px; height: 55px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/50'">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; background: #141417; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <img src="${itemImg}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/50'">
                         <div style="flex: 1;">
-                            <h4 style="margin:0 0 4px 0; font-size:13px; color:var(--text-color);">${item.title}</h4>
-                            <div style="font-size:12px; color:var(--accent-gold); font-weight:bold;">₹${item.price} x ${item.qty} = ₹${itemTotal}</div>
+                            <h4 style="margin:0 0 3px 0; font-size:12px; color:#fff;">${item.title}</h4>
+                            <div style="font-size:11px; color:var(--accent-gold); font-weight:700;">₹${item.price} x ${item.qty} = ₹${itemTotal}</div>
                         </div>
-                        <div class="qty-controls" style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                            <div style="display: flex; align-items: center; gap: 4px;">
-                                <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
-                                <span style="font-size:12px; font-weight:bold; color:var(--text-color); min-width:14px; text-align:center;">${item.qty}</span>
-                                <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <button onclick="changeQty(${index}, -1)" style="background:#222; color:#fff; border:1px solid #444; width:20px; height:20px; font-size:11px; border-radius:4px; cursor:pointer;">-</button>
+                                <span style="font-size:11px; font-weight:700; color:#fff; min-width:14px; text-align:center;">${item.qty}</span>
+                                <button onclick="changeQty(${index}, 1)" style="background:#222; color:#fff; border:1px solid #444; width:20px; height:20px; font-size:11px; border-radius:4px; cursor:pointer;">+</button>
                             </div>
-                            <button onclick="removeItem(${index})" style="background:transparent; border:none; color:#ff4d4d; cursor:pointer; font-size:12px;"><i class="fa-solid fa-trash"></i> Remove</button>
+                            <button onclick="removeItem(${index})" style="background:transparent; border:none; color:#ef4444; cursor:pointer; font-size:11px;"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -382,7 +646,7 @@
         }
 
         function proceedToCheckout() {
-            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            let cart = JSON.parse(localStorage.getItem('nova_cart')) || JSON.parse(localStorage.getItem('novaCart')) || [];
             if (cart.length === 0) {
                 alert("Your cart is empty!");
                 return;
