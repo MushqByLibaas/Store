@@ -36,10 +36,10 @@
 
             <div style="margin-bottom: 15px;">
                 <label style="display:block; margin-bottom:5px; font-size:13px; color:var(--text-muted);">Select Country</label>
-                <select id="custCountry" required style="width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border-color); color:#fff; border-radius:6px; box-sizing:border-box; font-family:'Poppins', sans-serif;">
-                    <option value="" disabled selected>-- Select your country --</option>
+                <select id="custCountry" required onchange="handleCountryChange()" style="width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border-color); color:#fff; border-radius:6px; box-sizing:border-box; font-family:'Poppins', sans-serif;">
+                    <option value="" disabled>-- Select your country --</option>
                     <option value="India">🇮🇳 India</option>
-                    <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                    <option value="Saudi Arabia" selected>🇸🇦 Saudi Arabia</option>
                     <option value="Dubai">🇦🇪 Dubai</option>
                     <option value="Qatar">🇶🇦 Qatar</option>
                 </select>
@@ -77,10 +77,11 @@
     <!-- PAYMENT MODAL POPUP -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <h3 style="color: var(--accent-gold); margin-top:0;">Scan & Pay</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;">Scan QR or click below to complete payment.</p>
+            <h3 style="color: var(--accent-gold); margin-top:0;" id="modalTitle">Scan & Pay</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;" id="modalSubtitle">Scan QR or click below to complete payment.</p>
             
-            <img src="qr.jpg" alt="Payment QR" style="width:160px; height:160px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
+            <!-- QR Image: Dynamic change hogi Saudi ke liye -->
+            <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:160px; height:160px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
             
             <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
 
@@ -115,8 +116,9 @@
 
         let lat = "";
         let lng = "";
-        let finalTotal = 0;
+        let baseInrTotal = 0;
         let customerData = {};
+        const sarRate = 22; // 1 SAR approx 22 INR (aap apne hisaab se adjust kar sakte hain)
 
         document.addEventListener("DOMContentLoaded", () => {
             const summaryDiv = document.getElementById('checkoutSummary');
@@ -134,13 +136,38 @@
             }
 
             let html = '<ul style="padding-left:15px; margin:0;">';
+            baseInrTotal = 0;
             cart.forEach(item => {
-                finalTotal += Number(item.price) * Number(item.qty);
+                baseInrTotal += Number(item.price) * Number(item.qty);
                 html += `<li style="margin-bottom:5px;">${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
             });
-            html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ₹${finalTotal}</div>`;
+            html += `</ul>`;
             summaryDiv.innerHTML = html;
+            updateSummaryDisplay();
         });
+
+        function handleCountryChange() {
+            updateSummaryDisplay();
+        }
+
+        function updateSummaryDisplay() {
+            const country = document.getElementById('custCountry').value;
+            const summaryDiv = document.getElementById('checkoutSummary');
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+
+            let html = '<ul style="padding-left:15px; margin:0;">';
+            cart.forEach(item => {
+                html += `<li style="margin-bottom:5px;">${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
+            });
+
+            if (country === 'Saudi Arabia') {
+                let sarTotal = (baseInrTotal / sarRate).toFixed(2);
+                html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ${sarTotal} SAR (ر.س)</div>`;
+            } else {
+                html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ₹${baseInrTotal}</div>`;
+            }
+            summaryDiv.innerHTML = html;
+        }
 
         function getLocation() {
             const status = document.getElementById('locationStatus');
@@ -167,15 +194,37 @@
                 address: document.getElementById('custAddress').value
             };
 
-            if (finalTotal <= 0) {
+            if (baseInrTotal <= 0) {
                 alert("Invalid total amount. Please re-select the product.");
                 return;
             }
 
-            document.getElementById('modalAmount').innerText = "Amount to Pay: ₹" + finalTotal;
-            
-            const merchantUpiID = "mushq@paytm"; 
-            document.getElementById('upiPayLink').href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas&am=${finalTotal}&cu=INR`;
+            const country = customerData.country;
+            const modalAmount = document.getElementById('modalAmount');
+            const qrImg = document.getElementById('paymentQrImg');
+            const upiLink = document.getElementById('upiPayLink');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSubtitle = document.getElementById('modalSubtitle');
+
+            if (country === 'Saudi Arabia') {
+                let sarTotal = (baseInrTotal / sarRate).toFixed(2);
+                modalAmount.innerText = "Amount to Pay: " + sarTotal + " SAR";
+                
+                // Yahan apna Saudi bank ka QR image link daal dena (abhi placeholder ya 'saudi-qr.jpg' rakh sakte hain)
+                qrImg.src = "saudi-qr.jpg"; 
+                modalTitle.innerText = "Saudi Bank QR Payment";
+                modalSubtitle.innerText = "Scan via STC Pay, Al Rajhi, or Saudi Banking App";
+                upiLink.style.display = "none"; // UPI hide kar diya kyunki Saudi ke liye bank transfer/QR hai
+            } else {
+                modalAmount.innerText = "Amount to Pay: ₹" + baseInrTotal;
+                qrImg.src = "qr.jpg";
+                modalTitle.innerText = "Scan & Pay";
+                modalSubtitle.innerText = "Scan QR or click below to complete payment.";
+                
+                const merchantUpiID = "mushq@paytm"; 
+                upiLink.href = `upi://pay?pa=${merchantUpiID}&pn=MushqByLibaas&am=${baseInrTotal}&cu=INR`;
+                upiLink.style.display = "block";
+            }
 
             document.getElementById('paymentModal').style.display = 'flex';
         }
@@ -186,15 +235,20 @@
 
         function submitFinalOrder() {
             const cartItems = JSON.parse(localStorage.getItem('novaCart')) || [];
+            const country = customerData.country;
+            
+            let finalDisplayedAmount = (country === 'Saudi Arabia') 
+                ? `${(baseInrTotal / sarRate).toFixed(2)} SAR` 
+                : `₹${baseInrTotal}`;
 
             db.collection("orders").add({
                 customerName: customerData.name,
-                country: customerData.country,
+                country: country,
                 phone: customerData.phone,
                 address: customerData.address,
                 location: { latitude: lat || 'Not shared', longitude: lng || 'Not shared' },
                 items: cartItems,
-                totalAmount: finalTotal,
+                totalAmount: finalDisplayedAmount,
                 paymentStatus: "Pending Verification",
                 status: "Pending Confirmation",
                 orderDate: new Date().toLocaleString()
