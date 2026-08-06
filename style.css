@@ -294,3 +294,16 @@ body {
     cursor: pointer;
     border: none;
 }
+.main-img-wrap {
+    background: #0b0b0d !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.main-img-wrap img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #0b0b0d !important;
+}
