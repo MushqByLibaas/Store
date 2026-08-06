@@ -77,13 +77,26 @@
     <!-- PAYMENT MODAL POPUP -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <h3 style="color: var(--accent-gold); margin-top:0;" id="modalTitle">Scan & Pay</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;" id="modalSubtitle">Scan QR using PhonePe, GPay, or Paytm.</p>
+            <h3 style="color: var(--accent-gold); margin-top:0;" id="modalTitle">Complete Payment</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;" id="modalSubtitle">Scan QR or choose app to pay.</p>
             
-            <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:170px; height:170px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
+            <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:150px; height:150px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:10px;">
             
-            <div id="modalAmount" style="font-size: 18px; font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;">Amount to Pay: ₹0</div>
+            <div id="modalAmount" style="font-size: 17px; font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;">Amount to Pay: ₹0</div>
             <div style="font-size: 12px; color: #bbb; margin-bottom: 12px;">UPI ID: <b style="color:#fff;">rehan65@ybl</b></div>
+
+            <!-- Direct Redirect Buttons for India -->
+            <div id="indiaRedirectButtons" style="display:none; flex-direction:column; gap:8px; margin-bottom:10px;">
+                <a id="phonepeBtn" href="#" style="background:#5f259f; color:#fff; text-decoration:none; padding:10px; border-radius:6px; font-weight:bold; font-size:13px; display:block;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Pay via PhonePe
+                </a>
+                <a id="gpayBtn" href="#" style="background:#1a73e8; color:#fff; text-decoration:none; padding:10px; border-radius:6px; font-weight:bold; font-size:13px; display:block;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Pay via Google Pay
+                </a>
+                <a id="paytmBtn" href="#" style="background:#00b9f1; color:#000; text-decoration:none; padding:10px; border-radius:6px; font-weight:bold; font-size:13px; display:block;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Pay via Paytm
+                </a>
+            </div>
 
             <button onclick="submitFinalOrder()" style="width:100%; background:var(--accent-gold); color:#000; border:none; padding:12px; font-weight:bold; border-radius:6px; cursor:pointer; margin-bottom:6px; text-transform:uppercase;">
                 <i class="fa-solid fa-circle-check"></i> I Have Paid - Submit Order
@@ -216,6 +229,7 @@
             const qrImg = document.getElementById('paymentQrImg');
             const modalTitle = document.getElementById('modalTitle');
             const modalSubtitle = document.getElementById('modalSubtitle');
+            const indiaRedirectButtons = document.getElementById('indiaRedirectButtons');
 
             if (country === 'Saudi Arabia') {
                 let productSar = baseInrTotal / sarRate;
@@ -225,11 +239,20 @@
                 qrImg.src = "saudi-qr.jpg"; 
                 modalTitle.innerText = "Saudi Bank QR Payment";
                 modalSubtitle.innerText = "Scan via STC Pay, Al Rajhi, or Saudi Banking App";
+                indiaRedirectButtons.style.display = "none";
             } else {
                 modalAmount.innerText = "Amount to Pay: ₹" + baseInrTotal;
                 qrImg.src = "qr.jpg"; 
                 modalTitle.innerText = "Scan & Pay (India)";
-                modalSubtitle.innerText = "Scan QR using PhonePe, GPay, or Paytm";
+                modalSubtitle.innerText = "Scan QR or click below to open your preferred UPI App.";
+                
+                // Clean UPI pay links for apps redirection (without forced amount to avoid security declines)
+                const upiUrl = `upi://pay?pa=rehan65@ybl&pn=RehanAli`;
+                document.getElementById('phonepeBtn').href = `phonepe://pay?pa=rehan65@ybl&pn=RehanAli`;
+                document.getElementById('gpayBtn').href = `tez://upi/pay?pa=rehan65@ybl&pn=RehanAli`;
+                document.getElementById('paytmioBtn')?.href || (document.getElementById('paytmBtn').href = `paytmmp://pay?pa=rehan65@ybl&pn=RehanAli`);
+                
+                indiaRedirectButtons.style.display = "flex";
             }
 
             document.getElementById('paymentModal').style.display = 'flex';
