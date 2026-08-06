@@ -2,259 +2,133 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MushqByLibaas | Exclusive Suits & Party Wear</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mushq By Libaas - Advanced Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <link rel="stylesheet" href="style.css">
     <style>
-        * { box-sizing: border-box; }
-        body {
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-            background: var(--bg-primary, #0b0b0d);
-            color: var(--text-color, #fff);
-            font-family: 'Poppins', sans-serif;
+        :root {
+            --bg-primary: #0b0b0d;
+            --card-bg: #18181c;
+            --accent-gold: #d4af37;
+            --text-color: #fff;
+            --text-muted: #aaa;
+            --border-color: #333;
+            --input-bg: #111;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px 12px;
-        }
-        /* Professional 2-Column Grid for Mobile, 4 for Desktop */
-        .product-grid {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
-            width: 100% !important;
-            margin-bottom: 20px;
-        }
-        @media (min-width: 768px) {
-            .product-grid {
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 20px !important;
-            }
-        }
-        .product-card {
-            background: #18181c;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            width: 100%;
-            overflow: hidden;
-        }
-        .product-card:hover {
-            transform: translateY(-4px);
-        }
-        .product-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 6px;
-            background: #111;
-        }
-        @media (min-width: 768px) {
-            .product-card img { height: 240px; }
-            .product-card { padding: 12px; }
-        }
-        .product-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-            margin: 6px 0 2px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .product-price {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--accent-gold, #d4af37);
-            margin-bottom: 4px;
-        }
-        .product-meta {
-            font-size: 10px;
-            color: #aaa;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .product-btn-group {
-            display: flex;
-            gap: 4px;
-            margin-top: 8px;
-        }
-        .trust-badges-bar {
-            background: #18181c;
-            border-bottom: 1px solid #333;
-            padding: 8px 10px;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 10px;
-            font-size: 11px;
-            color: #ddd;
-        }
-        .trust-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--accent-gold, #d4af37);
-            font-weight: 500;
-        }
-        .header-trust {
-            display: flex;
-            gap: 15px;
-            font-size: 12px;
-            color: #aaa;
-            align-items: center;
-        }
-        .floating-whatsapp {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #25d366;
-            color: #fff;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            z-index: 1000;
-            text-decoration: none;
-        }
-        .reviews-section {
-            padding: 30px 15px;
-            background: #111;
-            border-top: 1px solid #333;
-            margin-top: 30px;
-        }
-        .reviews-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .review-card {
-            background: #18181c;
-            border: 1px solid #333;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-gold, #d4af37);
-        }
-        @media(max-width: 768px) {
-            .header-trust { display: none; }
-        }
+        body { background: var(--bg-primary); color: var(--text-color); font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
+        .login-box, .admin-container { max-width: 1000px; margin: 20px auto; background: var(--card-bg); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
+        input, textarea, select { width: 100%; padding: 10px 12px; margin: 8px 0 15px 0; background: var(--input-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        button { background: var(--accent-gold); color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tab-btn { background: #222; color: #fff; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
+        .card { background: #111; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 15px; border-radius: 6px; }
+        .hidden { display: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .tag { background: #222; padding: 3px 8px; border-radius: 4px; font-size: 12px; color: #fff; border: 1px solid #444; display: inline-block; margin-right: 5px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar" style="font-size: 11px; text-align: center; padding: 6px;">
-        ✨ NO EXCHANGE / NO RETURN / NO CANCELLATION | Pan India Delivery ✨
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-box">
+        <h2 style="color: var(--accent-gold); text-align: center; margin-bottom: 20px;">Mushq By Libaas - Admin Portal</h2>
+        <label style="font-size: 13px; color: var(--text-muted);">Admin Password</label>
+        <input type="password" id="adminPass" placeholder="Enter password...">
+        <button onclick="checkLogin()" style="width: 100%; margin-top: 10px;">Login to Panel</button>
     </div>
 
-    <div class="trust-badges-bar">
-        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Secure Payments</div>
-        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Pan India Delivery</div>
-        <div class="trust-item"><i class="fa-solid fa-circle-check"></i> Quality Checked</div>
-    </div>
-
-    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #18181c; border-bottom: 1px solid #333;">
-        <a href="index.html" class="logo" style="font-family: 'Cinzel', serif; font-size: 18px; color: #fff; text-decoration: none; font-weight: bold;">MUSK BY <span style="color:var(--accent-gold, #d4af37);">LIBAAS</span></a>
-        
-        <div class="header-trust">
-            <span>🔒 Secure Checkout</span>
-            <span>🚚 Fast Delivery</span>
+    <!-- Admin Panel Container -->
+    <div id="adminPanel" class="admin-container hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 id="panelTitle" style="color: var(--accent-gold); margin: 0;">Admin Dashboard</h2>
+            <button onclick="logoutAdmin()" style="background: #333; color: #fff; padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
 
-        <div class="cart-trigger" onclick="toggleCartDrawer()" style="cursor: pointer; position: relative; background: #222; padding: 8px 12px; border-radius: 6px; border: 1px solid #444;">
-            <i class="fa-solid fa-cart-shopping" style="color: var(--accent-gold, #d4af37);"></i>
-            <span class="cart-badge" id="cartCount" style="background: var(--accent-gold, #d4af37); color: #000; padding: 1px 5px; border-radius: 10px; font-size: 11px; font-weight: bold;">0</span>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="search-box" style="position: relative; margin: 15px 0 25px 0;">
-            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 14px; color: #777;"></i>
-            <input type="text" id="searchInput" placeholder="Search Suits, Party Wear, Festive..." onkeyup="filterProducts()" style="width: 100%; padding: 12px 12px 12px 40px; background: #18181c; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 13px; outline: none;">
+        <!-- Navigation Tabs -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="btnOrdersTab" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Live Orders</button>
+            <button class="tab-btn" id="btnProductsTab" onclick="switchTab('productsTab', this)"><i class="fa-solid fa-shirt"></i> Manage Products</button>
         </div>
 
-        <h2 class="section-title" style="font-size: 16px; color: var(--accent-gold, #d4af37); margin-bottom: 12px; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">🔥 BEST SELLERS</h2>
-        <div class="product-grid" id="bestSellerGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
-        </div>
-
-        <h2 class="section-title" style="font-size: 16px; color: var(--accent-gold, #d4af37); margin: 30px 0 12px 0; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">⚡ TRENDING</h2>
-        <div class="product-grid" id="trendingGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
-        </div>
-
-        <h2 class="section-title" style="font-size: 16px; color: var(--accent-gold, #d4af37); margin: 30px 0 12px 0; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">⚡ SPECIAL OFFER</h2>
-        <div class="product-grid" id="specialGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
-        </div>
-
-        <h2 class="section-title" style="font-size: 16px; color: var(--accent-gold, #d4af37); margin: 30px 0 12px 0; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">✨ NEW ARRIVALS</h2>
-        <div class="product-grid" id="newGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 15px;">Loading...</p>
-        </div>
-    </div>
-
-    <div class="reviews-section">
-        <h2 style="text-align: center; color: var(--accent-gold, #d4af37); margin-bottom: 20px; font-size: 18px;">What Our Customers Say</h2>
-        <div class="reviews-grid">
-            <div class="review-card">
-                <div style="color: #f39c12; margin-bottom: 6px; font-size: 12px;">⭐⭐⭐⭐⭐</div>
-                <p style="font-size: 13px; color: #ddd; margin-bottom: 8px; font-style: italic;">"Fabric quality amazing."</p>
-                <p style="font-size: 11px; color: var(--accent-gold, #d4af37); font-weight: bold; margin: 0;">– Rahul</p>
+        <!-- TAB 1: LIVE ORDERS -->
+        <div id="ordersTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="color: #fff; margin: 0;">Customer Orders</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <label style="cursor: pointer; font-size: 13px; color: #ddd; display: flex; align-items: center; gap: 6px;">
+                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" style="width: 16px; height: 16px; margin:0; accent-color: var(--accent-gold);"> Select All
+                    </label>
+                    <button onclick="deleteSelectedOrders()" style="background: #c0392b; color: #fff; padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+                    <button onclick="loadOrders()" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                </div>
             </div>
-            <div class="review-card">
-                <div style="color: #f39c12; margin-bottom: 6px; font-size: 12px;">⭐⭐⭐⭐⭐</div>
-                <p style="font-size: 13px; color: #ddd; margin-bottom: 8px; font-style: italic;">"Received exactly as shown."</p>
-                <p style="font-size: 11px; color: var(--accent-gold, #d4af37); font-weight: bold; margin: 0;">– Aman</p>
+            <div id="ordersContainer">
+                <p style="color: var(--text-muted);">Loading orders...</p>
             </div>
         </div>
-    </div>
 
-    <a href="https://wa.me/966571116528?text=Hello%20Mushq%20By%20Libaas,%20I%20want%20to%20know%20more%20about%20your%20products." target="_blank" class="floating-whatsapp" title="Chat on WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
+        <!-- TAB 2: MANAGE PRODUCTS -->
+        <div id="productsTab" class="tab-content hidden">
+            <h3 id="formHeading" style="color: #fff; margin-bottom: 15px;">Add New Product</h3>
+            <form id="addProductForm" onsubmit="saveProduct(event)" style="background: #111; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 30px;">
+                <input type="hidden" id="editProdId">
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Product Title / Name</label>
+                        <input type="text" id="prodTitle" required placeholder="e.g. Maroon Designer Suit">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Price (₹)</label>
+                        <input type="number" id="prodPrice" required placeholder="e.g. 2499">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Available Colors (Auto-filled)</label>
+                        <input type="text" id="prodColors" value="Maroon, Black, Navy Blue, Pink">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Available Sizes (Auto-filled)</label>
+                        <input type="text" id="prodSizes" value="S, M, L, XL, XXL">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Select Product Section / Category (Collection)</label>
+                    <select id="prodCategory">
+                        <option value="new">New Arrivals</option>
+                        <option value="trending">Trending</option>
+                        <option value="special">Special Offer</option>
+                        <option value="bestseller">Best Seller</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Main Cover Image from Device (Auto 1000x1000)</label>
+                    <input type="file" id="prodImageFile" accept="image/*" onchange="convertImage(event)" style="padding: 8px;">
+                    <input type="hidden" id="prodImage">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Additional Slider Images (Select 3-4 Images for Detail Page)</label>
+                    <input type="file" id="prodExtraImagesFiles" accept="image/*" multiple onchange="convertExtraImages(event)" style="padding: 8px;">
+                    <div id="extraImagesPreview" style="font-size: 11px; color: var(--accent-gold); margin-top: 5px;"></div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" id="saveBtn" style="flex: 1;"><i class="fa-solid fa-plus"></i> Publish Product</button>
+                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="hidden" style="background:#444; color:#fff; width:120px;">Cancel</button>
+                </div>
+            </form>
 
-    <!-- Cart Drawer & Overlay Setup -->
-    <div class="cart-overlay" id="cartOverlay" onclick="toggleCartDrawer()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; z-index:1100;"></div>
-    <div class="cart-drawer" id="cartDrawer" style="position:fixed; top:0; right:-100%; width:100%; max-width:350px; height:100%; background:#18181c; z-index:1200; transition:0.3s ease; display:flex; flex-direction:column; border-left:1px solid #333;">
-        <div class="cart-header" style="padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin:0; font-size: 16px; color:#fff;">Your Shopping Cart</h3>
-            <button onclick="toggleCartDrawer()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="cart-body" id="cartItemsContainer" style="flex:1; overflow-y:auto; padding: 15px;">
-            <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Your cart is empty.</p>
-        </div>
-        <div class="cart-footer" style="padding: 15px; border-top: 1px solid #333; background: #111;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-weight:bold; font-size: 14px;">
-                <span>Subtotal:</span>
-                <span id="cartSubtotal" style="color:var(--accent-gold, #d4af37);">₹0</span>
+            <h3 style="color: #fff; margin-bottom: 15px;">Existing Store Products</h3>
+            <div id="productsContainer">
+                <p style="color: var(--text-muted);">Loading products...</p>
             </div>
-            <button onclick="proceedToCheckout()" style="width:100%; background:var(--accent-gold, #d4af37); color:#000; border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:14px;">
-                Proceed to Checkout ⚡
-            </button>
         </div>
-    </div>
-
-    <script>
+    </div><script>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
@@ -269,212 +143,319 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
+        let uploadedExtraImagesArray = [];
 
-        document.addEventListener("DOMContentLoaded", () => {
-            updateCartCount();
-            loadLiveProducts();
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('novaAdminAuth') === 'true') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                
+                const savedTab = localStorage.getItem('novaActiveTab') || 'ordersTab';
+                const activeBtnId = savedTab === 'productsTab' ? 'btnProductsTab' : 'btnOrdersTab';
+                switchTab(savedTab, document.getElementById(activeBtnId), false);
+
+                loadOrders();
+                loadProducts();
+            }
         });
 
-        function loadLiveProducts() {
-            const bestSellerGrid = document.getElementById('bestSellerGrid');
-            const trendingGrid = document.getElementById('trendingGrid');
-            const specialGrid = document.getElementById('specialGrid');
-            const newGrid = document.getElementById('newGrid');
+        function checkLogin() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === 'mushq123') {
+                localStorage.setItem('novaAdminAuth', 'true');
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                switchTab('ordersTab', document.getElementById('btnOrdersTab'), false);
+                loadOrders();
+                loadProducts();
+            } else {
+                alert('Wrong Password!');
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('novaAdminAuth');
+            localStorage.removeItem('novaActiveTab');
+            location.reload();
+        }
+
+        function switchTab(tabId, btn, save = true) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            if(btn) btn.classList.add('active');
+            if(save) {
+                localStorage.setItem('novaActiveTab', tabId);
+            }
+        }
+
+        function loadOrders() {
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '<p style="color: var(--text-muted);">Fetching orders...</p>';
+
+            db.collection("orders").get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No orders found yet.</p>';
+                    return;
+                }
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const order = doc.data();
+                    const orderId = doc.id;
+                    let itemsHtml = '';
+                    if (order.items && Array.isArray(order.items)) {
+                        order.items.forEach(item => {
+                            itemsHtml += `<li>${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
+                        });
+                    }
+                    html += `
+                        <div class="card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; color:var(--accent-gold); border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <input type="checkbox" class="order-checkbox" value="${orderId}" style="width:16px; height:16px; margin:0; accent-color:var(--accent-gold);">
+                                    <span>Customer: ${order.customerName || 'N/A'}</span>
+                                </div>
+                                <span class="tag">₹${order.totalAmount || 0}</span>
+                            </div>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Phone:</strong> <a href="tel:${order.customerPhone}" style="color:var(--accent-gold);">${order.customerPhone}</a></p>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Address:</strong> ${order.customerAddress || order.address || 'N/A'}</p>
+                            <p style="margin:4px 0; font-size:13px; color:var(--text-muted);"><strong>Items:</strong></p>
+                            <ul style="margin:4px 0 8px 15px; font-size:13px; color:#ddd;">${itemsHtml}</ul>
+                            <p style="margin:0; font-size:11px; color:var(--text-muted);">Date: ${order.orderDate || 'Recent'}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                const selectAll = document.getElementById('selectAllCheckbox');
+                if(selectAll) selectAll.checked = false;
+            }).catch(err => {
+                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+            });
+        }
+
+        function toggleSelectAll(master) {
+            const checkboxes = document.querySelectorAll('.order-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+        }
+
+        function deleteSelectedOrders() {
+            const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert("Please select at least one order to delete!");
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete selected ${checkboxes.length} orders?`)) {
+                let promises = [];
+                checkboxes.forEach(cb => {
+                    promises.push(db.collection("orders").doc(cb.value).delete());
+                });
+
+                Promise.all(promises).then(() => {
+                    alert("Selected orders deleted successfully!");
+                    loadOrders();
+                }).catch(err => {
+                    alert("Error deleting orders: " + err.message);
+                });
+            }
+        }
+
+        // Image Resizer to 1000x1000 Exact Square
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1000;
+                    canvas.height = 1000;
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, 1000, 1000);
+
+                    let width = img.width;
+                    let height = img.height;
+                    let targetWidth = 1000;
+                    let targetHeight = 1000;
+                    let offsetX = 0;
+                    let offsetY = 0;
+
+                    if (width > height) {
+                        targetHeight = (height / width) * 1000;
+                        offsetY = (1000 - targetHeight) / 2;
+                    } else {
+                        targetWidth = (width / height) * 1000;
+                        offsetX = (1000 - targetWidth) / 2;
+                    }
+
+                    ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    callback(dataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function convertImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                compressImage(file, function(compressedDataUrl) {
+                    document.getElementById('prodImage').value = compressedDataUrl;
+                });
+            }
+        }
+
+        function convertExtraImages(event) {
+            const files = event.target.files;
+            uploadedExtraImagesArray = [];
+            if (files.length > 0) {
+                document.getElementById('extraImagesPreview').innerText = "Resizing images to 1000x1000, please wait...";
+                let processed = 0;
+                for (let i = 0; i < files.length; i++) {
+                    compressImage(files[i], function(compressedDataUrl) {
+                        uploadedExtraImagesArray.push(compressedDataUrl);
+                        processed++;
+                        if (processed === files.length) {
+                            document.getElementById('extraImagesPreview').innerText = `${files.length} extra images resized & attached successfully!`;
+                        }
+                    });
+                }
+            }
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('editProdId').value;
+            const title = document.getElementById('prodTitle').value;
+            const price = Number(document.getElementById('prodPrice').value);
+            const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
+            const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
+            const category = document.getElementById('prodCategory').value;
+            const image = document.getElementById('prodImage').value;
+
+            if (!image && !id) {
+                alert("Please upload a main cover image file.");
+                return;
+            }
+
+            const productData = { title, price, colors, sizes, category };
+            if (image) productData.image = image;
+            
+            if (uploadedExtraImagesArray.length > 0) {
+                let mainImg = image || document.getElementById('prodImage').value;
+                productData.images = [mainImg, ...uploadedExtraImagesArray];
+            } else if (!productData.images && image) {
+                productData.images = [image];
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Publishing...";
+            saveBtn.disabled = true;
+
+            if (id) {
+                db.collection("products").doc(id).update(productData).then(() => {
+                    alert("Product updated successfully!");
+                    resetForm();
+                    loadProducts();
+                }).catch(err => {
+                    alert("Error updating: " + err.message);
+                    saveBtn.innerText = "Update Product";
+                    saveBtn.disabled = false;
+                });
+            } else {
+                productData.createdAt = new Date();
+                db.collection("products").add(productData).then(() => {
+                    alert("Product added successfully!");
+                    resetForm();
+                    loadProducts();
+                }).catch(err => {
+                    alert("Error adding: " + err.message);
+                    saveBtn.innerText = "Publish Product";
+                    saveBtn.disabled = false;
+                });
+            }
+        }
+
+        function loadProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<p style="color: var(--text-muted);">Loading products...</p>';
 
             db.collection("products").get().then((querySnapshot) => {
                 if (querySnapshot.empty) {
-                    const emptyMsg = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding:10px;">No products available.</p>';
-                    bestSellerGrid.innerHTML = emptyMsg;
-                    trendingGrid.innerHTML = emptyMsg;
-                    specialGrid.innerHTML = emptyMsg;
-                    newGrid.innerHTML = emptyMsg;
+                    container.innerHTML = '<p style="color: var(--text-muted);">No custom products found in database.</p>';
                     return;
                 }
-
-                let bestSellerHTML = '';
-                let trendingHTML = '';
-                let specialHTML = '';
-                let newHTML = '';
-
+                let html = '';
                 querySnapshot.forEach((doc) => {
                     const p = doc.data();
-                    const pId = doc.id;
-                    const colorsText = p.colors && Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || 'N/A');
-                    const sizesText = p.sizes && Array.isArray(p.sizes) ? p.sizes.join(', ') : (p.sizes || 'N/A');
-                    const safeImage = p.image || 'https://via.placeholder.com/300';
-                    const category = (p.category || 'new').toLowerCase();
-                    const titleLower = p.title.toLowerCase();
-                    
-                    const cardContent = `
-                        <div class="product-card" data-title="${titleLower}" onclick="openProductDetail('${pId}')">
-                            <img src="${safeImage}" alt="Suit" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
-                            <h3 class="product-title">${p.title}</h3>
-                            <div class="product-price">₹${p.price}</div>
-                            <div class="product-meta">Colors: ${colorsText}</div>
-                            <div class="product-meta" style="margin-bottom:6px;">Sizes: ${sizesText}</div>
-                            <div class="product-btn-group" onclick="event.stopPropagation();">
-                                <button onclick="addToCart('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')" style="flex:1; background:#111; color:#fff; border:1px solid var(--accent-gold, #d4af37); padding:6px 2px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:10px;">🛒 Cart</button>
-                                <button onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')" style="flex:1; background:var(--accent-gold, #d4af37); border:none; padding:6px 2px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:10px; color:#000;">⚡ Order</button>
+                    const pData = JSON.stringify({id: doc.id, ...p}).replace(/"/g, '&quot;');
+                    let imgCount = p.images && Array.isArray(p.images) ? p.images.length : 1;
+                    html += `
+                        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:15px; align-items:center;">
+                                <img src="${p.image}" style="width:50px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #444;" onerror="this.src='https://via.placeholder.com/50'">
+                                <div>
+                                    <h4 style="margin:0; color:var(--accent-gold); font-size:15px;">${p.title}</h4>
+                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price} <span class="tag" style="margin-left:8px; font-size:10px;">${p.category || 'new'}</span> <span style="font-size:11px; color:#aaa;">(Imgs: ${imgCount})</span></p>
+                                    <p style="margin:3px 0; font-size:11px; color:var(--text-muted);">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'} | Sizes: ${p.sizes ? p.sizes.join(', ') : 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button onclick="editProduct(${pData})" style="background:#333; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:8px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteProduct('${doc.id}')" style="background:#ff4d4d; color:#fff; padding:8px 12px; font-size:12px;"><i class="fa-solid fa-trash"></i> Delete</button>
                             </div>
                         </div>
                     `;
-
-                    if (category.includes('bestseller') || category.includes('best')) {
-                        bestSellerHTML += cardContent;
-                    } else if (category.includes('trending')) {
-                        trendingHTML += cardContent;
-                    } else if (category.includes('special') || category.includes('offer')) {
-                        specialHTML += cardContent;
-                    } else {
-                        newHTML += cardContent; 
-                    }
                 });
-
-                bestSellerGrid.innerHTML = bestSellerHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No best sellers right now.</p>';
-                trendingGrid.innerHTML = trendingHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No trending products.</p>';
-                specialGrid.innerHTML = specialHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No special offers right now.</p>';
-                newGrid.innerHTML = newHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No new arrivals.</p>';
-
-            }).catch((error) => {
-                const errMsg = `<p style="color:red; text-align:center; grid-column: 1 / -1; padding:20px;">Error loading products.</p>`;
-                bestSellerGrid.innerHTML = errMsg;
-                trendingGrid.innerHTML = errMsg;
-                specialGrid.innerHTML = errMsg;
-                newGrid.innerHTML = errMsg;
+                container.innerHTML = html;
+            }).catch(err => {
+                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
             });
         }
 
-        function openProductDetail(productId) {
-            window.location.href = `product.html?id=${productId}`;
-        }
-
-        function addToCart(title, price, image) {
-            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
-            let existing = cart.find(item => item.title === title);
-            if (existing) {
-                existing.qty += 1;
-                existing.image = image;
-            } else {
-                cart.push({ title: title, price: price, image: image, qty: 1 });
+        function editProduct(p) {
+            document.getElementById('editProdId').value = p.id;
+            document.getElementById('prodTitle').value = p.title;
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
+            document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
+            document.getElementById('prodCategory').value = p.category || 'new';
+            if(p.image) document.getElementById('prodImage').value = p.image;
+            uploadedExtraImagesArray = p.images || [];
+            if(uploadedExtraImagesArray.length > 0) {
+                document.getElementById('extraImagesPreview').innerText = `${uploadedExtraImagesArray.length} images currently loaded in gallery.`;
             }
-            localStorage.setItem('novaCart', JSON.stringify(cart));
-            updateCartCount();
-            alert("Product added to cart successfully!");
+            document.getElementById('formHeading').innerText = "Edit Product";
+            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function toggleCartDrawer() {
-            const drawer = document.getElementById('cartDrawer');
-            const overlay = document.getElementById('cartOverlay');
-            if (drawer.style.right === '0px') {
-                drawer.style.right = '-100%';
-                overlay.style.display = 'none';
-            } else {
-                drawer.style.right = '0px';
-                overlay.style.display = 'block';
-                renderCartItems();
+        function resetForm() {
+            document.getElementById('addProductForm').reset();
+            document.getElementById('editProdId').value = '';
+            document.getElementById('prodImage').value = '';
+            document.getElementById('extraImagesPreview').innerText = '';
+            uploadedExtraImagesArray = [];
+            document.getElementById('formHeading').innerText = "Add New Product";
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
+            saveBtn.disabled = false;
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('prodColors').value = "Maroon, Black, Navy Blue, Pink";
+            document.getElementById('prodSizes').value = "S, M, L, XL, XXL";
+            document.getElementById('prodCategory').value = "new";
+        }
+
+        function deleteProduct(id) {
+            if (confirm("Are you sure you want to delete this product?")) {
+                db.collection("products").doc(id).delete().then(() => {
+                    alert("Product deleted successfully!");
+                    loadProducts();
+                }).catch(err => alert("Error deleting: " + err.message));
             }
-        }
-
-        function renderCartItems() {
-            const container = document.getElementById('cartItemsContainer');
-            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
-            
-            if (cart.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Your cart is empty.</p>';
-                document.getElementById('cartSubtotal').innerText = '₹0';
-                return;
-            }
-
-            let html = '';
-            let subtotal = 0;
-
-            cart.forEach((item, index) => {
-                let itemTotal = item.price * item.qty;
-                subtotal += itemTotal;
-                let itemImg = item.image && item.image !== 'undefined' ? item.image : 'https://via.placeholder.com/50';
-                
-                html += `
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; background: #111; padding: 8px; border-radius: 6px;">
-                        <img src="${itemImg}" alt="" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #333;" onerror="this.src='https://via.placeholder.com/50'">
-                        <div style="flex: 1;">
-                            <h4 style="margin:0 0 2px 0; font-size:11px; color:#fff;">${item.title}</h4>
-                            <div style="font-size:11px; color:var(--accent-gold, #d4af37); font-weight:bold;">₹${item.price} x ${item.qty} = ₹${itemTotal}</div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-                            <div style="display: flex; align-items: center; gap: 4px;">
-                                <button onclick="changeQty(${index}, -1)" style="background:#222; color:#fff; border:1px solid #444; width:18px; height:18px; font-size:10px; cursor:pointer;">-</button>
-                                <span style="font-size:11px; font-weight:bold; color:#fff; min-width:12px; text-align:center;">${item.qty}</span>
-                                <button onclick="changeQty(${index}, 1)" style="background:#222; color:#fff; border:1px solid #444; width:18px; height:18px; font-size:10px; cursor:pointer;">+</button>
-                            </div>
-                            <button onclick="removeItem(${index})" style="background:transparent; border:none; color:#ff4d4d; cursor:pointer; font-size:10px;"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-            document.getElementById('cartSubtotal').innerText = '₹' + subtotal;
-        }
-
-        function changeQty(index, delta) {
-            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
-            if (cart[index]) {
-                cart[index].qty += delta;
-                if (cart[index].qty <= 0) {
-                    cart.splice(index, 1);
-                }
-            }
-            localStorage.setItem('novaCart', JSON.stringify(cart));
-            updateCartCount();
-            renderCartItems();
-        }
-
-        function removeItem(index) {
-            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
-            cart.splice(index, 1);
-            localStorage.setItem('novaCart', JSON.stringify(cart));
-            updateCartCount();
-            renderCartItems();
-        }
-
-        function updateCartCount() {
-            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
-            let totalCount = cart.reduce((sum, item) => sum + Number(item.qty), 0);
-            document.getElementById('cartCount').innerText = totalCount;
-        }
-
-        function directOrder(title, price, image) {
-            const buyNowItem = [{
-                title: title,
-                price: price,
-                image: image,
-                qty: 1
-            }];
-            localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
-            window.location.href = 'checkout.html';
-        }
-
-        function proceedToCheckout() {
-            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
-            if (cart.length === 0) {
-                alert("Your cart is empty!");
-                return;
-            }
-            window.location.href = 'checkout.html';
-        }
-
-        function filterProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.product-card');
-
-            cards.forEach(card => {
-                const title = card.getAttribute('data-title');
-                if (title.includes(query)) {
-                    card.style.display = "";
-                } else {
-                    card.style.display = "none";
-                }
-            });
         }
     </script>
 </body>
