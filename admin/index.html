@@ -3,246 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - MuskByLibaas</title>
-    <!-- Cropper.js CSS for image cropping & resizing -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <title>Mushq By Libaas - Advanced Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #1abc9c;
-            --background-color: #f4f6f9;
-            --text-color: #333;
+            --bg-primary: #0b0b0d;
+            --card-bg: #18181c;
+            --accent-gold: #d4af37;
+            --text-color: #fff;
+            --text-muted: #aaa;
+            --border-color: #333;
+            --input-bg: #111;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
-        sidebar {
-            width: 250px;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        sidebar h2 {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            text-align: center;
-            color: var(--secondary-color);
-        }
-        sidebar a {
-            color: white;
-            text-decoration: none;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            transition: background 0.3s;
-        }
-        sidebar a:hover, sidebar a.active {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        main {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
-        h3 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        input[type="text"], input[type="number"], textarea, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        button {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        /* Image Cropper Container Styles */
-        .img-container {
-            max-width: 100%;
-            max-height: 400px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        .img-container img {
-            max-width: 100%;
-            display: block;
-        }
-        .preview-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            align-items: center;
-        }
+        body { background: var(--bg-primary); color: var(--text-color); font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
+        .login-box, .admin-container { max-width: 1000px; margin: 20px auto; background: var(--card-bg); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
+        input, textarea, select { width: 100%; padding: 10px 12px; margin: 8px 0 15px 0; background: var(--input-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        button { background: var(--accent-gold); color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tab-btn { background: #222; color: #fff; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
+        .card { background: #111; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 15px; margin-bottom: 15px; border-radius: 6px; }
+        .hidden { display: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .tag { background: #222; padding: 3px 8px; border-radius: 4px; font-size: 12px; color: #fff; border: 1px solid #444; display: inline-block; margin-right: 5px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <sidebar>
-        <h2>MuskByLibaas</h2>
-        <a href="#" class="active">Dashboard</a>
-        <a href="#">Products</a>
-        <a href="#">Orders</a>
-        <a href="#">Settings</a>
-    </sidebar>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-box">
+        <h2 style="color: var(--accent-gold); text-align: center; margin-bottom: 20px;">Mushq By Libaas - Admin Portal</h2>
+        <label style="font-size: 13px; color: var(--text-muted);">Admin Password</label>
+        <input type="password" id="adminPass" placeholder="Enter password...">
+        <button onclick="checkLogin()" style="width: 100%; margin-top: 10px;">Login to Panel</button>
+    </div>
 
-    <main>
-        <header>
-            <h2>Admin Dashboard</h2>
-            <span>Welcome, Admin</span>
-        </header>
-
-        <div class="card">
-            <h3>Add New Product</h3>
-            <form id="productForm">
-                <div class="form-group">
-                    <label for="productName">Product Name</label>
-                    <input type="text" id="productName" required>
-                </div>
-                <div class="form-group">
-                    <label for="productPrice">Price</label>
-                    <input type="number" id="productPrice" required>
-                </div>
-                <div class="form-group">
-                    <label for="productImageInput">Product Image (Auto 1000x1000 Resizer)</label>
-                    <input type="file" id="productImageInput" accept="image/*" required>
-                </div>
-
-                <!-- Cropper Area -->
-                <div class="form-group">
-                    <div class="img-container">
-                        <img id="imageToCrop" src="" alt="Source Image">
-                    </div>
-                    <button type="button" id="cropBtn" style="display:none; margin-top: 10px;">Crop & Fit to 1000x1000</button>
-                </div>
-
-                <div class="form-group preview-container">
-                    <input type="hidden" id="croppedImageData">
-                    <canvas id="outputCanvas" width="100" height="100" style="border:1px solid #ccc; display:none;"></canvas>
-                    <span id="cropStatus" style="font-size: 0.9rem; color: #665; display:none;">Image ready (1000x1000px)</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="productDesc">Description</label>
-                    <textarea id="productDesc" rows="4"></textarea>
-                </div>
-                <button type="submit">Save Product</button>
-            </form>
+    <!-- Admin Panel Container -->
+    <div id="adminPanel" class="admin-container hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 id="panelTitle" style="color: var(--accent-gold); margin: 0;">Admin Dashboard</h2>
+            <button onclick="logoutAdmin()" style="background: #333; color: #fff; padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
-    </main>
 
-    <!-- Cropper.js Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+        <!-- Navigation Tabs -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="btnOrdersTab" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Live Orders</button>
+            <button class="tab-btn" id="btnProductsTab" onclick="switchTab('productsTab', this)"><i class="fa-solid fa-shirt"></i> Manage Products</button>
+        </div>
+
+        <!-- TAB 1: LIVE ORDERS -->
+        <div id="ordersTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="color: #fff; margin: 0;">Customer Orders</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <label style="cursor: pointer; font-size: 13px; color: #ddd; display: flex; align-items: center; gap: 6px;">
+                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" style="width: 16px; height: 16px; margin:0; accent-color: var(--accent-gold);"> Select All
+                    </label>
+                    <button onclick="deleteSelectedOrders()" style="background: #c0392b; color: #fff; padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+                    <button onclick="loadOrders()" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                </div>
+            </div>
+            <div id="ordersContainer">
+                <p style="color: var(--text-muted);">Loading orders...</p>
+            </div>
+        </div>
+
+        <!-- TAB 2: MANAGE PRODUCTS -->
+        <div id="productsTab" class="tab-content hidden">
+            <h3 id="formHeading" style="color: #fff; margin-bottom: 15px;">Add New Product</h3>
+            <form id="addProductForm" onsubmit="saveProduct(event)" style="background: #111; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 30px;">
+                <input type="hidden" id="editProdId">
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Product Title / Name</label>
+                        <input type="text" id="prodTitle" required placeholder="e.g. Maroon Designer Suit">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Price (₹)</label>
+                        <input type="number" id="prodPrice" required placeholder="e.g. 2499">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Available Colors (Auto-filled)</label>
+                        <input type="text" id="prodColors" value="Maroon, Black, Navy Blue, Pink">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--text-muted);">Available Sizes (Auto-filled)</label>
+                        <input type="text" id="prodSizes" value="S, M, L, XL, XXL">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Select Product Section / Category (Collection)</label>
+                    <select id="prodCategory">
+                        <option value="new">New Arrivals</option>
+                        <option value="trending">Trending</option>
+                        <option value="special">Special Offer</option>
+                        <option value="bestseller">Best Seller</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Main Cover Image from Device (Auto 1000x1000)</label>
+                    <input type="file" id="prodImageFile" accept="image/*" onchange="convertImage(event)" style="padding: 8px;">
+                    <input type="hidden" id="prodImage">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: var(--text-muted);">Additional Slider Images (Select 3-4 Images for Detail Page)</label>
+                    <input type="file" id="prodExtraImagesFiles" accept="image/*" multiple onchange="convertExtraImages(event)" style="padding: 8px;">
+                    <div id="extraImagesPreview" style="font-size: 11px; color: var(--accent-gold); margin-top: 5px;"></div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" id="saveBtn" style="flex: 1;"><i class="fa-solid fa-plus"></i> Publish Product</button>
+                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="hidden" style="background:#444; color:#fff; width:120px;">Cancel</button>
+                </div>
+            </form>
+
+            <h3 style="color: #fff; margin-bottom: 15px;">Existing Store Products</h3>
+            <div id="productsContainer">
+                <p style="color: var(--text-muted);">Loading products...</p>
+            </div>
+        </div>
+    </div>
+
     <script>
-        let cropper;
-        const imageInput = document.getElementById('productImageInput');
-        const imageToCrop = document.getElementById('imageToCrop');
-        const imgContainer = document.querySelector('.img-container');
-        const cropBtn = document.getElementById('cropBtn');
-        const croppedImageData = document.getElementById('croppedImageData');
-        const outputCanvas = document.getElementById('outputCanvas');
-        const cropStatus = document.getElementById('cropStatus');
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
+            authDomain: "mushqbylibaas.firebaseapp.com",
+            projectId: "mushqbylibaas",
+            storageBucket: "mushqbylibaas.firebasestorage.app",
+            messagingSenderId: "1057698747540",
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
+        };
 
-        imageInput.addEventListener('change', function (e) {
-            const files = e.target.files;
-            if (files && files.length > 0) {
-                const file = files[0];
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    imageToCrop.src = event.target.result;
-                    imgContainer.style.display = 'block';
-                    cropBtn.style.display = 'inline-block';
-                    
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    
-                    cropper = new Cropper(imageToCrop, {
-                        aspectRatio: 1 / 1, // 1:1 Square for 1000x1000
-                        viewMode: 1,
-                        autoCropArea: 1,
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        let uploadedExtraImagesArray = [];
 
-        cropBtn.addEventListener('click', function () {
-            if (cropper) {
-                const canvas = cropper.getCroppedCanvas({
-                    width: 1000,
-                    height: 1000,
-                });
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('novaAdminAuth') === 'true') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
                 
-                // Show thumbnail preview
-                outputCanvas.style.display = 'block';
-                const ctx = outputCanvas.getContext('2d');
-                ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
-                ctx.drawImage(canvas, 0, 0, 100, 100);
+                const savedTab = localStorage.getItem('novaActiveTab') || 'ordersTab';
+                const activeBtnId = savedTab === 'productsTab' ? 'btnProductsTab' : 'btnOrdersTab';
+                switchTab(savedTab, document.getElementById(activeBtnId), false);
 
-                // Save base64 data to hidden input
-                croppedImageData.value = canvas.toDataURL('image/jpeg');
-                cropStatus.style.display = 'inline-block';
-                cropStatus.innerText = "Image successfully fitted to 1000x1000px!";
+                loadOrders();
+                loadProducts();
             }
         });
 
-        document.getElementById('productForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            if (!croppedImageData.value) {
-                alert('Please crop and generate the 1000x1000 image first!');
+        function checkLogin() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === 'mushq123') {
+                localStorage.setItem('novaAdminAuth', 'true');
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                switchTab('ordersTab', document.getElementById('btnOrdersTab'), false);
+                loadOrders();
+                loadProducts();
+            } else {
+                alert('Wrong Password!');
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('novaAdminAuth');
+            localStorage.removeItem('novaActiveTab');
+            location.reload();
+        }
+
+        function switchTab(tabId, btn, save = true) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            if(btn) btn.classList.add('active');
+            if(save) {
+                localStorage.setItem('novaActiveTab', tabId);
+            }
+        }
+
+        function loadOrders() {
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '<p style="color: var(--text-muted);">Fetching orders...</p>';
+
+            db.collection("orders").get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No orders found yet.</p>';
+                    return;
+                }
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const order = doc.data();
+                    const orderId = doc.id;
+                    let itemsHtml = '';
+                    if (order.items && Array.isArray(order.items)) {
+                        order.items.forEach(item => {
+                            itemsHtml += `<li>${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
+                        });
+                    }
+                    html += `
+                        <div class="card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; color:var(--accent-gold); border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <input type="checkbox" class="order-checkbox" value="${orderId}" style="width:16px; height:16px; margin:0; accent-color:var(--accent-gold);">
+                                    <span>Customer: ${order.customerName || 'N/A'}</span>
+                                </div>
+                                <span class="tag">₹${order.totalAmount || 0}</span>
+                            </div>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Phone:</strong> <a href="tel:${order.customerPhone}" style="color:var(--accent-gold);">${order.customerPhone}</a></p>
+                            <p style="margin:4px 0; font-size:13px;"><strong>Address:</strong> ${order.customerAddress || order.address || 'N/A'}</p>
+                            <p style="margin:4px 0; font-size:13px; color:var(--text-muted);"><strong>Items:</strong></p>
+                            <ul style="margin:4px 0 8px 15px; font-size:13px; color:#ddd;">${itemsHtml}</ul>
+                            <p style="margin:0; font-size:11px; color:var(--text-muted);">Date: ${order.orderDate || 'Recent'}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                const selectAll = document.getElementById('selectAllCheckbox');
+                if(selectAll) selectAll.checked = false;
+            }).catch(err => {
+                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+            });
+        }
+
+        function toggleSelectAll(master) {
+            const checkboxes = document.querySelectorAll('.order-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+        }
+
+        function deleteSelectedOrders() {
+            const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert("Please select at least one order to delete!");
                 return;
             }
-            // Baaki submission logic jo aapki pehle se thi
-            alert('Product saved successfully for MuskByLibaas!');
-        });
+
+            if (confirm(`Are you sure you want to delete selected ${checkboxes.length} orders?`)) {
+                let promises = [];
+                checkboxes.forEach(cb => {
+                    promises.push(db.collection("orders").doc(cb.value).delete());
+                });
+
+                Promise.all(promises).then(() => {
+                    alert("Selected orders deleted successfully!");
+                    loadOrders();
+                }).catch(err => {
+                    alert("Error deleting orders: " + err.message);
+                });
+            }
+        }
+
+        // Updated compression to force exact 1000x1000 square ratio for store uniformity
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1000;
+                    canvas.height = 1000;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Fill white background for padding if aspect ratio differs
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, 1000, 1000);
+
+                    let width = img.width;
+                    let height = img.height;
+                    let targetWidth = 1000;
+                    let targetHeight = 1000;
+                    let offsetX = 0;
+                    let offsetY = 0;
+
+                    if (width > height) {
+                        targetHeight = (height / width) * 1000;
+                        offsetY = (1000 - targetHeight) / 2;
+                    } else {
+                        targetWidth = (width / height) * 1000;
+                        offsetX = (1000 - targetWidth) / 2;
+                    }
+
+                    ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    callback(dataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function convertImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                compressImage(file, function(compressedDataUrl) {
+                    document.getElementById('prodImage').value = compressedDataUrl;
+                });
+            }
+        }
+
+        function convertExtraImages(event) {
+            const files = event.target.files;
+            uploadedExtraImagesArray = [];
+            if (files.length > 0) {
+                document.getElementById('extraImagesPreview').innerText = "Resizing images to 1000x1000, please wait...";
+                let processed = 0;
+                for (let i = 0; i < files.length; i++) {
+                    compressImage(files[i], function(compressedDataUrl) {
+                        uploadedExtraImagesArray.push(compressedDataUrl);
+                        processed++;
+                        if (processed === files.length) {
+                            document.getElementById('extraImagesPreview').innerText = `${files.length} extra images resized & attached successfully!`;
+                        }
+                    });
+                }
+            }
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('editProdId').value;
+            const title = document.getElementById('prodTitle').value;
+            const price = Number(document.getElementById('prodPrice').value);
+            const colors = document.getElementById('prodColors').value.split(',').map(s => s.trim());
+            const sizes = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
+            const category = document.getElementById('prodCategory').value;
+            const image = document.getElementById('prodImage').value;
+
+            if (!image && !id) {
+                alert("Please upload a main cover image file.");
+                return;
+            }
+
+            const productData = { title, price, colors, sizes, category };
+            if (image) productData.image = image;
+            
+            if (uploadedExtraImagesArray.length > 0) {
+                let mainImg = image || document.getElementById('prodImage').value;
+                productData.images = [mainImg, ...uploadedExtraImagesArray];
+            } else if (!productData.images && image) {
+                productData.images = [image];
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Publishing...";
+            saveBtn.disabled = true;
+
+            if (id) {
+                db.collection("products").doc(id).update(productData).then(() => {
+                    alert("Product updated successfully!");
+                    resetForm();
+                    loadProducts();
+                }).catch(err => {
+                    alert("Error updating: " + err.message);
+                    saveBtn.innerText = "Update Product";
+                    saveBtn.disabled = false;
+                    document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('prodColors').value = "Maroon, Black, Navy Blue, Pink";
+            document.getElementById('prodSizes').value = "S, M, L, XL, XXL";
+            document.getElementById('prodCategory').value = "new";
+        }
+
+        function deleteProduct(id) {
+            if (confirm("Are you sure you want to delete this product?")) {
+                db.collection("products").doc(id).delete().then(() => {
+                    alert("Product deleted successfully!");
+                    loadProducts();
+                }).catch(err => alert("Error deleting: " + err.message));
+            }
+        }
     </script>
 </body>
 </html>
+  
