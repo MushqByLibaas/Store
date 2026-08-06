@@ -444,3 +444,228 @@
             </button>
         </div>
     </div>
+<script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
+            authDomain: "mushqbylibaas.firebaseapp.com",
+            projectId: "mushqbylibaas",
+            storageBucket: "mushqbylibaas.firebasestorage.app",
+            messagingSenderId: "1057698747540",
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCartCount();
+            loadLiveProducts();
+        });
+
+        function loadLiveProducts() {
+            const bestSellerGrid = document.getElementById('bestSellerGrid');
+            const trendingGrid = document.getElementById('trendingGrid');
+            const specialGrid = document.getElementById('specialGrid');
+            const newGrid = document.getElementById('newGrid');
+
+            db.collection("products").get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    const emptyMsg = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding:20px;">No products available.</p>';
+                    bestSellerGrid.innerHTML = emptyMsg;
+                    trendingGrid.innerHTML = emptyMsg;
+                    specialGrid.innerHTML = emptyMsg;
+                    newGrid.innerHTML = emptyMsg;
+                    return;
+                }
+
+                let bestSellerHTML = '';
+                let trendingHTML = '';
+                let specialHTML = '';
+                let newHTML = '';
+
+                querySnapshot.forEach((doc) => {
+                    const p = doc.data();
+                    const pId = doc.id;
+                    const colorsText = p.colors && Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || 'N/A');
+                    const sizesText = p.sizes && Array.isArray(p.sizes) ? p.sizes.join(', ') : (p.sizes || 'N/A');
+                    const safeImage = p.image || 'https://via.placeholder.com/300';
+                    const category = (p.category || 'new').toLowerCase();
+                    const titleLower = p.title.toLowerCase();
+                    
+                    const cardContent = `
+                        <div class="product-card" data-title="${titleLower}" onclick="openProductDetail('${pId}')">
+                            <img src="${safeImage}" alt="Suit" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
+                            <h3 class="product-title">${p.title}</h3>
+                            <div class="product-price">₹${p.price}</div>
+                            <div class="product-meta">Colors: ${colorsText}</div>
+                            <div class="product-meta" style="margin-bottom:8px;">Sizes: ${sizesText}</div>
+                            <div class="product-btn-group" onclick="event.stopPropagation();">
+                                <button class="btn-cart" onclick="addToCart('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')">🛒 Cart</button>
+                                <button class="btn-order" onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')">⚡ Order</button>
+                            </div>
+                        </div>
+                    `;
+
+                    if (category.includes('bestseller') || category.includes('best')) {
+                        bestSellerHTML += cardContent;
+                    } else if (category.includes('trending')) {
+                        trendingHTML += cardContent;
+                    } else if (category.includes('special') || category.includes('offer')) {
+                        specialHTML += cardContent;
+                    } else {
+                        newHTML += cardContent; 
+                    }
+                });
+
+                bestSellerGrid.innerHTML = bestSellerHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No best sellers right now.</p>';
+                trendingGrid.innerHTML = trendingHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No trending products.</p>';
+                specialGrid.innerHTML = specialHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No special offers right now.</p>';
+                newGrid.innerHTML = newHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No new arrivals.</p>';
+
+            }).catch((error) => {
+                const errMsg = `<p style="color:red; text-align:center; grid-column: 1 / -1; padding:20px;">Error loading products.</p>`;
+                bestSellerGrid.innerHTML = errMsg;
+                trendingGrid.innerHTML = errMsg;
+                specialGrid.innerHTML = errMsg;
+                newGrid.innerHTML = errMsg;
+            });
+        }
+
+        function openProductDetail(productId) {
+            window.location.href = `product.html?id=${productId}`;
+        }
+
+        function addToCart(title, price, image) {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            let existing = cart.find(item => item.title === title);
+            if (existing) {
+                existing.qty += 1;
+                existing.image = image;
+            } else {
+                cart.push({ title: title, price: price, image: image, qty: 1 });
+            }
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            updateCartCount();
+            alert("Product added to cart successfully!");
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            if (drawer.style.right === '0px') {
+                drawer.style.right = '-100%';
+                overlay.style.display = 'none';
+            } else {
+                drawer.style.right = '0px';
+                overlay.style.display = 'block';
+                renderCartItems();
+            }
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Your cart is empty.</p>';
+                document.getElementById('cartSubtotal').innerText = '₹0';
+                return;
+            }
+
+            let html = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+                let itemImg = item.image && item.image !== 'undefined' ? item.image : 'https://via.placeholder.com/50';
+                
+                html += `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; background: #141417; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <img src="${itemImg}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/50'">
+                        <div style="flex: 1;">
+                            <h4 style="margin:0 0 3px 0; font-size:12px; color:#fff;">${item.title}</h4>
+                            <div style="font-size:11px; color:var(--accent-gold); font-weight:700;">₹${item.price} x ${item.qty} = ₹${itemTotal}</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <button onclick="changeQty(${index}, -1)" style="background:#222; color:#fff; border:1px solid #444; width:20px; height:20px; font-size:11px; border-radius:4px; cursor:pointer;">-</button>
+                                <span style="font-size:11px; font-weight:700; color:#fff; min-width:14px; text-align:center;">${item.qty}</span>
+                                <button onclick="changeQty(${index}, 1)" style="background:#222; color:#fff; border:1px solid #444; width:20px; height:20px; font-size:11px; border-radius:4px; cursor:pointer;">+</button>
+                            </div>
+                            <button onclick="removeItem(${index})" style="background:transparent; border:none; color:#ef4444; cursor:pointer; font-size:11px;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('cartSubtotal').innerText = '₹' + subtotal;
+        }
+
+        function changeQty(index, delta) {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            if (cart[index]) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            updateCartCount();
+            renderCartItems();
+        }
+
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            updateCartCount();
+            renderCartItems();
+        }
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            let totalCount = cart.reduce((sum, item) => sum + Number(item.qty), 0);
+            document.getElementById('cartCount').innerText = totalCount;
+        }
+
+        function directOrder(title, price, image) {
+            const buyNowItem = [{
+                title: title,
+                price: price,
+                image: image,
+                qty: 1
+            }];
+            localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
+            window.location.href = 'checkout.html';
+        }
+
+        function proceedToCheckout() {
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+            window.location.href = 'checkout.html';
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                if (title.includes(query)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
