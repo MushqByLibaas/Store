@@ -21,26 +21,33 @@
             font-family: 'Poppins', sans-serif;
         }
         .product-detail-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 20px auto;
             padding: 15px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: 1fr;
+            gap: 20px;
             background: #18181c;
             border: 1px solid #333;
             border-radius: 12px;
         }
+        @media (min-width: 768px) {
+            .product-detail-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+                margin: 30px auto;
+                padding: 20px;
+            }
+        }
         .gallery-box {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 100%;
+            gap: 15px;
         }
         .main-img-wrap {
             width: 100%;
-            height: 400px;
-            background: #111;
+            height: 380px;
+            background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #333;
@@ -48,25 +55,25 @@
             align-items: center;
             justify-content: center;
         }
+        @media (min-width: 768px) {
+            .main-img-wrap { height: 450px; }
+        }
         .main-img-wrap img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Clean full fit without awkward black borders */
+            object-fit: contain;
             object-position: center;
         }
         .thumbnail-row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             overflow-x: auto;
             padding-bottom: 5px;
             scrollbar-width: thin;
         }
-        .thumbnail-row::-webkit-scrollbar { height: 4px; }
-        .thumbnail-row::-webkit-scrollbar-thumb { background: var(--accent-gold, #d4af37); border-radius: 4px; }
-        
         .thumb-img {
-            width: 65px;
-            height: 75px;
+            width: 75px;
+            height: 85px;
             object-fit: cover;
             border-radius: 6px;
             border: 2px solid #333;
@@ -80,38 +87,38 @@
         .product-info-box h1 {
             font-family: 'Cinzel', serif;
             color: var(--text-color, #fff);
-            font-size: 22px;
-            margin-bottom: 8px;
+            font-size: 24px;
+            margin-bottom: 10px;
         }
         .product-info-box .price {
-            font-size: 20px;
+            font-size: 22px;
             color: var(--accent-gold, #d4af37);
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .option-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .option-group label {
             display: block;
-            font-size: 12px;
+            font-size: 13px;
             color: #aaa;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 600;
         }
         .chips-row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .chip {
             background: #111;
             border: 1px solid #444;
             color: #fff;
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             transition: all 0.2s;
         }
         .chip.selected {
@@ -122,16 +129,16 @@
         }
         .action-btns {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 30px;
         }
         .action-btns button {
             flex: 1;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
         }
         .add-cart-btn {
             background: #111;
@@ -145,27 +152,27 @@
         }
         /* Similar Products Grid Styles */
         .similar-container {
-            max-width: 1000px;
-            margin: 0 auto 30px auto;
+            max-width: 1100px;
+            margin: 0 auto 40px auto;
             padding: 15px;
         }
         .product-grid {
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
+            gap: 15px !important;
             width: 100% !important;
         }
         @media (min-width: 768px) {
             .product-grid {
                 grid-template-columns: repeat(4, 1fr) !important;
-                gap: 15px !important;
+                gap: 20px !important;
             }
         }
         .product-card {
             background: #18181c;
             border: 1px solid #333;
             border-radius: 8px;
-            padding: 8px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -177,42 +184,27 @@
         }
         .product-card img {
             width: 100%;
-            height: 150px;
+            height: 160px;
             object-fit: cover;
             border-radius: 6px;
             background: #111;
         }
         @media (min-width: 768px) {
-            .product-card img { height: 200px; }
+            .product-card img { height: 220px; }
         }
         .card-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: #fff;
-            margin: 6px 0 2px 0;
+            margin: 8px 0 4px 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .card-price {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
             color: var(--accent-gold, #d4af37);
-        }
-        @media(max-width: 768px) {
-            .product-detail-container {
-                grid-template-columns: 1fr;
-                gap: 15px;
-                margin: 10px;
-                padding: 12px;
-            }
-            .main-img-wrap {
-                height: 320px;
-            }
-            .similar-container {
-                margin: 0 10px 20px 10px;
-                padding: 10px;
-            }
         }
     </style>
 </head>
@@ -220,20 +212,20 @@
 
     <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #18181c; border-bottom: 1px solid #333;">
         <a href="index.html" class="logo" style="font-family: 'Cinzel', serif; font-size: 18px; color: #fff; text-decoration: none; font-weight: bold;">MUSK BY <span style="color:var(--accent-gold, #d4af37);">LIBAAS</span></a>
-        <div class="cart-trigger" onclick="window.location.href='index.html'" style="cursor: pointer; background: #222; padding: 6px 12px; border-radius: 6px; border: 1px solid #444; font-size: 13px; color: var(--accent-gold, #d4af37);">
+        <div class="cart-trigger" onclick="window.location.href='index.html'" style="cursor: pointer; background: #222; padding: 8px 12px; border-radius: 6px; border: 1px solid #444; font-size: 13px; color: var(--accent-gold, #d4af37);">
             <i class="fa-solid fa-house"></i> Home
         </div>
     </header>
 
     <div class="product-detail-container" id="productDetailContainer">
-        <p style="color: #aaa; text-align: center; grid-column: 1 / -1; padding: 30px;">Loading product details...</p>
+        <p style="color: #aaa; text-align: center; grid-column: 1 / -1; padding: 40px;">Loading product details...</p>
     </div>
 
     <!-- Similar Products & Collection Section -->
     <div class="similar-container">
-        <h2 style="font-family: 'Cinzel', serif; color: var(--accent-gold, #d4af37); font-size: 16px; margin-bottom: 12px; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">✨ Similar Products & Collection</h2>
+        <h2 style="font-family: 'Cinzel', serif; color: var(--accent-gold, #d4af37); font-size: 18px; margin-bottom: 15px; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">✨ Similar Products & Collection</h2>
         <div class="product-grid" id="similarProductsGrid">
-            <p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size: 12px; padding: 15px;">Loading collection...</p>
+            <p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size: 13px; padding: 20px;">Loading collection...</p>
         </div>
     </div>
 
