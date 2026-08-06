@@ -80,7 +80,6 @@
             <h3 style="color: var(--accent-gold); margin-top:0;" id="modalTitle">Scan & Pay</h3>
             <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;" id="modalSubtitle">Scan QR or click below to complete payment.</p>
             
-            <!-- QR Image: Dynamic change hogi Saudi ke liye -->
             <img id="paymentQrImg" src="qr.jpg" alt="Payment QR" style="width:160px; height:160px; border-radius:8px; border:2px solid var(--accent-gold); background:#fff; padding:4px; margin-bottom:8px;">
             
             <div id="modalAmount" style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 10px;">Amount to Pay: ₹0</div>
@@ -118,7 +117,8 @@
         let lng = "";
         let baseInrTotal = 0;
         let customerData = {};
-        const sarRate = 22; // 1 SAR approx 22 INR (aap apne hisaab se adjust kar sakte hain)
+        const sarRate = 22; // 1 SAR = 22 INR approx
+        const saudiShippingSar = 25; // 25 SAR Shipping Charge
 
         document.addEventListener("DOMContentLoaded", () => {
             const summaryDiv = document.getElementById('checkoutSummary');
@@ -135,14 +135,11 @@
                 return;
             }
 
-            let html = '<ul style="padding-left:15px; margin:0;">';
             baseInrTotal = 0;
             cart.forEach(item => {
                 baseInrTotal += Number(item.price) * Number(item.qty);
-                html += `<li style="margin-bottom:5px;">${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
             });
-            html += `</ul>`;
-            summaryDiv.innerHTML = html;
+            
             updateSummaryDisplay();
         });
 
@@ -155,16 +152,34 @@
             const summaryDiv = document.getElementById('checkoutSummary');
             let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
 
-            let html = '<ul style="padding-left:15px; margin:0;">';
+            let html = '<ul style="padding-left:15px; margin:0 0 10px 0;">';
             cart.forEach(item => {
-                html += `<li style="margin-bottom:5px;">${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
+                html += `<li style="margin-bottom:4px;">${item.title} (Qty: ${item.qty}) - ₹${item.price * item.qty}</li>`;
             });
+            html += '</ul>';
 
             if (country === 'Saudi Arabia') {
-                let sarTotal = (baseInrTotal / sarRate).toFixed(2);
-                html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ${sarTotal} SAR (ر.س)</div>`;
+                let productSar = baseInrTotal / sarRate;
+                let totalSar = productSar + saudiShippingSar;
+                
+                html += `
+                    <div style="font-size:13px; color:#aaa; border-top:1px dashed #444; padding-top:8px; margin-top:6px;">
+                        <div>Shipping Price: <b>${saudiShippingSar} SAR</b></div>
+                        <div style="color:var(--accent-gold); font-size:12px; margin-top:2px;">🚚 Delivery All Over Saudi Arabia 🇸🇦</div>
+                    </div>
+                    <div style="margin-top:8px; font-weight:bold; font-size:15px; color:var(--accent-gold);">
+                        Total Amount: ${totalSar.toFixed(2)} SAR (ر.س)
+                    </div>
+                `;
             } else {
-                html += `</ul><div style="margin-top:10px; font-weight:bold; color:var(--accent-gold);">Total Amount: ₹${baseInrTotal}</div>`;
+                html += `
+                    <div style="font-size:13px; color:#aaa; border-top:1px dashed #444; padding-top:8px; margin-top:6px;">
+                        <div>Shipping: <b>Free / Standard</b></div>
+                    </div>
+                    <div style="margin-top:8px; font-weight:bold; font-size:15px; color:var(--accent-gold);">
+                        Total Amount: ₹${baseInrTotal}
+                    </div>
+                `;
             }
             summaryDiv.innerHTML = html;
         }
@@ -207,14 +222,14 @@
             const modalSubtitle = document.getElementById('modalSubtitle');
 
             if (country === 'Saudi Arabia') {
-                let sarTotal = (baseInrTotal / sarRate).toFixed(2);
-                modalAmount.innerText = "Amount to Pay: " + sarTotal + " SAR";
+                let productSar = baseInrTotal / sarRate;
+                let totalSar = (productSar + saudiShippingSar).toFixed(2);
                 
-                // Yahan apna Saudi bank ka QR image link daal dena (abhi placeholder ya 'saudi-qr.jpg' rakh sakte hain)
+                modalAmount.innerText = "Amount to Pay: " + totalSar + " SAR";
                 qrImg.src = "saudi-qr.jpg"; 
                 modalTitle.innerText = "Saudi Bank QR Payment";
                 modalSubtitle.innerText = "Scan via STC Pay, Al Rajhi, or Saudi Banking App";
-                upiLink.style.display = "none"; // UPI hide kar diya kyunki Saudi ke liye bank transfer/QR hai
+                upiLink.style.display = "none";
             } else {
                 modalAmount.innerText = "Amount to Pay: ₹" + baseInrTotal;
                 qrImg.src = "qr.jpg";
@@ -238,7 +253,7 @@
             const country = customerData.country;
             
             let finalDisplayedAmount = (country === 'Saudi Arabia') 
-                ? `${(baseInrTotal / sarRate).toFixed(2)} SAR` 
+                ? `${((baseInrTotal / sarRate) + saudiShippingSar).toFixed(2)} SAR` 
                 : `₹${baseInrTotal}`;
 
             db.collection("orders").add({
