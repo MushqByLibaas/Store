@@ -200,7 +200,7 @@
 <body>
 
     <header class="header">
-        <a href="index.html" class="logo">MUSK BY <span>LIBAAS</span>[span_1](start_span)[span_1](end_span)</a>
+        <a href="index.html" class="logo">MUSK BY <span>LIBAAS</span></a>
         <div class="cart-trigger" onclick="window.location.href='index.html'" style="cursor: pointer;">
             <i class="fa-solid fa-house"></i> Home
         </div>
@@ -218,7 +218,7 @@
         </div>
     </div>
 
-    <script[span_2](start_span)[span_2](end_span)>
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
@@ -336,7 +336,7 @@
 
                 let html = '';
                 snapshot.forEach((doc) => {
-                    if (doc.id === currentId) return; // Skip current product
+                    if (doc.id === currentId) return;
                     const p = doc.data();
                     const pId = doc.id;
                     const img = (p.images && p.images[0]) ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
