@@ -129,7 +129,6 @@
             </div>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
@@ -262,7 +261,7 @@
             }
         }
 
-        // Updated compression to force exact 1000x1000 square ratio for store uniformity
+        // Image Resizer to 1000x1000 Exact Square
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -273,7 +272,6 @@
                     canvas.height = 1000;
                     const ctx = canvas.getContext('2d');
                     
-                    // Fill white background for padding if aspect ratio differs
                     ctx.fillStyle = "#FFFFFF";
                     ctx.fillRect(0, 0, 1000, 1000);
 
@@ -366,7 +364,87 @@
                     alert("Error updating: " + err.message);
                     saveBtn.innerText = "Update Product";
                     saveBtn.disabled = false;
-                    document.getElementById('cancelEditBtn').classList.add('hidden');
+                });
+            } else {
+                productData.createdAt = new Date();
+                db.collection("products").add(productData).then(() => {
+                    alert("Product added successfully!");
+                    resetForm();
+                    loadProducts();
+                }).catch(err => {
+                    alert("Error adding: " + err.message);
+                    saveBtn.innerText = "Publish Product";
+                    saveBtn.disabled = false;
+                });
+            }
+        }
+
+        function loadProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<p style="color: var(--text-muted);">Loading products...</p>';
+
+            db.collection("products").get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No custom products found in database.</p>';
+                    return;
+                }
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const p = doc.data();
+                    const pData = JSON.stringify({id: doc.id, ...p}).replace(/"/g, '&quot;');
+                    let imgCount = p.images && Array.isArray(p.images) ? p.images.length : 1;
+                    html += `
+                        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:15px; align-items:center;">
+                                <img src="${p.image}" style="width:50px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #444;" onerror="this.src='https://via.placeholder.com/50'">
+                                <div>
+                                    <h4 style="margin:0; color:var(--accent-gold); font-size:15px;">${p.title}</h4>
+                                    <p style="margin:3px 0; font-size:13px; color:#fff;">₹${p.price} <span class="tag" style="margin-left:8px; font-size:10px;">${p.category || 'new'}</span> <span style="font-size:11px; color:#aaa;">(Imgs: ${imgCount})</span></p>
+                                    <p style="margin:3px 0; font-size:11px; color:var(--text-muted);">Colors: ${p.colors ? p.colors.join(', ') : 'N/A'} | Sizes: ${p.sizes ? p.sizes.join(', ') : 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button onclick="editProduct(${pData})" style="background:#333; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:8px 12px; font-size:12px;"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteProduct('${doc.id}')" style="background:#ff4d4d; color:#fff; padding:8px 12px; font-size:12px;"><i class="fa-solid fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }).catch(err => {
+                container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+            });
+        }
+
+        function editProduct(p) {
+            document.getElementById('editProdId').value = p.id;
+            document.getElementById('prodTitle').value = p.title;
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodColors').value = p.colors ? p.colors.join(', ') : '';
+            document.getElementById('prodSizes').value = p.sizes ? p.sizes.join(', ') : '';
+            document.getElementById('prodCategory').value = p.category || 'new';
+            if(p.image) document.getElementById('prodImage').value = p.image;
+            uploadedExtraImagesArray = p.images || [];
+            if(uploadedExtraImagesArray.length > 0) {
+                document.getElementById('extraImagesPreview').innerText = `${uploadedExtraImagesArray.length} images currently loaded in gallery.`;
+            }
+            document.getElementById('formHeading').innerText = "Edit Product";
+            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Product';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('addProductForm').reset();
+            document.getElementById('editProdId').value = '';
+            document.getElementById('prodImage').value = '';
+            document.getElementById('extraImagesPreview').innerText = '';
+            uploadedExtraImagesArray = [];
+            document.getElementById('formHeading').innerText = "Add New Product";
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Publish Product';
+            saveBtn.disabled = false;
+            document.getElementById('cancelEditBtn').classList.add('hidden');
             document.getElementById('prodColors').value = "Maroon, Black, Navy Blue, Pink";
             document.getElementById('prodSizes').value = "S, M, L, XL, XXL";
             document.getElementById('prodCategory').value = "new";
@@ -383,4 +461,3 @@
     </script>
 </body>
 </html>
-  
