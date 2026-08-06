@@ -77,6 +77,13 @@
             border-radius: 8px;
             border-left: 4px solid var(--accent-gold, #d4af37);
         }
+        .product-card {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
         @media(max-width: 768px) {
             .header-trust { display: none; }
             .trust-badges-bar { font-size: 11px; padding: 8px; }
@@ -222,6 +229,7 @@
 
                 querySnapshot.forEach((doc) => {
                     const p = doc.data();
+                    const pId = doc.id;
                     const colorsText = p.colors && Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || 'N/A');
                     const sizesText = p.sizes && Array.isArray(p.sizes) ? p.sizes.join(', ') : (p.sizes || 'N/A');
                     const safeImage = p.image || 'https://via.placeholder.com/300';
@@ -229,13 +237,13 @@
                     const titleLower = p.title.toLowerCase();
                     
                     const cardContent = `
-                        <div class="product-card" data-title="${titleLower}">
+                        <div class="product-card" data-title="${titleLower}" onclick="openProductDetail('${pId}')">
                             <img src="${safeImage}" alt="Suit" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
                             <h3 class="product-title">${p.title}</h3>
                             <div class="product-price">₹${p.price}</div>
                             <div class="product-meta">Colors: ${colorsText}</div>
                             <div class="product-meta" style="margin-bottom:10px;">Sizes: ${sizesText}</div>
-                            <div class="product-btn-group">
+                            <div class="product-btn-group" onclick="event.stopPropagation();">
                                 <button onclick="addToCart('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')" style="flex:1; background:var(--input-bg); color:var(--text-color); border:1px solid var(--accent-gold); padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🛒 Add to Cart</button>
                                 <button onclick="directOrder('${p.title.replace(/'/g, "\\'")}', ${p.price}, '${safeImage}')" style="flex:1; background:var(--accent-gold); border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; color:#000;">⚡ Order Now</button>
                             </div>
@@ -265,6 +273,10 @@
                 specialGrid.innerHTML = errMsg;
                 newGrid.innerHTML = errMsg;
             });
+        }
+
+        function openProductDetail(productId) {
+            window.location.href = `product.html?id=${productId}`;
         }
 
         function addToCart(title, price, image) {
