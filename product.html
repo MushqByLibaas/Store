@@ -2,60 +2,221 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Product Details - MushqByLibaas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
-        .similar-container { max-width: 1100px; margin: 0 auto 40px auto; padding: 15px; }
-        
-        /* Mobile Horizontal Slider Override */
-        @media (max-width: 768px) {
-            #similarProductsGrid {
-                display: flex !important;
-                flex-wrap: nowrap !important;
-                overflow-x: auto !important;
-                gap: 12px !important;
-                padding: 10px 0 !important;
-                -webkit-overflow-scrolling: touch !important;
-                scrollbar-width: none !important;
-            }
-            #similarProductsGrid::-webkit-scrollbar { display: none; }
-            #similarProductsGrid .product-card {
-                flex: 0 0 170px !important;
-                min-width: 170px !important;
+        * { box-sizing: border-box; }
+        body {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-primary, #0b0b0d);
+            color: var(--text-color, #fff);
+            font-family: 'Poppins', sans-serif;
+        }
+        .product-detail-container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            background: #18181c;
+            border: 1px solid #333;
+            border-radius: 12px;
+        }
+        @media (min-width: 768px) {
+            .product-detail-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+                margin: 30px auto;
+                padding: 20px;
             }
         }
-
-        .product-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            cursor: pointer;
+        .gallery-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        .product-card img {
+        .main-img-wrap {
             width: 100%;
-            height: 160px;
+            height: 380px;
+            background: #0b0b0d;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @media (min-width: 768px) {
+            .main-img-wrap { height: 450px; }
+        }
+        .main-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            background: #0b0b0d;
+        }
+        .thumbnail-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: thin;
+        }
+        .thumb-img {
+            width: 75px;
+            height: 85px;
             object-fit: cover;
             border-radius: 6px;
+            border: 2px solid #333;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: border-color 0.2s;
         }
-        .card-title { font-size: 13px; font-weight: 600; margin: 8px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-price { font-size: 14px; font-weight: bold; color: var(--accent-gold); }
+        .thumb-img:hover, .thumb-img.active {
+            border-color: var(--accent-gold, #d4af37);
+        }
+        .product-info-box h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--text-color, #fff);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .product-info-box .price {
+            font-size: 22px;
+            color: var(--accent-gold, #d4af37);
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .option-group {
+            margin-bottom: 20px;
+        }
+        .option-group label {
+            display: block;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .chips-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .chip {
+            background: #111;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .chip.selected {
+            background: var(--accent-gold, #d4af37);
+            color: #000;
+            border-color: var(--accent-gold, #d4af37);
+            font-weight: bold;
+        }
+        .action-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .action-btns button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .add-cart-btn {
+            background: #111;
+            color: #fff;
+            border: 1px solid var(--accent-gold, #d4af37);
+        }
+        .order-now-btn {
+            background: var(--accent-gold, #d4af37);
+            color: #000;
+            border: none;
+        }
+        .similar-container {
+            max-width: 1100px;
+            margin: 0 auto 40px auto;
+            padding: 15px;
+        }
+        
+        /* Enforce horizontal slider layout specifically for similar products grid */
+        #similarProductsGrid.product-grid {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            gap: 12px !important;
+            width: 100% !important;
+            padding: 10px 5px !important;
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+        }
+        #similarProductsGrid.product-grid::-webkit-scrollbar {
+            display: none !important;
+        }
+        @media (min-width: 768px) {
+            #similarProductsGrid.product-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                overflow-x: visible !important;
+                gap: 20px !important;
+            }
+        }
+        #similarProductsGrid .product-card {
+            flex: 0 0 170px !important;
+            min-width: 170px !important;
+            max-width: 170px !important;
+        }
+        @media (min-width: 768px) {
+            #similarProductsGrid .product-card {
+                flex: unset !important;
+                min-width: unset !important;
+                max-width: unset !important;
+                width: 100% !important;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #18181c; border-bottom: 1px solid #333;">
+        <a href="index.html" class="logo" style="font-family: 'Cinzel', serif; font-size: 18px; color: #fff; text-decoration: none; font-weight: bold;">MUSK BY <span style="color:var(--accent-gold, #d4af37);">LIBAAS</span></a>
+        <div class="cart-trigger" onclick="window.location.href='index.html'" style="cursor: pointer; background: #222; padding: 8px 12px; border-radius: 6px; border: 1px solid #444; font-size: 13px; color: var(--accent-gold, #d4af37);">
+            <i class="fa-solid fa-house"></i> Home
+        </div>
+    </header>
+
+    <div class="product-detail-container" id="productDetailContainer">
+        <p style="color: #aaa; text-align: center; grid-column: 1 / -1; padding: 40px;">Loading product details...</p>
+    </div>
+
     <div class="similar-container">
-        <h2 style="color: var(--accent-gold);">✨ Similar Products</h2>
+        <h2 style="font-family: 'Cinzel', serif; color: var(--accent-gold, #d4af37); font-size: 18px; margin-bottom: 15px; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">✨ Similar Products & Collection</h2>
         <div class="product-grid" id="similarProductsGrid">
-            <!-- Products will load here -->
+            <p style="color: #aaa; text-align: center; width: 100%; font-size: 13px; padding: 20px;">Loading collection...</p>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
@@ -63,30 +224,188 @@
             projectId: "mushqbylibaas",
             storageBucket: "mushqbylibaas.firebasestorage.app",
             messagingSenderId: "1057698747540",
-            appId: "1:1057698747540:web:e68337039fcb254f381081"
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
         };
-        firebase.initializeApp(firebaseConfig);
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.firestore();
 
-        function loadSimilarProducts() {
+        let selectedColor = '';
+        let selectedSize = '';
+        let currentProduct = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (!productId) {
+                document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center; grid-column:1/-1;">Product not found!</p>';
+                return;
+            }
+
+            db.collection("products").doc(productId).get().then((doc) => {
+                if (doc.exists) {
+                    currentProduct = doc.data();
+                    renderProduct(currentProduct);
+                    loadSimilarProducts(productId);
+                } else {
+                    document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center; grid-column:1/-1;">Product does not exist.</p>';
+                }
+            }).catch(err => {
+                document.getElementById('productDetailContainer').innerHTML = `<p style="color:red; text-align:center; grid-column:1/-1;">Error: ${err.message}</p>`;
+            });
+        });
+
+        function renderProduct(p) {
+            const container = document.getElementById('productDetailContainer');
+            
+            let images = [];
+            if (p.images && Array.isArray(p.images) && p.images.length > 0) {
+                images = p.images;
+            } else if (p.image) {
+                images = [p.image];
+            } else {
+                images = ['https://via.placeholder.com/400'];
+            }
+
+            let thumbHtml = '';
+            images.forEach((img, index) => {
+                thumbHtml += `<img src="${img}" class="thumb-img ${index === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)" onerror="this.src='https://via.placeholder.com/80'">`;
+            });
+
+            let colors = p.colors || ['Maroon', 'Black', 'Navy Blue', 'Pink'];
+            if (typeof colors === 'string') colors = colors.split(',').map(s => s.trim());
+            selectedColor = colors[0];
+
+            let colorHtml = '';
+            colors.forEach((col, idx) => {
+                colorHtml += `<div class="chip ${idx === 0 ? 'selected' : ''}" onclick="selectOption('color', '${col}', this)">${col}</div>`;
+            });
+
+            let sizes = p.sizes || ['S', 'M', 'L', 'XL', 'XXL'];
+            if (typeof sizes === 'string') sizes = sizes.split(',').map(s => s.trim());
+            selectedSize = sizes[0];
+
+            let sizeHtml = '';
+            sizes.forEach((sz, idx) => {
+                sizeHtml += `<div class="chip ${idx === 0 ? 'selected' : ''}" onclick="selectOption('size', '${sz}', this)">${sz}</div>`;
+            });
+
+            container.innerHTML = `
+                <div class="gallery-box">
+                    <div class="main-img-wrap">
+                        <img id="mainProductImg" src="${images[0]}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/400'">
+                    </div>
+                    <div class="thumbnail-row">
+                        ${thumbHtml}
+                    </div>
+                </div>
+                <div class="product-info-box">
+                    <h1>${p.title}</h1>
+                    <div class="price">₹${p.price}</div>
+                    
+                    <div class="option-group">
+                        <label>Select Color:</label>
+                        <div class="chips-row">${colorHtml}</div>
+                    </div>
+
+                    <div class="option-group">
+                        <label>Select Size:</label>
+                        <div class="chips-row">${sizeHtml}</div>
+                    </div>
+
+                    <div class="action-btns">
+                        <button class="add-cart-btn" onclick="addToCartDetail()"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
+                        <button class="order-now-btn" onclick="orderNowDetail()"><i class="fa-solid fa-bolt"></i> Order Now</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadSimilarProducts(currentId) {
             const grid = document.getElementById('similarProductsGrid');
             db.collection("products").get().then((snapshot) => {
+                if (snapshot.empty) {
+                    grid.innerHTML = '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No other products available.</p>';
+                    return;
+                }
+
                 let html = '';
                 snapshot.forEach((doc) => {
+                    if (doc.id === currentId) return;
                     const p = doc.data();
+                    const pId = doc.id;
                     const img = (p.images && p.images[0]) ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
+
                     html += `
-                        <div class="product-card" onclick="window.location.href='product.html?id=${doc.id}'">
-                            <img src="${img}" alt="${p.title}" loading="lazy">
+                        <div class="product-card" onclick="window.location.href='product.html?id=${pId}'">
+                            <img src="${img}" alt="${p.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
                             <div class="card-title">${p.title}</div>
                             <div class="card-price">₹${p.price}</div>
                         </div>
                     `;
                 });
-                grid.innerHTML = html;
+
+                grid.innerHTML = html || '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No similar products found.</p>';
+            }).catch(err => {
+                grid.innerHTML = `<p style="color:red; text-align:center; width: 100%; font-size:12px;">Error loading collection.</p>`;
             });
         }
-        loadSimilarProducts();
+
+        function changeMainImage(imgSrc, thumbElement) {
+            document.getElementById('mainProductImg').src = imgSrc;
+            document.querySelectorAll('.thumb-img').forEach(el => el.classList.remove('active'));
+            thumbElement.classList.add('active');
+        }
+
+        function selectOption(type, value, element) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.chip').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+
+            if (type === 'color') selectedColor = value;
+            if (type === 'size') selectedSize = value;
+        }
+
+        function addToCartDetail() {
+            if (!currentProduct) return;
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            const customTitle = `${currentProduct.title} (${selectedColor}, ${selectedSize})`;
+            
+            let existing = cart.find(item => item.title === customTitle);
+            const mainImg = (currentProduct.images && currentProduct.images[0]) ? currentProduct.images[0] : (currentProduct.image || 'https://via.placeholder.com/150');
+
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({
+                    title: customTitle,
+                    price: currentProduct.price,
+                    image: mainImg,
+                    qty: 1
+                });
+            }
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            alert("Product added to cart successfully!");
+        }
+
+        function orderNowDetail() {
+            if (!currentProduct) return;
+            const customTitle = `${currentProduct.title} (${selectedColor}, ${selectedSize})`;
+            const mainImg = (currentProduct.images && currentProduct.images[0]) ? currentProduct.images[0] : (currentProduct.image || 'https://via.placeholder.com/150');
+
+            const buyNowItem = [{
+                title: customTitle,
+                price: currentProduct.price,
+                image: mainImg,
+                qty: 1
+            }];
+            localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
+            window.location.href = 'checkout.html';
+        }
     </script>
 </body>
 </html>
