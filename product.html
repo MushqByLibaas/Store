@@ -157,7 +157,7 @@
             padding: 15px;
         }
         
-        /* Enforce horizontal slider layout specifically for similar products grid */
+        /* FORCE HORIZONTAL SLIDER FOR MOBILE / DESKTOP VIEWPORTS */
         #similarProductsGrid.product-grid {
             display: flex !important;
             flex-direction: row !important;
@@ -174,26 +174,45 @@
         #similarProductsGrid.product-grid::-webkit-scrollbar {
             display: none !important;
         }
-        @media (min-width: 768px) {
-            #similarProductsGrid.product-grid {
-                display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
-                overflow-x: visible !important;
-                gap: 20px !important;
-            }
-        }
+        
         #similarProductsGrid .product-card {
+            background: #18181c;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            cursor: pointer;
+            transition: transform 0.2s ease;
             flex: 0 0 170px !important;
             min-width: 170px !important;
             max-width: 170px !important;
         }
-        @media (min-width: 768px) {
-            #similarProductsGrid .product-card {
-                flex: unset !important;
-                min-width: unset !important;
-                max-width: unset !important;
-                width: 100% !important;
-            }
+        
+        #similarProductsGrid .product-card:hover {
+            transform: translateY(-4px);
+        }
+        #similarProductsGrid .product-card img {
+            width: 100% !important;
+            height: 160px !important;
+            object-fit: cover !important;
+            border-radius: 6px;
+            background: #111;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin: 8px 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-price {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--accent-gold, #d4af37);
         }
     </style>
 </head>
