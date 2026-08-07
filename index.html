@@ -31,8 +31,7 @@
             color: var(--text-color);
             font-family: 'Poppins', sans-serif;
         }
-
-        .top-bar {
+             .top-bar {
             background: linear-gradient(90deg, #b89728, var(--accent-gold), #b89728);
             color: #000;
             font-size: 11px;
@@ -137,11 +136,10 @@
             color: var(--text-muted);
             margin-bottom: 0;
         }
-
         .search-box {
             position: relative;
             margin-bottom: 30px;
-        }
+            }
         .search-box input {
             width: 100%;
             padding: 14px 14px 14px 45px;
@@ -177,17 +175,26 @@
             color: var(--accent-gold);
         }
 
+        /* Product Grid / Slider container */
         .product-grid {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 12px !important;
-            width: 100% !important;
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            width: 100%;
             margin-bottom: 30px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .product-grid::-webkit-scrollbar {
+            display: none;
         }
         @media (min-width: 768px) {
             .product-grid {
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 20px !important;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+                overflow-x: visible;
             }
             .hero-banner { padding: 60px 20px; }
             .hero-banner h1 { font-size: 32px; }
@@ -203,8 +210,18 @@
             justify-content: space-between;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 100%;
+            min-width: 170px;
+            max-width: 170px;
+            flex-shrink: 0;
             overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .product-card {
+                min-width: unset;
+                max-width: unset;
+                flex-shrink: unset;
+                padding: 12px;
+            }
         }
         .product-card:hover {
             transform: translateY(-5px);
@@ -221,7 +238,6 @@
         }
         @media (min-width: 768px) {
             .product-card img { height: 250px; }
-            .product-card { padding: 12px; }
         }
         .product-title {
             font-size: 13px;
@@ -323,8 +339,7 @@
         .floating-whatsapp:hover {
             transform: scale(1.08);
         }
-
-        .cart-overlay {
+                .cart-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: none; z-index: 1100;
             backdrop-filter: blur(3px);
@@ -386,22 +401,22 @@
 
         <h2 class="section-title"><i class="fa-solid fa-fire" style="color: var(--accent-gold);"></i> Best <span>Sellers</span></h2>
         <div class="product-grid" id="bestSellerGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
+            <p style="color: var(--text-muted); text-align: center; padding: 20px; width:100%;">Loading collection...</p>
         </div>
 
         <h2 class="section-title" style="margin-top: 40px;"><i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> Trending <span>Styles</span></h2>
         <div class="product-grid" id="trendingGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
+            <p style="color: var(--text-muted); text-align: center; padding: 20px; width:100%;">Loading collection...</p>
         </div>
 
         <h2 class="section-title" style="margin-top: 40px;"><i class="fa-solid fa-tags" style="color: var(--accent-gold);"></i> Special <span>Offers</span></h2>
         <div class="product-grid" id="specialGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
+            <p style="color: var(--text-muted); text-align: center; padding: 20px; width:100%;">Loading collection...</p>
         </div>
 
         <h2 class="section-title" style="margin-top: 40px;"><i class="fa-solid fa-sparkles" style="color: var(--accent-gold);"></i> New <span>Arrivals</span></h2>
         <div class="product-grid" id="newGrid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Loading collection...</p>
+            <p style="color: var(--text-muted); text-align: center; padding: 20px; width:100%;">Loading collection...</p>
         </div>
     </div>
 
@@ -443,7 +458,9 @@
                 Proceed to Checkout ⚡
             </button>
         </div>
-    </div> <script>
+    </div>
+
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
             authDomain: "mushqbylibaas.firebaseapp.com",
@@ -472,7 +489,7 @@
 
             db.collection("products").get().then((querySnapshot) => {
                 if (querySnapshot.empty) {
-                    const emptyMsg = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; padding:20px;">No products available in Firebase database.</p>';
+                    const emptyMsg = '<p style="color: var(--text-muted); text-align: center; padding:20px; width:100%;">No products available in Firebase database.</p>';
                     bestSellerGrid.innerHTML = emptyMsg;
                     trendingGrid.innerHTML = emptyMsg;
                     specialGrid.innerHTML = emptyMsg;
@@ -492,7 +509,7 @@
                     const sizesText = p.sizes && Array.isArray(p.sizes) ? p.sizes.join(', ') : (p.sizes || 'N/A');
                     const safeImage = p.image || 'https://via.placeholder.com/300';
                     const category = (p.category || 'new').toLowerCase();
-                    const titleLower = p.title.toLowerCase();
+                    const titleLower = p.title ? p.title.toLowerCase() : '';
                     
                     const cardContent = `
                         <div class="product-card" data-title="${titleLower}" onclick="openProductDetail('${pId}')">
@@ -519,13 +536,13 @@
                     }
                 });
 
-                bestSellerGrid.innerHTML = bestSellerHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No best sellers.</p>';
-                trendingGrid.innerHTML = trendingHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No trending products.</p>';
-                specialGrid.innerHTML = specialHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No special offers.</p>';
-                newGrid.innerHTML = newHTML || '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1; font-size:12px;">No new arrivals.</p>';
+                bestSellerGrid.innerHTML = bestSellerHTML || '<p style="color: var(--text-muted); text-align: center; padding:20px; width:100%; font-size:12px;">No best sellers.</p>';
+                trendingGrid.innerHTML = trendingHTML || '<p style="color: var(--text-muted); text-align: center; padding:20px; width:100%; font-size:12px;">No trending products.</p>';
+                specialGrid.innerHTML = specialHTML || '<p style="color: var(--text-muted); text-align: center; padding:20px; width:100%; font-size:12px;">No special offers.</p>';
+                newGrid.innerHTML = newHTML || '<p style="color: var(--text-muted); text-align: center; padding:20px; width:100%; font-size:12px;">No new arrivals.</p>';
 
             }).catch((error) => {
-                const errMsg = `<p style="color:red; text-align:center; grid-column: 1 / -1; padding:20px;">Firebase Error: Check database rules/connection.</p>`;
+                const errMsg = `<p style="color:red; text-align:center; padding:20px; width:100%;">Firebase Error: Check database rules/connection.</p>`;
                 bestSellerGrid.innerHTML = errMsg;
                 trendingGrid.innerHTML = errMsg;
                 specialGrid.innerHTML = errMsg;
@@ -656,9 +673,9 @@
             const query = document.getElementById('searchInput').value.toLowerCase();
             const cards = document.querySelectorAll('.product-card');
 
-            cards.forEach(card => {
+            cards.deviceWidth || cards.forEach(card => {
                 const title = card.getAttribute('data-title');
-                if (title.includes(query)) {
+                if (title && title.includes(query)) {
                     card.style.display = "";
                 } else {
                     card.style.display = "none";
