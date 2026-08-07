@@ -1,70 +1,8 @@
-:root {
-    --bg-primary: #0b0b0d;
-    --bg-card: #18181c;
-    --text-color: #ffffff;
-    --text-muted: #aaaaaa;
-    --accent-gold: #d4af37;
-    --border-color: #333333;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-body {
-    background-color: var(--bg-primary);
-    color: var(--text-color);
-    overflow-x: hidden;
-    padding-bottom: 40px;
-}
-
-/* Header Styling */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 20px;
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.logo {
-    font-family: 'Cinzel', serif;
-    font-size: 18px;
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.logo span {
-    color: var(--accent-gold);
-}
-
-.cart-trigger, .home-btn {
-    cursor: pointer;
-    background: #222225;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    font-size: 13px;
-    color: var(--accent-gold);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* Professional Horizontal Slider Styling (Purana grid aur sab safe rakhte hue) */
-.product-grid {
+/* Professional Horizontal Slider for both Home and Product Pages */
+.product-grid, .similar-products-grid {
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: nowrap !important;
     overflow-x: auto !important;
     gap: 15px !important;
     width: 100% !important;
@@ -74,7 +12,7 @@ body {
     scrollbar-width: none;
 }
 
-.product-grid::-webkit-scrollbar {
+.product-grid::-webkit-scrollbar, .similar-products-grid::-webkit-scrollbar {
     display: none;
 }
 
@@ -107,7 +45,7 @@ body {
 }
 
 @media (min-width: 768px) {
-    .product-grid {
+    .product-grid, .similar-products-grid {
         display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
         overflow-x: visible !important;
@@ -124,45 +62,4 @@ body {
     .product-card img {
         height: 220px;
     }
-}
-
-.card-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-color);
-    margin: 8px 0 4px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.card-price {
-    font-size: 14px;
-    font-weight: bold;
-    color: var(--accent-gold);
-}
-
-/* Buttons and Interactive Elements */
-button {
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-primary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-gold);
 }
