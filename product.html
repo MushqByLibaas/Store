@@ -18,21 +18,186 @@
     </header>
 
     <div class="product-detail-container" id="productDetailContainer">
-        <p style="text-align: center; padding: 40px;">Loading product details...</p>
+        <p style="text-align: center; padding: 40px; color: #aaa;">Loading product details...</p>
     </div>
 
     <div class="similar-container">
         <h2 class="section-title">✨ Similar Products & Collection</h2>
-        <!-- Class yaha 'similar-products-grid' use ki hai -->
         <div class="similar-products-grid" id="similarProductsGrid">
-            <p style="text-align: center; width: 100%;">Loading collection...</p>
+            <p style="text-align: center; width: 100%; color: #aaa; font-size: 13px;">Loading collection...</p>
         </div>
     </div>
 
-    <!-- Script wahi purani hai, bas structure fix hai -->
     <script>
-        // ... (Firebase configuration and existing JS remains same) ...
-        // Ensure loadSimilarProducts function uses the 'similar-products-grid' div.
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCQU5IqB0wStcqvnetheOcv2oVnD-RoXw",
+            authDomain: "mushqbylibaas.firebaseapp.com",
+            projectId: "mushqbylibaas",
+            storageBucket: "mushqbylibaas.firebasestorage.app",
+            messagingSenderId: "1057698747540",
+            appId: "1:1057698747540:web:e68337039fcb254f381081",
+            measurementId: "G-J1L758MD9G"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        let selectedColor = '';
+        let selectedSize = '';
+        let currentProduct = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (!productId) {
+                document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center;">Product not found!</p>';
+                return;
+            }
+
+            db.collection("products").doc(productId).get().then((doc) => {
+                if (doc.exists) {
+                    currentProduct = doc.data();
+                    renderProduct(currentProduct);
+                    loadSimilarProducts(productId);
+                } else {
+                    document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center;">Product does not exist.</p>';
+                }
+            }).catch(err => {
+                document.getElementById('productDetailContainer').innerHTML = `<p style="color:red; text-align:center;">Error: ${err.message}</p>`;
+            });
+        });
+
+        function renderProduct(p) {
+            const container = document.getElementById('productDetailContainer');
+            
+            let images = (p.images && Array.isArray(p.images) && p.images.length > 0) ? p.images : (p.image ? [p.image] : ['https://via.placeholder.com/400']);
+
+            let thumbHtml = '';
+            images.forEach((img, index) => {
+                thumbHtml += `<img src="${img}" class="thumb-img ${index === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)" onerror="this.src='https://via.placeholder.com/80'">`;
+            });
+
+            let colors = p.colors || ['Maroon', 'Black', 'Navy Blue', 'Pink'];
+            if (typeof colors === 'string') colors = colors.split(',').map(s => s.trim());
+            selectedColor = colors[0];
+
+            let colorHtml = '';
+            colors.forEach((col, idx) => {
+                colorHtml += `<div class="chip ${idx === 0 ? 'selected' : ''}" onclick="selectOption('color', '${col}', this)">${col}</div>`;
+            });
+
+            let sizes = p.sizes || ['S', 'M', 'L', 'XL', 'XXL'];
+            if (typeof sizes === 'string') sizes = sizes.split(',').map(s => s.trim());
+            selectedSize = sizes[0];
+
+            let sizeHtml = '';
+            sizes.forEach((sz, idx) => {
+                sizeHtml += `<div class="chip ${idx === 0 ? 'selected' : ''}" onclick="selectOption('size', '${sz}', this)">${sz}</div>`;
+            });
+
+            container.innerHTML = `
+                <div class="gallery-box">
+                    <div class="main-img-wrap">
+                        <img id="mainProductImg" src="${images[0]}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/400'">
+                    </div>
+                    <div class="thumbnail-row">${thumbHtml}</div>
+                </div>
+                <div class="product-info-box">
+                    <h1>${p.title}</h1>
+                    <div class="price">₹${p.price}</div>
+                    
+                    <div class="option-group">
+                        <label>Select Color:</label>
+                        <div class="chips-row">${colorHtml}</div>
+                    </div>
+
+                    <div class="option-group">
+                        <label>Select Size:</label>
+                        <div class="chips-row">${sizeHtml}</div>
+                    </div>
+
+                    <div class="action-btns">
+                        <button class="add-cart-btn" onclick="addToCartDetail()"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
+                        <button class="order-now-btn" onclick="orderNowDetail()"><i class="fa-solid fa-bolt"></i> Order Now</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadSimilarProducts(currentId) {
+            const grid = document.getElementById('similarProductsGrid');
+            db.collection("products").get().then((snapshot) => {
+                if (snapshot.empty) {
+                    grid.innerHTML = '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No products available.</p>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach((doc) => {
+                    if (doc.id === currentId) return;
+                    const p = doc.data();
+                    const pId = doc.id;
+                    const img = (p.images && p.images[0]) ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
+
+                    html += `
+                        <div class="product-card" onclick="window.location.href='product.html?id=${pId}'">
+                            <img src="${img}" alt="${p.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
+                            <div class="card-title">${p.title}</div>
+                            <div class="card-price">₹${p.price}</div>
+                        </div>
+                    `;
+                });
+
+                grid.innerHTML = html || '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No similar products found.</p>';
+            }).catch(err => {
+                grid.innerHTML = `<p style="color:red; text-align:center; width: 100%; font-size:12px;">Error loading collection.</p>`;
+            });
+        }
+
+        function changeMainImage(imgSrc, thumbElement) {
+            document.getElementById('mainProductImg').src = imgSrc;
+            document.querySelectorAll('.thumb-img').forEach(el => el.classList.remove('active'));
+            thumbElement.classList.add('active');
+        }
+
+        function selectOption(type, value, element) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.chip').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+
+            if (type === 'color') selectedColor = value;
+            if (type === 'size') selectedSize = value;
+        }
+
+        function addToCartDetail() {
+            if (!currentProduct) return;
+            let cart = JSON.parse(localStorage.getItem('novaCart')) || [];
+            const customTitle = `${currentProduct.title} (${selectedColor}, ${selectedSize})`;
+            
+            let existing = cart.find(item => item.title === customTitle);
+            const mainImg = (currentProduct.images && currentProduct.images[0]) ? currentProduct.images[0] : (currentProduct.image || 'https://via.placeholder.com/150');
+
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ title: customTitle, price: currentProduct.price, image: mainImg, qty: 1 });
+            }
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            alert("Product added to cart successfully!");
+        }
+
+        function orderNowDetail() {
+            if (!currentProduct) return;
+            const customTitle = `${currentProduct.title} (${selectedColor}, ${selectedSize})`;
+            const mainImg = (currentProduct.images && currentProduct.images[0]) ? currentProduct.images[0] : (currentProduct.image || 'https://via.placeholder.com/150');
+
+            const buyNowItem = [{ title: customTitle, price: currentProduct.price, image: mainImg, qty: 1 }];
+            localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
+            window.location.href = 'checkout.html';
+        }
     </script>
 </body>
 </html>
