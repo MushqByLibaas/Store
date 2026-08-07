@@ -61,7 +61,7 @@ body {
     gap: 6px;
 }
 
-/* GUARANTEED MOBILE HORIZONTAL SLIDER FOR ALL GRIDS */
+/* MOBILE HORIZONTAL SLIDER SYSTEM */
 .product-grid, .similar-products-grid {
     display: flex !important;
     flex-direction: row !important;
@@ -70,8 +70,8 @@ body {
     overflow-y: hidden !important;
     gap: 12px !important;
     width: 100% !important;
-    max-width: 100% !important;
     padding: 10px 5px !important;
+    margin-bottom: 30px;
     scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
@@ -92,9 +92,9 @@ body {
     justify-content: space-between !important;
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease;
-    flex: 0 0 160px !important;
-    min-width: 160px !important;
-    max-width: 160px !important;
+    flex: 0 0 170px !important;
+    min-width: 170px !important;
+    max-width: 170px !important;
     box-sizing: border-box !important;
 }
 
@@ -105,13 +105,13 @@ body {
 
 .product-card img {
     width: 100% !important;
-    height: 150px !important;
+    height: 160px !important;
     object-fit: cover !important;
     border-radius: 6px;
     background: #111113;
 }
 
-/* DESKTOP VIEW: Grid Layout */
+/* DESKTOP VIEW: Standard Grid Layout */
 @media (min-width: 768px) {
     .product-grid, .similar-products-grid {
         display: grid !important;
@@ -126,6 +126,7 @@ body {
         min-width: unset !important;
         max-width: unset !important;
         width: 100% !important;
+        padding: 12px;
     }
 
     .product-card img {
@@ -133,7 +134,7 @@ body {
     }
 }
 
-.card-title {
+.card-title, .product-title {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-color);
@@ -143,10 +144,50 @@ body {
     text-overflow: ellipsis;
 }
 
-.card-price {
+.card-price, .product-price {
     font-size: 14px;
     font-weight: bold;
     color: var(--accent-gold);
+}
+
+.product-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-btn-group {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.btn-cart {
+    flex: 1;
+    background: #111;
+    color: #fff;
+    border: 1px solid var(--accent-gold);
+    padding: 8px 4px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 11px;
+    transition: 0.2s;
+}
+
+.btn-order {
+    flex: 1;
+    background: var(--accent-gold);
+    border: none;
+    padding: 8px 4px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 11px;
+    color: #000;
+    transition: 0.2s;
 }
 
 /* Buttons and Interactive Elements */
