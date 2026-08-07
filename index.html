@@ -10,6 +10,36 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* MOBILE HORIZONTAL SWIPE SLIDER FOR INDEX PAGE */
+        @media (max-width: 768px) {
+            .product-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                gap: 12px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 10px 5px !important;
+                scroll-behavior: smooth !important;
+                -webkit-overflow-scrolling: touch !important;
+                touch-action: pan-x !important;
+                pointer-events: auto !important;
+                scrollbar-width: none !important;
+            }
+            .product-grid::-webkit-scrollbar {
+                display: none !important;
+            }
+            .product-card {
+                flex: 0 0 170px !important;
+                min-width: 170px !important;
+                max-width: 170px !important;
+                pointer-events: auto !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -198,7 +228,6 @@
                 newGrid.innerHTML = errMsg;
             });
         }
-
         function openProductDetail(productId) {
             window.location.href = `product.html?id=${productId}`;
         }
