@@ -1,38 +1,27 @@
-/* ... (pichle codes waise hi rehne dein, bas niche wala part replace kar dein) ... */
-
-/* Horizontal Slider Styling */
-.product-slider-wrapper {
+/* Slider CSS - Purane grid ko disturb nahi karega */
+.horizontal-slider {
     display: flex;
     gap: 15px;
     overflow-x: auto;
     padding: 10px 0;
+    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox ke liye */
+    scrollbar-width: none;
 }
 
-.product-slider-wrapper::-webkit-scrollbar {
-    display: none; /* Chrome/Safari ke liye */
+.horizontal-slider::-webkit-scrollbar {
+    display: none;
 }
 
-.product-card {
-    min-width: 160px; /* Slider ke liye fixed width */
+.horizontal-slider .product-card {
+    min-width: 160px; /* Mobile par card size */
     max-width: 160px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: all 0.3s ease;
     flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
-    .product-card {
+    .horizontal-slider .product-card {
         min-width: 220px;
         max-width: 220px;
     }
 }
-/* ... baki sab same rehne dein ... */
