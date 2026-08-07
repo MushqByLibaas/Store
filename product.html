@@ -156,18 +156,34 @@
             margin: 0 auto 40px auto;
             padding: 15px;
         }
+        
+        /* FIXED: Mobile Horizontal Slider for Similar Products */
         .product-grid {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 15px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            gap: 12px !important;
             width: 100% !important;
+            padding: 10px 5px !important;
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
         }
+        .product-grid::-webkit-scrollbar {
+            display: none !important;
+        }
+        
         @media (min-width: 768px) {
             .product-grid {
+                display: grid !important;
                 grid-template-columns: repeat(4, 1fr) !important;
+                overflow-x: visible !important;
                 gap: 20px !important;
             }
         }
+
         .product-card {
             background: #18181c;
             border: 1px solid #333;
@@ -178,7 +194,20 @@
             justify-content: space-between;
             cursor: pointer;
             transition: transform 0.2s ease;
+            flex: 0 0 170px !important;
+            min-width: 170px !important;
+            max-width: 170px !important;
         }
+        
+        @media (min-width: 768px) {
+            .product-card {
+                flex: unset !important;
+                min-width: unset !important;
+                max-width: unset !important;
+                width: 100% !important;
+            }
+        }
+
         .product-card:hover {
             transform: translateY(-4px);
         }
@@ -224,7 +253,7 @@
     <div class="similar-container">
         <h2 style="font-family: 'Cinzel', serif; color: var(--accent-gold, #d4af37); font-size: 18px; margin-bottom: 15px; border-left: 3px solid var(--accent-gold, #d4af37); padding-left: 8px;">✨ Similar Products & Collection</h2>
         <div class="product-grid" id="similarProductsGrid">
-            <p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size: 13px; padding: 20px;">Loading collection...</p>
+            <p style="color: #aaa; text-align: center; width: 100%; font-size: 13px; padding: 20px;">Loading collection...</p>
         </div>
     </div>
 
@@ -340,7 +369,7 @@
             const grid = document.getElementById('similarProductsGrid');
             db.collection("products").get().then((snapshot) => {
                 if (snapshot.empty) {
-                    grid.innerHTML = '<p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size:12px;">No other products available.</p>';
+                    grid.innerHTML = '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No other products available.</p>';
                     return;
                 }
 
@@ -360,9 +389,9 @@
                     `;
                 });
 
-                grid.innerHTML = html || '<p style="color: #aaa; text-align: center; grid-column: 1 / -1; font-size:12px;">No similar products found.</p>';
+                grid.innerHTML = html || '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No similar products found.</p>';
             }).catch(err => {
-                grid.innerHTML = `<p style="color:red; text-align:center; grid-column: 1 / -1; font-size:12px;">Error loading collection.</p>`;
+                grid.innerHTML = `<p style="color:red; text-align:center; width: 100%; font-size:12px;">Error loading collection.</p>`;
             });
         }
 
