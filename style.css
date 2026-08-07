@@ -99,7 +99,7 @@ body {
     padding-left: 8px;
 }
 
-/* MOBILE HORIZONTAL SWIPE SLIDER (Amazon / Myntra Style) */
+/* MOBILE HORIZONTAL SWIPE SLIDER (Forced for Mobile Screens) */
 .similar-products-grid {
     display: flex !important;
     flex-direction: row !important;
