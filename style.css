@@ -61,19 +61,20 @@ body {
     gap: 6px;
 }
 
-/* Product Grid & Cards */
+/* Product Grid & Horizontal Slider for Mobile */
 .product-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
     width: 100%;
+    padding: 10px 5px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 }
 
-@media (min-width: 768px) {
-    .product-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-    }
+.product-grid::-webkit-scrollbar {
+    display: none;
 }
 
 .product-card {
@@ -86,6 +87,9 @@ body {
     justify-content: space-between;
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease;
+    flex: 0 0 160px;
+    scroll-snap-align: start;
+    box-sizing: border-box;
 }
 
 .product-card:hover {
@@ -102,6 +106,19 @@ body {
 }
 
 @media (min-width: 768px) {
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        overflow-x: visible;
+        padding: 0;
+    }
+
+    .product-card {
+        flex: unset;
+        scroll-snap-align: unset;
+    }
+
     .product-card img {
         height: 220px;
     }
