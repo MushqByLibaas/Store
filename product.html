@@ -6,9 +6,31 @@
     <title>Product Details - MushqByLibaas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .gallery-box { display: flex; flex-direction: column; gap: 15px; }
+        .main-img-wrap { width: 100%; height: 380px; background: #0b0b0d; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; align-items: center; justify-content: center; }
+        @media (min-width: 768px) { .main-img-wrap { height: 450px; } }
+        .main-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center; background: #0b0b0d; }
+        .thumbnail-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: thin; }
+        .thumb-img { width: 75px; height: 85px; object-fit: cover; border-radius: 6px; border: 2px solid #333; cursor: pointer; flex-shrink: 0; transition: border-color 0.2s; }
+        .thumb-img:hover, .thumb-img.active { border-color: var(--accent-gold, #d4af37); }
+        .product-info-box h1 { font-family: 'Cinzel', serif; color: var(--text-color, #fff); font-size: 24px; margin-bottom: 10px; }
+        .product-info-box .price { font-size: 22px; color: var(--accent-gold, #d4af37); font-weight: bold; margin-bottom: 20px; }
+        .option-group { margin-bottom: 20px; }
+        .option-group label { display: block; font-size: 13px; color: #aaa; margin-bottom: 8px; font-weight: 600; }
+        .chips-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .chip { background: #111; border: 1px solid #444; color: #fff; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .chip.selected { background: var(--accent-gold, #d4af37); color: #000; border-color: var(--accent-gold, #d4af37); font-weight: bold; }
+        .action-btns { display: flex; gap: 15px; margin-top: 30px; }
+        .action-btns button { flex: 1; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .add-cart-btn { background: #111; color: #fff; border: 1px solid var(--accent-gold, #d4af37); }
+        .order-now-btn { background: var(--accent-gold, #d4af37); color: #000; border: none; }
+        .similar-container { max-width: 1100px; margin: 0 auto 40px auto; padding: 15px; }
+    </style>
 </head>
 <body>
 
@@ -18,13 +40,13 @@
     </header>
 
     <div class="product-detail-container" id="productDetailContainer">
-        <p style="text-align: center; padding: 40px; color: #aaa;">Loading product details...</p>
+        <p style="color: #aaa; text-align: center; grid-column: 1 / -1; padding: 40px;">Loading product details...</p>
     </div>
 
     <div class="similar-container">
         <h2 class="section-title">✨ Similar Products & Collection</h2>
         <div class="similar-products-grid" id="similarProductsGrid">
-            <p style="text-align: center; width: 100%; color: #aaa; font-size: 13px;">Loading collection...</p>
+            <p style="color: #aaa; text-align: center; width: 100%; font-size: 13px; padding: 20px;">Loading collection...</p>
         </div>
     </div>
 
@@ -53,7 +75,7 @@
             const productId = urlParams.get('id');
 
             if (!productId) {
-                document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center;">Product not found!</p>';
+                document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center; grid-column:1/-1;">Product not found!</p>';
                 return;
             }
 
@@ -63,17 +85,24 @@
                     renderProduct(currentProduct);
                     loadSimilarProducts(productId);
                 } else {
-                    document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center;">Product does not exist.</p>';
+                    document.getElementById('productDetailContainer').innerHTML = '<p style="color:red; text-align:center; grid-column:1/-1;">Product does not exist.</p>';
                 }
             }).catch(err => {
-                document.getElementById('productDetailContainer').innerHTML = `<p style="color:red; text-align:center;">Error: ${err.message}</p>`;
+                document.getElementById('productDetailContainer').innerHTML = `<p style="color:red; text-align:center; grid-column:1/-1;">Error: ${err.message}</p>`;
             });
         });
 
         function renderProduct(p) {
             const container = document.getElementById('productDetailContainer');
             
-            let images = (p.images && Array.isArray(p.images) && p.images.length > 0) ? p.images : (p.image ? [p.image] : ['https://via.placeholder.com/400']);
+            let images = [];
+            if (p.images && Array.isArray(p.images) && p.images.length > 0) {
+                images = p.images;
+            } else if (p.image) {
+                images = [p.image];
+            } else {
+                images = ['https://via.placeholder.com/400'];
+            }
 
             let thumbHtml = '';
             images.forEach((img, index) => {
@@ -103,7 +132,9 @@
                     <div class="main-img-wrap">
                         <img id="mainProductImg" src="${images[0]}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/400'">
                     </div>
-                    <div class="thumbnail-row">${thumbHtml}</div>
+                    <div class="thumbnail-row">
+                        ${thumbHtml}
+                    </div>
                 </div>
                 <div class="product-info-box">
                     <h1>${p.title}</h1>
@@ -131,7 +162,7 @@
             const grid = document.getElementById('similarProductsGrid');
             db.collection("products").get().then((snapshot) => {
                 if (snapshot.empty) {
-                    grid.innerHTML = '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No products available.</p>';
+                    grid.innerHTML = '<p style="color: #aaa; text-align: center; width: 100%; font-size:12px;">No other products available.</p>';
                     return;
                 }
 
@@ -183,7 +214,12 @@
             if (existing) {
                 existing.qty += 1;
             } else {
-                cart.push({ title: customTitle, price: currentProduct.price, image: mainImg, qty: 1 });
+                cart.push({
+                    title: customTitle,
+                    price: currentProduct.price,
+                    image: mainImg,
+                    qty: 1
+                });
             }
             localStorage.setItem('novaCart', JSON.stringify(cart));
             alert("Product added to cart successfully!");
@@ -194,7 +230,12 @@
             const customTitle = `${currentProduct.title} (${selectedColor}, ${selectedSize})`;
             const mainImg = (currentProduct.images && currentProduct.images[0]) ? currentProduct.images[0] : (currentProduct.image || 'https://via.placeholder.com/150');
 
-            const buyNowItem = [{ title: customTitle, price: currentProduct.price, image: mainImg, qty: 1 }];
+            const buyNowItem = [{
+                title: customTitle,
+                price: currentProduct.price,
+                image: mainImg,
+                qty: 1
+            }];
             localStorage.setItem('novaCart', JSON.stringify(buyNowItem));
             window.location.href = 'checkout.html';
         }
